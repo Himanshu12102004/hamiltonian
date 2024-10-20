@@ -1,8 +1,9 @@
+import { GUI } from 'dat.gui';
 import CanvasEvents from './CanvasEvents';
-import {GlobalVariables} from './GlobalVariables';
+import { GlobalVariables, NodeState } from './GlobalVariables';
 import { shaderCompiler } from './helpers/compileShaders';
 import { createProgram } from './helpers/createProgram';
-import { drawConnections, drawNodes } from './rendering/drawNodes';
+import { drawConnections, drawMouseTrain, drawNodes } from './rendering/draw';
 function loadShader(shaderUrl: string): Promise<string> {
   return new Promise((resolve, reject) => {
     let req = new XMLHttpRequest();
@@ -35,10 +36,59 @@ function compileShader(
   );
   return { vertexShader, fragmentShader };
 }
+function datInit() {
+  const gui = new GUI();
+  let controls = gui.addFolder('Controls');
+  let nodes = controls.addFolder('Nodes');
+  let nodeColor = nodes.addFolder('Color');
+  let backGround=controls.addFolder("Backgraound");
+  controls.open();
+  for (let state = 0; state < Object.keys(NodeState).length/2; state++) {
+    console.log(Object.keys(NodeState))
+    nodeColor
+      .addColor({ color: GlobalVariables.nodeColors[state] }, 'color')
+      .name(NodeState[state])
+      .onChange((value: number[]) => {
+        GlobalVariables.nodeColors[state] = value;
+      });
+  }
+  backGround.addColor({color:GlobalVariables.backgroundColor},"color").onChange((value:number[])=>{
+    GlobalVariables.backgroundColor=value;
+  })
+  let nodeBody=nodes.addFolder("Node Body");
+  nodeBody.add({radius:GlobalVariables.nodeRadius},"radius",0,10).onChange((value:number)=>{
+    GlobalVariables.nodeRadius=value;
+    GlobalVariables.nodeRayTracingTolerance=value;
+  });
+  nodeBody.add({polyCount:GlobalVariables.noOfTriangles},"polyCount",3,100,1).onChange((value:number)=>{
+    GlobalVariables.noOfTriangles=value;
+  });
+let forces=  controls.addFolder("Forces");
+forces.add({gravity:GlobalVariables.gravitationalConstant},"gravity",0,100).name("Gravitational Constant").onChange((value:number)=>{
+  GlobalVariables.gravitationalConstant=value;
+});
+forces.add({viscosity:GlobalVariables.viscosity},"viscosity",0,100).name("Viscosity").onChange((value:number)=>{
+  GlobalVariables.viscosity=value;
+});
+forces.add({distancePropotionality:GlobalVariables.distancePropotionality},"distancePropotionality",0,5).name("Distance Propotionality").onChange((value:number)=>{
+  GlobalVariables.distancePropotionality=value;
+});
+
+}
+let lastTime = performance.now();
+
 function animate() {
-  GlobalVariables.gl.clearColor(0.0, 0.0, 0.0, 1.0); 
-  GlobalVariables.gl.clear(GlobalVariables.gl.COLOR_BUFFER_BIT|GlobalVariables.gl.DEPTH_BUFFER_BIT);
+  const currentTime = performance.now();
+  const deltaTime = currentTime - lastTime;
+  GlobalVariables.timeElapsed=deltaTime;
+  lastTime = currentTime;
+  GlobalVariables.gl.clearColor(GlobalVariables.backgroundColor[0]/255, GlobalVariables.backgroundColor[1]/255, GlobalVariables.backgroundColor[2]/255, 1.0);
+  GlobalVariables.gl.clear(
+    GlobalVariables.gl.COLOR_BUFFER_BIT | GlobalVariables.gl.DEPTH_BUFFER_BIT
+  );
+
   drawConnections();
+  drawMouseTrain();
   drawNodes();
   requestAnimationFrame(animate);
 }
@@ -78,7 +128,9 @@ async function init() {
 function main(canvas: HTMLCanvasElement) {
   GlobalVariables.init(canvas);
   CanvasEvents.addEvents();
-  init();
-  animate();
+  datInit();
+  init().then(() => {
+    animate();
+  });
 }
 export default main;

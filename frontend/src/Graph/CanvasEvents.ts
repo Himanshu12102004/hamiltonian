@@ -1,6 +1,6 @@
 import { GlobalVariables } from './GlobalVariables';
+import Train from './world/components/Train';
 import Point from './world/helpers/point';
-
 class CanvasEvents {
   static isPanning = false;
   static isDragging = false;
@@ -70,11 +70,9 @@ class CanvasEvents {
     if (e.deltaY > 0) {
       GlobalVariables.graphScale.scale =
         GlobalVariables.graphScale.scale * 0.95;
-      if (GlobalVariables.noOfTriangles >= 20) --GlobalVariables.noOfTriangles;
     } else {
       GlobalVariables.graphScale.scale =
         GlobalVariables.graphScale.scale * 1.05;
-      if (GlobalVariables.noOfTriangles <= 100) ++GlobalVariables.noOfTriangles;
     }
     let centerX =
       (GlobalVariables.bounds.maxX + GlobalVariables.bounds.minX) / 2;
@@ -100,6 +98,8 @@ class CanvasEvents {
   static onPan(e: MouseEvent) {
     if (e.buttons === 1) {
       let pt = CanvasEvents.convertClientToCanvas(e.clientX, e.clientY);
+      if(GlobalVariables.graph.isConnectionInitiated)
+      GlobalVariables.mouseTrain.updateVector(pt);
       GlobalVariables.graph.handleConnections(pt);
       GlobalVariables.graph.handleConnectionVicinity(pt);
       if (!GlobalVariables.graph.isConnectionInitiated) {

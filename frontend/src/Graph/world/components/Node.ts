@@ -163,14 +163,17 @@ class Node {
     }
   }
   updatePosition() {
+    let viscosity =GlobalVariables.viscosity*0.00001;
+    let firctionX=viscosity>Math.abs(this.netForce.x)?-this.netForce.x:-Math.sign(this.netForce.x)*viscosity;
+    let firctionY=viscosity>Math.abs(this.netForce.y)?-this.netForce.y:-Math.sign(this.netForce.y)*viscosity;
     this.point.x +=
-      this.netForce.x - GlobalVariables.viscosity * this.netForce.x;
+      (this.netForce.x+firctionX)*GlobalVariables.timeElapsed;
     this.point.y +=
-      this.netForce.y - GlobalVariables.viscosity * this.netForce.y;
+      (this.netForce.y +firctionY)*GlobalVariables.timeElapsed;
   }
   findNetForce() {
     this.netForce = new Vector(new Point(0, 0), new Point(0, 0));
-
+    let gravitationalConstant=0.0005*GlobalVariables.gravitationalConstant;
     for (let i = 0; i < GlobalVariables.graph.nodes.length; i++) {
       const node = GlobalVariables.graph.nodes[i];
 
@@ -181,10 +184,10 @@ class Node {
 
       let forceMagnitude: number;
       if (distance === 0) {
-        forceMagnitude = GlobalVariables.gravitationalConstant;
+        forceMagnitude = gravitationalConstant*GlobalVariables.nodeRadius;
       } else {
         forceMagnitude =
-          GlobalVariables.gravitationalConstant /
+          gravitationalConstant*GlobalVariables.nodeRadius /
           Math.pow(distance, GlobalVariables.distancePropotionality);
       }
 

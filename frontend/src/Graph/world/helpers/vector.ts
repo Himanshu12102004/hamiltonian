@@ -18,11 +18,20 @@ class Vector {
       this.y = 0;
     }
   }
+  
   multiply(scalar: number): void {
     this.x *= scalar;
     this.y *= scalar;
   }
-
+  multiplyInNewVector(scalar:number){
+    let vec2=new Vector();
+    vec2.x=this.x*scalar;
+    vec2.y=this.y*scalar;
+    return vec2;
+  }
+  addAPoint(pt:Point){
+   return new Point(this.x+pt.x,this.y+pt.y);
+  }
   add(other: Vector): Vector {
     return new Vector(
       new Point(0, 0),

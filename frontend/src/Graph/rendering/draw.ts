@@ -29,9 +29,13 @@ function drawConnections() {
   let nodes = GlobalVariables.graph.nodes;
   for (let i = 0; i < matrix.length; i++) {
     for (let j = 0; j < matrix[i].length; j++) {
-      matrix[i][j].setVao(nodes[matrix[i][j].connectionFrom].point, nodes[matrix[i][j].connectionTo].point);
+      matrix[i][j].setVao(nodes[i].point, nodes[matrix[i][j].connectionTo].point);
       matrix[i][j].draw();
     }
   }
 }
-export { drawNodes ,drawConnections};
+function drawMouseTrain(){
+  GlobalVariables.mouseTrain.setVao();
+  GlobalVariables.mouseTrain.draw();
+}
+export { drawNodes ,drawConnections,drawMouseTrain};

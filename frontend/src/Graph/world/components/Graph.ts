@@ -38,6 +38,12 @@ class Graph {
           this.nodes[i].addState(NodeState.clicked);
           this.isConnectionInitiated = true;
           this.connectionInitiatedFrom = i;
+          GlobalVariables.mouseTrain.initialize(
+            this.nodes[this.connectionInitiatedFrom].point
+          );
+          GlobalVariables.mouseTrain.updateVector(pt);
+          GlobalVariables.mouseTrain.updateT(1);
+
           return;
         }
       }
@@ -60,7 +66,7 @@ class Graph {
     }
   }
   rollBack() {
-    this.isConnectionInitiated=false;
+    this.isConnectionInitiated = false;
     this.nodes[this.connectionInitiatedFrom].removeState(NodeState.clicked);
   }
   checkForConnectionsAndConnect(pt: Point) {
@@ -81,14 +87,16 @@ class Graph {
               NodeState.connected
             );
             this.connect(this.connectionInitiatedFrom, i);
-            if(!GlobalVariables.graphIsDirected){
-              this.connect(i,this.connectionInitiatedFrom);
+            if (!GlobalVariables.graphIsDirected) {
+              this.connect(i, this.connectionInitiatedFrom);
             }
             console.log(this.adjacencyMatrix);
             this.isConnectionInitiated = false;
+            GlobalVariables.mouseTrain.updateT(0);
             return;
           }
         }
+        GlobalVariables.mouseTrain.updateT(0);
         this.rollBack();
       }
     }
@@ -128,18 +136,20 @@ class Graph {
     ) {
       throw new Error('Invalid node indices');
     }
-  
+
     const existingConnection = this.adjacencyMatrix[nodeIndex1].some(
       (connection) => connection.connectionTo === nodeIndex2
     );
-  
+
     if (existingConnection) {
-      console.log(`Connection already exists between node ${nodeIndex1} and node ${nodeIndex2}`);
-      return; 
+      console.log(
+        `Connection already exists between node ${nodeIndex1} and node ${nodeIndex2}`
+      );
+      return;
     }
-    let connection = new Connection(nodeIndex1,nodeIndex2);
+    let connection = new Connection(nodeIndex2);
     this.adjacencyMatrix[nodeIndex1].push(connection);
   }
-}  
+}
 
 export default Graph;

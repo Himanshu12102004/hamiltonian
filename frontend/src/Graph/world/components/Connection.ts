@@ -4,11 +4,9 @@ import updateVao from "../../helpers/updateVao";
 import Point from "../helpers/point";
 class Connection {
   connectionTo: number;
-  connectionFrom:number;
   vao:WebGLVertexArrayObject|null
-  constructor(connectionFrom:number,connectionTo: number) {
+  constructor(connectionTo: number) {
     this.connectionTo = connectionTo;
-    this.connectionFrom=connectionFrom;
     this.vao=null;
   }
   static getNormalizedPoint(point: Point): [number, number] {

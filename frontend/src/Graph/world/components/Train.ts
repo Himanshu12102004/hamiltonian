@@ -1,0 +1,108 @@
+import { GlobalVariables, NodeState } from '../../GlobalVariables';
+import createVao from '../../helpers/createVao';
+import updateVao from '../../helpers/updateVao';
+import Point from '../helpers/point';
+import Vector from '../helpers/vector';
+
+class Train {
+  vec: Vector;
+  t: number;
+  start: Point;
+  vao: WebGLVertexArrayObject | null;
+  constructor(
+    pt1: Point = new Point(0, 0),
+    pt2: Point = new Point(0, 0),
+    t: number = 0
+  ) {
+    this.vec = new Vector(pt1, pt2);
+    this.t = t;
+    this.start = pt1;
+    this.vao = null;
+  }
+  calcTermination() {
+    let pt = this.vec.multiplyInNewVector(this.t).addAPoint(this.start);
+    return pt;
+  }
+  initialize(pt1: Point) {
+    // console.log(pt1)
+    this.start = pt1;
+  }
+  updateVector(pt2: Point) {
+    this.vec = new Vector(this.start, pt2);
+  }
+  incrementT() {
+    this.t = this.t + 0.01;
+  }
+  updateT(t: number) {
+    this.t = t;
+  }
+  static getNormalizedPoint(point: Point): [number, number] {
+    return [
+      (2 * (point.x - GlobalVariables.bounds.minX)) /
+        (GlobalVariables.bounds.maxX - GlobalVariables.bounds.minX) -
+        1,
+      (2 * (point.y - GlobalVariables.bounds.minY)) /
+        (GlobalVariables.bounds.maxY - GlobalVariables.bounds.minY) -
+        1,
+    ];
+  }
+  setVao() {
+    GlobalVariables.gl.useProgram(GlobalVariables.program.line);
+    let vertexLocation = GlobalVariables.gl.getAttribLocation(
+      GlobalVariables.program.line!,
+      'vertex'
+    );
+    let colorUniformLocation = GlobalVariables.gl.getUniformLocation(
+      GlobalVariables.program.line!,
+      'userColor'
+    );
+
+    let connectionVertices = [
+      ...Train.getNormalizedPoint(this.start),
+      ...Train.getNormalizedPoint(this.calcTermination()),
+    ];
+    let float32vertex = new Float32Array(connectionVertices);
+    GlobalVariables.gl.uniform3f(
+      colorUniformLocation,
+      GlobalVariables.nodeColors[NodeState.connected][0] / 255,
+      GlobalVariables.nodeColors[NodeState.connected][1] / 255,
+      GlobalVariables.nodeColors[NodeState.connected][2] / 255
+    );
+    if (this.vao == null) {
+      this.vao = createVao(
+        [
+          {
+            bufferArray: float32vertex,
+            type: GlobalVariables.gl.ARRAY_BUFFER,
+            location: vertexLocation,
+            howToRead: 2,
+            normalized: false,
+            startFrom: 0,
+          },
+        ],
+        GlobalVariables.gl
+      );
+    } else {
+      updateVao(
+        this.vao,
+        [
+          {
+            bufferArray: float32vertex,
+            type: GlobalVariables.gl.ARRAY_BUFFER,
+            location: vertexLocation,
+            howToRead: 2,
+            normalized: false,
+            startFrom: 0,
+          },
+        ],
+        GlobalVariables.gl
+      );
+    }
+  }
+  draw() {
+    GlobalVariables.gl.useProgram(GlobalVariables.program.line);
+    GlobalVariables.gl.bindVertexArray(this.vao);
+    GlobalVariables.gl.drawArrays(GlobalVariables.gl.LINES, 0, 2);
+  }
+}
+export default Train;

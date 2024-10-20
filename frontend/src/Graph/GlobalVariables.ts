@@ -1,4 +1,5 @@
 import Graph from './world/components/Graph';
+import Train from './world/components/Train';
 enum NodeState {
   clicked,
   inVisinity,
@@ -21,7 +22,9 @@ class GlobalVariables {
   static viscosity: number;
   static distancePropotionality: number;
   static nodeColors: number[][];
-  static graphIsDirected:boolean;
+  static graphIsDirected: boolean;
+  static timeElapsed: number;
+  static backgroundColor:number[];
   static shaders = {
     line: {
       fragmentShader: null as WebGLShader | null,
@@ -36,6 +39,7 @@ class GlobalVariables {
     line: null as WebGLProgram | null,
     node: null as WebGLProgram | null,
   };
+  static mouseTrain: Train;
   static init(canvas: HTMLCanvasElement) {
     GlobalVariables.screenDimensions.height = window.innerHeight;
     GlobalVariables.screenDimensions.width = window.innerWidth;
@@ -70,19 +74,22 @@ class GlobalVariables {
       GlobalVariables.screenDimensions.height
     );
     GlobalVariables.nodeRadius = 0.2;
-    GlobalVariables.noOfTriangles = 20;
+    GlobalVariables.noOfTriangles = 30;
     GlobalVariables.nodeRayTracingTolerance = GlobalVariables.nodeRadius;
     GlobalVariables.graph = new Graph();
+    this.mouseTrain = new Train();
     GlobalVariables.distancePropotionality = 2;
-    GlobalVariables.gravitationalConstant = 0.001;
-    GlobalVariables.viscosity = 0.09;
+    GlobalVariables.gravitationalConstant = 10;
+    GlobalVariables.viscosity = 20;
     GlobalVariables.nodeColors = [];
-    for (let i = 0; i < Object.keys(NodeState).length; i++) {
+    GlobalVariables.timeElapsed = 0;
+    GlobalVariables.backgroundColor=[255,255,255]
+    for (let i = 0; i < Object.keys(NodeState).length / 2; i++) {
       GlobalVariables.nodeColors.push([]);
       for (let j = 0; j < 3; j++)
         GlobalVariables.nodeColors[i].push(Math.random() * 255);
     }
-    this.graphIsDirected=false;
+    this.graphIsDirected = false;
   }
 }
 export { GlobalVariables, NodeState };
