@@ -4,7 +4,7 @@ import updateVao from '../../helpers/updateVao';
 import Point from '../helpers/point';
 import Vector from '../helpers/vector';
 
-class Train {
+class MouseTrain {
   vec: Vector;
   t: number;
   start: Point;
@@ -24,14 +24,10 @@ class Train {
     return pt;
   }
   initialize(pt1: Point) {
-    // console.log(pt1)
     this.start = pt1;
   }
   updateVector(pt2: Point) {
     this.vec = new Vector(this.start, pt2);
-  }
-  incrementT() {
-    this.t = this.t + 0.01;
   }
   updateT(t: number) {
     this.t = t;
@@ -46,6 +42,15 @@ class Train {
         1,
     ];
   }
+  calcPointsOfRect(pt1:Point,pt2:Point){
+    let dy=(pt2.y-pt1.y);
+    let perpM=(pt1.x-pt2.x)/dy;
+    let vertexArray:Point[]=[];
+    let lsinThetha=Math.sin(Math.atan(perpM))*GlobalVariables.connectionWidth/2;
+    let lcosThetha=Math.cos(Math.atan(perpM))*GlobalVariables.connectionWidth/2;
+    vertexArray.push(new Point(pt1.x+lcosThetha,pt1.y+lsinThetha),new Point(pt1.x-lcosThetha,pt1.y-lsinThetha),new Point(pt2.x+lcosThetha,pt2.y+lsinThetha),new Point(pt2.x-lcosThetha,pt2.y-lsinThetha));
+    return vertexArray;
+  }
   setVao() {
     GlobalVariables.gl.useProgram(GlobalVariables.program.line);
     let vertexLocation = GlobalVariables.gl.getAttribLocation(
@@ -56,10 +61,12 @@ class Train {
       GlobalVariables.program.line!,
       'userColor'
     );
-
+    let rect=this.calcPointsOfRect(this.start,this.calcTermination())
     let connectionVertices = [
-      ...Train.getNormalizedPoint(this.start),
-      ...Train.getNormalizedPoint(this.calcTermination()),
+      ...MouseTrain.getNormalizedPoint(rect[0]),
+      ...MouseTrain.getNormalizedPoint(rect[1]),
+      ...MouseTrain.getNormalizedPoint(rect[2]),
+      ...MouseTrain.getNormalizedPoint(rect[3]),
     ];
     let float32vertex = new Float32Array(connectionVertices);
     GlobalVariables.gl.uniform3f(
@@ -102,7 +109,7 @@ class Train {
   draw() {
     GlobalVariables.gl.useProgram(GlobalVariables.program.line);
     GlobalVariables.gl.bindVertexArray(this.vao);
-    GlobalVariables.gl.drawArrays(GlobalVariables.gl.LINES, 0, 2);
+    GlobalVariables.gl.drawArrays(GlobalVariables.gl.TRIANGLE_STRIP, 0, 4);
   }
 }
-export default Train;
+export default MouseTrain;

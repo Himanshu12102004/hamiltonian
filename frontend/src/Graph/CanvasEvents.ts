@@ -1,5 +1,5 @@
 import { GlobalVariables } from './GlobalVariables';
-import Train from './world/components/Train';
+import Train from './world/components/MouseTrain';
 import Point from './world/helpers/point';
 class CanvasEvents {
   static isPanning = false;
@@ -35,7 +35,7 @@ class CanvasEvents {
         CanvasEvents.isDragging = true;
       }
       GlobalVariables.canvas.style.cursor = 'pointer';
-      let pt=CanvasEvents.convertClientToCanvas(e.clientX,e.clientY);
+      let pt = CanvasEvents.convertClientToCanvas(e.clientX, e.clientY);
       GlobalVariables.graph.checkForConnectionsAndConnect(pt);
     });
   }
@@ -98,8 +98,8 @@ class CanvasEvents {
   static onPan(e: MouseEvent) {
     if (e.buttons === 1) {
       let pt = CanvasEvents.convertClientToCanvas(e.clientX, e.clientY);
-      if(GlobalVariables.graph.isConnectionInitiated)
-      GlobalVariables.mouseTrain.updateVector(pt);
+      if (GlobalVariables.graph.isConnectionInitiated)
+        GlobalVariables.mouseTrain.updateVector(pt);
       GlobalVariables.graph.handleConnections(pt);
       GlobalVariables.graph.handleConnectionVicinity(pt);
       if (!GlobalVariables.graph.isConnectionInitiated) {

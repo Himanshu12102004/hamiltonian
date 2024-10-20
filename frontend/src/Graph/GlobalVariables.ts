@@ -1,5 +1,6 @@
+import AnimationTrain from './world/components/AnimationTrain';
 import Graph from './world/components/Graph';
-import Train from './world/components/Train';
+import MouseTrain from './world/components/MouseTrain';
 enum NodeState {
   clicked,
   inVisinity,
@@ -7,6 +8,11 @@ enum NodeState {
   selected,
   connected,
   normal,
+}
+enum TravelMode{
+  forward,
+  backTrack,
+  pause
 }
 class GlobalVariables {
   static bounds = { maxX: 0, minX: 0, maxY: 0, minY: 0 };
@@ -24,7 +30,18 @@ class GlobalVariables {
   static nodeColors: number[][];
   static graphIsDirected: boolean;
   static timeElapsed: number;
-  static backgroundColor:number[];
+  static connectionWidth:number;
+  static backgroundColor: number[];
+  static animationConnectionWidth:number;
+  static animationParams={
+     speed: 0.01,
+     start: false,
+     frontendArray:[] as AnimationTrain[],
+     backendArray:[]as [number,number,TravelMode][],
+     frontendArrayPtr:-1,
+     backendArrayPtr:-1
+  }
+
   static shaders = {
     line: {
       fragmentShader: null as WebGLShader | null,
@@ -39,7 +56,7 @@ class GlobalVariables {
     line: null as WebGLProgram | null,
     node: null as WebGLProgram | null,
   };
-  static mouseTrain: Train;
+  static mouseTrain: MouseTrain;
   static init(canvas: HTMLCanvasElement) {
     GlobalVariables.screenDimensions.height = window.innerHeight;
     GlobalVariables.screenDimensions.width = window.innerWidth;
@@ -77,19 +94,34 @@ class GlobalVariables {
     GlobalVariables.noOfTriangles = 30;
     GlobalVariables.nodeRayTracingTolerance = GlobalVariables.nodeRadius;
     GlobalVariables.graph = new Graph();
-    this.mouseTrain = new Train();
+    this.mouseTrain = new MouseTrain();
     GlobalVariables.distancePropotionality = 2;
     GlobalVariables.gravitationalConstant = 10;
     GlobalVariables.viscosity = 20;
     GlobalVariables.nodeColors = [];
     GlobalVariables.timeElapsed = 0;
-    GlobalVariables.backgroundColor=[255,255,255]
+    GlobalVariables.backgroundColor = [255, 255, 255];
+
     for (let i = 0; i < Object.keys(NodeState).length / 2; i++) {
       GlobalVariables.nodeColors.push([]);
       for (let j = 0; j < 3; j++)
         GlobalVariables.nodeColors[i].push(Math.random() * 255);
     }
-    this.graphIsDirected = false;
+    GlobalVariables.graphIsDirected = false;
+  GlobalVariables.animationParams.speed = 0.001;
+  GlobalVariables.animationParams.start=false;
+  GlobalVariables.animationParams.frontendArray=[];
+  GlobalVariables.animationParams.frontendArrayPtr=-1;
+  GlobalVariables.animationParams.backendArray=
+  [[0,1,TravelMode.forward],
+  [1,2,TravelMode.forward],
+  [1,2,TravelMode.backTrack],
+  [1,3,TravelMode.forward],
+  [1,3,TravelMode.backTrack],
+  [0,1,TravelMode.backTrack]];
+  GlobalVariables.animationParams.backendArrayPtr=-1;
+  GlobalVariables.connectionWidth=0.03;
+  GlobalVariables.animationConnectionWidth=0.05;
   }
 }
-export { GlobalVariables, NodeState };
+export { GlobalVariables, NodeState,TravelMode };

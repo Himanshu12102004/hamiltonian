@@ -1,9 +1,15 @@
 import { GUI } from 'dat.gui';
 import CanvasEvents from './CanvasEvents';
-import { GlobalVariables, NodeState } from './GlobalVariables';
+import { GlobalVariables, NodeState, TravelMode } from './GlobalVariables';
 import { shaderCompiler } from './helpers/compileShaders';
 import { createProgram } from './helpers/createProgram';
-import { drawConnections, drawMouseTrain, drawNodes } from './rendering/draw';
+import {
+  drawAnimation,
+  drawConnections,
+  drawMouseTrain,
+  drawNodes,
+} from './rendering/draw';
+import AnimationTrain from './world/components/AnimationTrain';
 function loadShader(shaderUrl: string): Promise<string> {
   return new Promise((resolve, reject) => {
     let req = new XMLHttpRequest();
@@ -41,10 +47,13 @@ function datInit() {
   let controls = gui.addFolder('Controls');
   let nodes = controls.addFolder('Nodes');
   let nodeColor = nodes.addFolder('Color');
-  let backGround=controls.addFolder("Backgraound");
+  let backGround = controls.addFolder('Backgraound');
+  controls.add(GlobalVariables.animationParams, 'start').onChange((value) => {
+    GlobalVariables.animationParams.start = value;
+  });
   controls.open();
-  for (let state = 0; state < Object.keys(NodeState).length/2; state++) {
-    console.log(Object.keys(NodeState))
+  for (let state = 0; state < Object.keys(NodeState).length / 2; state++) {
+    console.log(Object.keys(NodeState));
     nodeColor
       .addColor({ color: GlobalVariables.nodeColors[state] }, 'color')
       .name(NodeState[state])
@@ -52,43 +61,122 @@ function datInit() {
         GlobalVariables.nodeColors[state] = value;
       });
   }
-  backGround.addColor({color:GlobalVariables.backgroundColor},"color").onChange((value:number[])=>{
-    GlobalVariables.backgroundColor=value;
-  })
-  let nodeBody=nodes.addFolder("Node Body");
-  nodeBody.add({radius:GlobalVariables.nodeRadius},"radius",0,10).onChange((value:number)=>{
-    GlobalVariables.nodeRadius=value;
-    GlobalVariables.nodeRayTracingTolerance=value;
-  });
-  nodeBody.add({polyCount:GlobalVariables.noOfTriangles},"polyCount",3,100,1).onChange((value:number)=>{
-    GlobalVariables.noOfTriangles=value;
-  });
-let forces=  controls.addFolder("Forces");
-forces.add({gravity:GlobalVariables.gravitationalConstant},"gravity",0,100).name("Gravitational Constant").onChange((value:number)=>{
-  GlobalVariables.gravitationalConstant=value;
-});
-forces.add({viscosity:GlobalVariables.viscosity},"viscosity",0,100).name("Viscosity").onChange((value:number)=>{
-  GlobalVariables.viscosity=value;
-});
-forces.add({distancePropotionality:GlobalVariables.distancePropotionality},"distancePropotionality",0,5).name("Distance Propotionality").onChange((value:number)=>{
-  GlobalVariables.distancePropotionality=value;
-});
-
+  backGround
+    .addColor({ color: GlobalVariables.backgroundColor }, 'color')
+    .onChange((value: number[]) => {
+      GlobalVariables.backgroundColor = value;
+    });
+  let nodeBody = nodes.addFolder('Node Body');
+  nodeBody
+    .add({ radius: GlobalVariables.nodeRadius }, 'radius', 0, 10)
+    .onChange((value: number) => {
+      GlobalVariables.nodeRadius = value;
+      GlobalVariables.nodeRayTracingTolerance = value;
+    });
+  nodeBody
+    .add({ polyCount: GlobalVariables.noOfTriangles }, 'polyCount', 3, 100, 1)
+    .onChange((value: number) => {
+      GlobalVariables.noOfTriangles = value;
+    });
+  let forces = controls.addFolder('Forces');
+  forces
+    .add({ gravity: GlobalVariables.gravitationalConstant }, 'gravity', 0, 100)
+    .name('Gravitational Constant')
+    .onChange((value: number) => {
+      GlobalVariables.gravitationalConstant = value;
+    });
+  forces
+    .add({ viscosity: GlobalVariables.viscosity }, 'viscosity', 0, 100)
+    .name('Viscosity')
+    .onChange((value: number) => {
+      GlobalVariables.viscosity = value;
+    });
+  forces
+    .add(
+      { distancePropotionality: GlobalVariables.distancePropotionality },
+      'distancePropotionality',
+      0,
+      5
+    )
+    .name('Distance Propotionality')
+    .onChange((value: number) => {
+      GlobalVariables.distancePropotionality = value;
+    });
+}
+function isAnimationCompleted() {
+  let ap = GlobalVariables.animationParams;
+  if (
+    ap.backendArray[ap.backendArrayPtr][2] == TravelMode.backTrack &&
+    ap.frontendArray[ap.frontendArrayPtr].t <= 0
+  ) {
+    ap.frontendArray.pop();
+    ap.frontendArrayPtr--;
+    ap.backendArrayPtr++;
+    return true;
+  } else if (
+    ap.backendArray[ap.backendArrayPtr][2] == TravelMode.forward &&
+    ap.frontendArray[ap.frontendArrayPtr].t >= 1
+  ) {
+    GlobalVariables.graph.nodes[ap.backendArray[ap.backendArrayPtr][1]].addState(NodeState.selected);
+    ap.backendArrayPtr++;
+    return true;
+  }
+  return false;
+}
+function startAnimation() {
+  let ap = GlobalVariables.animationParams;
+  if (
+    ap.backendArray.length != 0 &&
+    ap.backendArrayPtr != ap.backendArray.length
+  ) {
+    if (ap.backendArrayPtr == -1) {
+      ++ap.backendArrayPtr;
+      ++ap.frontendArrayPtr;
+      ap.frontendArray.push(
+        new AnimationTrain(
+          ap.backendArray[ap.backendArrayPtr][0],
+          ap.backendArray[ap.backendArrayPtr][1]
+        )
+      );
+      GlobalVariables.graph.nodes[ap.backendArray[ap.backendArrayPtr][0]].addState(NodeState.selected);
+    } else if (isAnimationCompleted()) {
+      if (
+        ap.backendArrayPtr != ap.backendArray.length &&
+        ap.backendArray[ap.backendArrayPtr][2] == TravelMode.forward
+      ) {
+        ap.frontendArray.push(
+          new AnimationTrain(
+            ap.backendArray[ap.backendArrayPtr][0],
+            ap.backendArray[ap.backendArrayPtr][1]
+          )
+        );
+        ++ap.frontendArrayPtr;
+      }
+    }
+  }
 }
 let lastTime = performance.now();
-
 function animate() {
   const currentTime = performance.now();
   const deltaTime = currentTime - lastTime;
-  GlobalVariables.timeElapsed=deltaTime;
+  GlobalVariables.timeElapsed = deltaTime;
   lastTime = currentTime;
-  GlobalVariables.gl.clearColor(GlobalVariables.backgroundColor[0]/255, GlobalVariables.backgroundColor[1]/255, GlobalVariables.backgroundColor[2]/255, 1.0);
+  GlobalVariables.gl.clearColor(
+    GlobalVariables.backgroundColor[0] / 255,
+    GlobalVariables.backgroundColor[1] / 255,
+    GlobalVariables.backgroundColor[2] / 255,
+    1.0
+  );
   GlobalVariables.gl.clear(
     GlobalVariables.gl.COLOR_BUFFER_BIT | GlobalVariables.gl.DEPTH_BUFFER_BIT
   );
 
   drawConnections();
   drawMouseTrain();
+  if (GlobalVariables.animationParams.start) {
+    startAnimation();
+    drawAnimation();
+  }
   drawNodes();
   requestAnimationFrame(animate);
 }
