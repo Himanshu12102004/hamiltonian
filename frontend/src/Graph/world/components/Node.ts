@@ -48,10 +48,11 @@ class Node {
     color.push(1, 1, 1, 1);
     for (let i = 0; i < this.points.length; i++) {
       nodeVertices.push(...Node.getNormalizedPoint(this.points[i]));
+      let appliedState=this.applyState()
       color.push(
-        GlobalVariables.nodeColors[this.applyState()][0] / 255,
-        GlobalVariables.nodeColors[this.applyState()][1] / 255,
-        GlobalVariables.nodeColors[this.applyState()][2] / 255,
+        GlobalVariables.nodeColors[appliedState][0] / 255,
+        GlobalVariables.nodeColors[appliedState][1] / 255,
+        GlobalVariables.nodeColors[appliedState][2] / 255,
         1.0
       );
     }

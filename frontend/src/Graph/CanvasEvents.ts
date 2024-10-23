@@ -38,6 +38,10 @@ class CanvasEvents {
       let pt = CanvasEvents.convertClientToCanvas(e.clientX, e.clientY);
       GlobalVariables.graph.checkForConnectionsAndConnect(pt);
     });
+    GlobalVariables.canvas.setAttribute('tabindex', '0');
+    GlobalVariables.canvas.addEventListener("keydown",(e:KeyboardEvent)=>{
+      CanvasEvents.handleKeyEvents(e);
+    })
   }
   static convertClientToCanvas(xi: number, yi: number) {
     let distance = GlobalVariables.graphScale.scale;
@@ -116,6 +120,21 @@ class CanvasEvents {
         GlobalVariables.canvas.style.cursor = 'grabbing';
       }
     }
+  }
+  static handleKeyEvents(e:KeyboardEvent){
+   if(e.code=='KeyK'){
+     console.log("dfjdjfhdfsf")
+     GlobalVariables.playPause();
+   }
+   else if(e.code=='KeyR'){
+    GlobalVariables.reset();
+   }
+   else if(e.code=='KeyF'){
+    GlobalVariables.fastForward();
+   }
+   else if(e.code=='KeyS'){
+    GlobalVariables.start();
+   }
   }
 }
 export default CanvasEvents;

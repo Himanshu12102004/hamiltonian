@@ -5,6 +5,8 @@ enum NodeState {
   clicked,
   inVisinity,
   visited,
+  accepted,
+  rejected,
   selected,
   connected,
   normal,
@@ -33,13 +35,15 @@ class GlobalVariables {
   static connectionWidth:number;
   static backgroundColor: number[];
   static animationConnectionWidth:number;
+  static isAlgoComputed:boolean;
   static animationParams={
      speed: 0.01,
      start: false,
      frontendArray:[] as AnimationTrain[],
-     backendArray:[]as [number,number,TravelMode][],
+     backendArray:[]as [number,number,TravelMode,number[],boolean][],
      frontendArrayPtr:-1,
-     backendArrayPtr:-1
+     backendArrayPtr:-1,
+     isAnimationPaused:false
   }
 
   static shaders = {
@@ -57,6 +61,45 @@ class GlobalVariables {
     node: null as WebGLProgram | null,
   };
   static mouseTrain: MouseTrain;
+  static animationParamsInit(){
+    // GlobalVariables.isAlgoComputed=false
+  GlobalVariables.animationParams.speed = 0.001;
+  GlobalVariables.animationParams.start=false;
+  GlobalVariables.animationParams.frontendArray=[];
+  GlobalVariables.animationParams.frontendArrayPtr=-1;
+  GlobalVariables.animationParams.backendArray=
+  [
+  //   [0,1,TravelMode.forward,[],false],
+  // [1,2,TravelMode.forward,[],false],
+  // [1,2,TravelMode.backTrack,[],false],
+  // [1,3,TravelMode.forward,[],false],
+  // [-1,-1,TravelMode.pause,[0,1,3],true],
+  // [1,3,TravelMode.backTrack,[],false],
+  // [0,1,TravelMode.backTrack,[],false],
+];
+  GlobalVariables.animationParams.backendArrayPtr=-1;
+  GlobalVariables.animationParams.isAnimationPaused=false
+  }
+  static reset(){
+    GlobalVariables.screenDimensions.height = window.innerHeight;
+    GlobalVariables.screenDimensions.width = window.innerWidth;
+    GlobalVariables.bounds = {
+      maxX:
+        GlobalVariables.screenDimensions.width /
+        (2 * GlobalVariables.graphScale.scale),
+      minX:
+        -GlobalVariables.screenDimensions.width /
+        (2 * GlobalVariables.graphScale.scale),
+      maxY:
+        GlobalVariables.screenDimensions.height /
+        (2 * GlobalVariables.graphScale.scale),
+      minY:
+        -GlobalVariables.screenDimensions.height /
+        (2 * GlobalVariables.graphScale.scale),
+    };
+    GlobalVariables.graph = new Graph();
+    GlobalVariables.animationParamsInit();
+  }
   static init(canvas: HTMLCanvasElement) {
     GlobalVariables.screenDimensions.height = window.innerHeight;
     GlobalVariables.screenDimensions.width = window.innerWidth;
@@ -107,21 +150,27 @@ class GlobalVariables {
       for (let j = 0; j < 3; j++)
         GlobalVariables.nodeColors[i].push(Math.random() * 255);
     }
+    GlobalVariables.animationParamsInit();
     GlobalVariables.graphIsDirected = false;
-  GlobalVariables.animationParams.speed = 0.001;
-  GlobalVariables.animationParams.start=false;
-  GlobalVariables.animationParams.frontendArray=[];
-  GlobalVariables.animationParams.frontendArrayPtr=-1;
-  GlobalVariables.animationParams.backendArray=
-  [[0,1,TravelMode.forward],
-  [1,2,TravelMode.forward],
-  [1,2,TravelMode.backTrack],
-  [1,3,TravelMode.forward],
-  [1,3,TravelMode.backTrack],
-  [0,1,TravelMode.backTrack]];
-  GlobalVariables.animationParams.backendArrayPtr=-1;
   GlobalVariables.connectionWidth=0.03;
   GlobalVariables.animationConnectionWidth=0.05;
+  GlobalVariables.isAlgoComputed=false;
   }
+  static playPause(){
+    GlobalVariables.animationParams.isAnimationPaused=!GlobalVariables.animationParams.isAnimationPaused;
+    }
+  static start(){
+    GlobalVariables.animationParams.start=true;
+  }
+  static fastForward(){
+    let ap=GlobalVariables.animationParams;
+    if(ap.backendArrayPtr!=ap.backendArray.length){
+      if(ap.backendArray[ap.backendArrayPtr][2]==TravelMode.forward){
+      ap.frontendArray[ap.frontendArrayPtr].setT(0.9999);
+    }
+    else if(ap.backendArray[ap.backendArrayPtr][2]==TravelMode.backTrack){
+      ap.frontendArray[ap.frontendArrayPtr].setT(0.0001);
+    }
+  } }
 }
 export { GlobalVariables, NodeState,TravelMode };

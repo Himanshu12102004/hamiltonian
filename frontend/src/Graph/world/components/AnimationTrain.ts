@@ -9,6 +9,7 @@ class AnimationTrain {
   from:number;
   to:number;
   vao: WebGLVertexArrayObject | null;
+  states:NodeState[];
   constructor(
     from:number,to:number,t=0
   ) {
@@ -16,6 +17,7 @@ class AnimationTrain {
     this.t = t;
     this.to=to;
     this.vao = null;
+    this.states=[NodeState.selected]
   }
   calcTermination() {
     let start=GlobalVariables.graph.nodes[this.from].point;
@@ -38,6 +40,30 @@ class AnimationTrain {
       if(this.t>1)
         this.t=1;
   }
+  setT(t:number){
+    this.t=t;
+
+  }
+  addState(state: NodeState) {
+    for (let i = 0; i < this.states.length; i++) {
+      if (this.states[i] == state) return;
+    }
+    this.states.push(state);
+  }
+  applyState() {
+    let min: number = this.states[0];
+    for (let i = 1; i < this.states.length; i++) {
+      if (min > this.states[i]) min = this.states[i];
+    }
+    return min;
+  }
+  removeState(state: NodeState) {
+    const index = this.states.indexOf(state);
+    if (index !== -1) {
+      this.states.splice(index, 1);
+    }
+  }
+
   static getNormalizedPoint(point: Point): [number, number] {
     return [
       (2 * (point.x - GlobalVariables.bounds.minX)) /
@@ -67,7 +93,6 @@ class AnimationTrain {
       GlobalVariables.program.line!,
       'userColor'
     );
-    let start=GlobalVariables.graph.nodes[this.from].point;
     let rect=this.calcPointsOfRect(GlobalVariables.graph.nodes[this.from].point,this.calcTermination());
     let connectionVertices = [
       ...AnimationTrain.getNormalizedPoint(rect[0]),
@@ -76,11 +101,12 @@ class AnimationTrain {
       ...AnimationTrain.getNormalizedPoint(rect[3]),
     ];
     let float32vertex = new Float32Array(connectionVertices);
+    let appliedState=this.applyState();
     GlobalVariables.gl.uniform3f(
       colorUniformLocation,
-      GlobalVariables.nodeColors[NodeState.selected][0] / 255,
-      GlobalVariables.nodeColors[NodeState.selected][1] / 255,
-      GlobalVariables.nodeColors[NodeState.selected][2] / 255
+      GlobalVariables.nodeColors[appliedState][0] / 255,
+      GlobalVariables.nodeColors[appliedState][1] / 255,
+      GlobalVariables.nodeColors[appliedState][2] / 255
     );
     if (this.vao == null) {
       this.vao = createVao(

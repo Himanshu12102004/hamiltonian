@@ -10,6 +10,7 @@ import {
   drawNodes,
 } from './rendering/draw';
 import AnimationTrain from './world/components/AnimationTrain';
+import { computeAlgo } from './backendInteraction/computeAlgo';
 function loadShader(shaderUrl: string): Promise<string> {
   return new Promise((resolve, reject) => {
     let req = new XMLHttpRequest();
@@ -48,9 +49,7 @@ function datInit() {
   let nodes = controls.addFolder('Nodes');
   let nodeColor = nodes.addFolder('Color');
   let backGround = controls.addFolder('Backgraound');
-  controls.add(GlobalVariables.animationParams, 'start').onChange((value) => {
-    GlobalVariables.animationParams.start = value;
-  });
+  let animation = controls.addFolder('Animation');
   controls.open();
   for (let state = 0; state < Object.keys(NodeState).length / 2; state++) {
     console.log(Object.keys(NodeState));
@@ -102,6 +101,12 @@ function datInit() {
     .onChange((value: number) => {
       GlobalVariables.distancePropotionality = value;
     });
+  animation
+    .add(GlobalVariables.animationParams, 'speed', 0.001, 1)
+    .onChange((value) => {
+      GlobalVariables.animationParams.speed = value;
+    });
+
 }
 function isAnimationCompleted() {
   let ap = GlobalVariables.animationParams;
@@ -117,7 +122,9 @@ function isAnimationCompleted() {
     ap.backendArray[ap.backendArrayPtr][2] == TravelMode.forward &&
     ap.frontendArray[ap.frontendArrayPtr].t >= 1
   ) {
-    GlobalVariables.graph.nodes[ap.backendArray[ap.backendArrayPtr][1]].addState(NodeState.selected);
+    GlobalVariables.graph.nodes[
+      ap.backendArray[ap.backendArrayPtr][1]
+    ].addState(NodeState.selected);
     ap.backendArrayPtr++;
     return true;
   }
@@ -138,7 +145,9 @@ function startAnimation() {
           ap.backendArray[ap.backendArrayPtr][1]
         )
       );
-      GlobalVariables.graph.nodes[ap.backendArray[ap.backendArrayPtr][0]].addState(NodeState.selected);
+      GlobalVariables.graph.nodes[
+        ap.backendArray[ap.backendArrayPtr][0]
+      ].addState(NodeState.selected);
     } else if (isAnimationCompleted()) {
       if (
         ap.backendArrayPtr != ap.backendArray.length &&
@@ -152,10 +161,64 @@ function startAnimation() {
         );
         ++ap.frontendArrayPtr;
       }
+      if (
+        ap.backendArrayPtr != ap.backendArray.length &&
+        ap.backendArray[ap.backendArrayPtr][2] == TravelMode.pause &&
+      !ap.isAnimationPaused
+      ) {
+        ap.isAnimationPaused = true;
+        for (
+          let i = 0;
+          i < ap.backendArray[ap.backendArrayPtr][3].length;
+          i++
+        ) {
+          if (ap.backendArray[ap.backendArrayPtr][4])
+            GlobalVariables.graph.nodes[
+              ap.backendArray[ap.backendArrayPtr][3][i]
+            ].addState(NodeState.accepted);
+          else
+            GlobalVariables.graph.nodes[
+              ap.backendArray[ap.backendArrayPtr][3][i]
+            ].addState(NodeState.rejected);
+        }
+        for (let i = 0; i < ap.frontendArray.length; i++) {
+          if (ap.backendArray[ap.backendArrayPtr][4])
+            ap.frontendArray[i].addState(NodeState.accepted);
+          else ap.frontendArray[i].addState(NodeState.rejected);
+        }
+        let currentAnimationWidth = GlobalVariables.animationConnectionWidth;
+        GlobalVariables.animationConnectionWidth = currentAnimationWidth * 2;
+        setTimeout(() => {
+          ap.isAnimationPaused = false;
+          for (
+            let i = 0;
+            i < ap.backendArray[ap.backendArrayPtr][3].length;
+            i++
+          ) {
+            if (ap.backendArray[ap.backendArrayPtr][4])
+              GlobalVariables.graph.nodes[
+                ap.backendArray[ap.backendArrayPtr][3][i]
+              ].removeState(NodeState.accepted);
+            else
+              GlobalVariables.graph.nodes[
+                ap.backendArray[ap.backendArrayPtr][3][i]
+              ].removeState(NodeState.rejected);
+          }
+          for (let i = 0; i < ap.frontendArray.length; i++) {
+            if (ap.backendArray[ap.backendArrayPtr][4])
+              ap.frontendArray[i].removeState(NodeState.accepted);
+            else ap.frontendArray[i].removeState(NodeState.rejected);
+          }
+          GlobalVariables.animationParams.backendArrayPtr++;
+          GlobalVariables.animationConnectionWidth = currentAnimationWidth;
+        }, 1000);
+      }
     }
   }
 }
 let lastTime = performance.now();
+let x = true;
+
 function animate() {
   const currentTime = performance.now();
   const deltaTime = currentTime - lastTime;
@@ -174,6 +237,10 @@ function animate() {
   drawConnections();
   drawMouseTrain();
   if (GlobalVariables.animationParams.start) {
+    if (!GlobalVariables.isAlgoComputed) {
+      GlobalVariables.isAlgoComputed = true;
+      computeAlgo();
+    }
     startAnimation();
     drawAnimation();
   }
@@ -221,4 +288,5 @@ function main(canvas: HTMLCanvasElement) {
     animate();
   });
 }
+
 export default main;

@@ -150,6 +150,16 @@ class Graph {
     let connection = new Connection(nodeIndex2);
     this.adjacencyMatrix[nodeIndex1].push(connection);
   }
+  parseGraph(){
+    let adjMat:number[][]=[];
+    for(let i=0;i<this.adjacencyMatrix.length;i++){
+      adjMat.push([]);
+      for(let j=0;j<this.adjacencyMatrix[i].length;j++){
+        adjMat[i].push(this.adjacencyMatrix[i][j].connectionTo);
+      }
+    }
+    return adjMat;
+  }
 }
 
 export default Graph;
