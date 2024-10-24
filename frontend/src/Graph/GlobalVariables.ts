@@ -80,26 +80,6 @@ class GlobalVariables {
   GlobalVariables.animationParams.backendArrayPtr=-1;
   GlobalVariables.animationParams.isAnimationPaused=false
   }
-  static reset(){
-    GlobalVariables.screenDimensions.height = window.innerHeight;
-    GlobalVariables.screenDimensions.width = window.innerWidth;
-    GlobalVariables.bounds = {
-      maxX:
-        GlobalVariables.screenDimensions.width /
-        (2 * GlobalVariables.graphScale.scale),
-      minX:
-        -GlobalVariables.screenDimensions.width /
-        (2 * GlobalVariables.graphScale.scale),
-      maxY:
-        GlobalVariables.screenDimensions.height /
-        (2 * GlobalVariables.graphScale.scale),
-      minY:
-        -GlobalVariables.screenDimensions.height /
-        (2 * GlobalVariables.graphScale.scale),
-    };
-    GlobalVariables.graph = new Graph();
-    GlobalVariables.animationParamsInit();
-  }
   static init(canvas: HTMLCanvasElement) {
     GlobalVariables.screenDimensions.height = window.innerHeight;
     GlobalVariables.screenDimensions.width = window.innerWidth;
@@ -162,6 +142,29 @@ class GlobalVariables {
   static start(){
     GlobalVariables.animationParams.start=true;
   }
+  static reset(){
+    GlobalVariables.screenDimensions.height = window.innerHeight;
+    GlobalVariables.screenDimensions.width = window.innerWidth;
+    GlobalVariables.bounds = {
+      maxX:
+        GlobalVariables.screenDimensions.width /
+        (2 * GlobalVariables.graphScale.scale),
+      minX:
+        -GlobalVariables.screenDimensions.width /
+        (2 * GlobalVariables.graphScale.scale),
+      maxY:
+        GlobalVariables.screenDimensions.height /
+        (2 * GlobalVariables.graphScale.scale),
+      minY:
+        -GlobalVariables.screenDimensions.height /
+        (2 * GlobalVariables.graphScale.scale),
+    };
+    GlobalVariables.graph.reset();
+    GlobalVariables.isAlgoComputed=false;
+    GlobalVariables.animationParamsInit();
+    console.log(this.animationParams)
+  }
+  
   static fastForward(){
     let ap=GlobalVariables.animationParams;
     if(ap.backendArrayPtr!=ap.backendArray.length){

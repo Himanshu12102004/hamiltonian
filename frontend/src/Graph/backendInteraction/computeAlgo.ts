@@ -49,7 +49,8 @@ function hamiltonianCycle(
 }
 function computeAlgo() {
   let parsedGraph = GlobalVariables.graph.parseGraph();
-  // console.log(parsedGraph);
+  visited=[];
+  steps=[];
   for (let i = 0; i < parsedGraph.length; i++) {
     visited.push(0);
     nodes.push(i);
@@ -59,7 +60,7 @@ function computeAlgo() {
   GlobalVariables.animationParamsInit();
   GlobalVariables.animationParams.start = true;
   GlobalVariables.animationParams.backendArray = steps;
-  // console.log(steps);
+  console.log(steps);
   // MAKE THE FETCH REQUEST HERE
 }
 export { computeAlgo };

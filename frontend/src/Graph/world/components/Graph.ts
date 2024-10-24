@@ -16,6 +16,13 @@ class Graph {
     this.isConnectionInitiated = false;
     this.connectionInitiatedFrom = -1;
   }
+  reset() {
+    this.nodes = [];
+    this.adjacencyMatrix = [];
+    this.nodeCount = 0;
+    this.isConnectionInitiated = false;
+    this.connectionInitiatedFrom = -1;
+  }
   handleNodes(pt: Point) {
     for (let i = 0; i < this.nodes.length; i++) {
       if (
@@ -90,7 +97,6 @@ class Graph {
             if (!GlobalVariables.graphIsDirected) {
               this.connect(i, this.connectionInitiatedFrom);
             }
-            console.log(this.adjacencyMatrix);
             this.isConnectionInitiated = false;
             GlobalVariables.mouseTrain.updateT(0);
             return;
@@ -128,7 +134,6 @@ class Graph {
   }
 
   connect(nodeIndex1: number, nodeIndex2: number): void {
-    console.log(nodeIndex1, nodeIndex2);
     if (
       nodeIndex1 >= this.nodes.length ||
       nodeIndex2 >= this.nodes.length ||
@@ -150,11 +155,11 @@ class Graph {
     let connection = new Connection(nodeIndex2);
     this.adjacencyMatrix[nodeIndex1].push(connection);
   }
-  parseGraph(){
-    let adjMat:number[][]=[];
-    for(let i=0;i<this.adjacencyMatrix.length;i++){
+  parseGraph() {
+    let adjMat: number[][] = [];
+    for (let i = 0; i < this.adjacencyMatrix.length; i++) {
       adjMat.push([]);
-      for(let j=0;j<this.adjacencyMatrix[i].length;j++){
+      for (let j = 0; j < this.adjacencyMatrix[i].length; j++) {
         adjMat[i].push(this.adjacencyMatrix[i][j].connectionTo);
       }
     }

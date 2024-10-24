@@ -123,7 +123,6 @@ class CanvasEvents {
   }
   static handleKeyEvents(e:KeyboardEvent){
    if(e.code=='KeyK'){
-     console.log("dfjdjfhdfsf")
      GlobalVariables.playPause();
    }
    else if(e.code=='KeyR'){

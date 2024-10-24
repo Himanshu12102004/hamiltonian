@@ -52,7 +52,6 @@ function datInit() {
   let animation = controls.addFolder('Animation');
   controls.open();
   for (let state = 0; state < Object.keys(NodeState).length / 2; state++) {
-    console.log(Object.keys(NodeState));
     nodeColor
       .addColor({ color: GlobalVariables.nodeColors[state] }, 'color')
       .name(NodeState[state])
@@ -106,7 +105,6 @@ function datInit() {
     .onChange((value) => {
       GlobalVariables.animationParams.speed = value;
     });
-
 }
 function isAnimationCompleted() {
   let ap = GlobalVariables.animationParams;
@@ -164,7 +162,7 @@ function startAnimation() {
       if (
         ap.backendArrayPtr != ap.backendArray.length &&
         ap.backendArray[ap.backendArrayPtr][2] == TravelMode.pause &&
-      !ap.isAnimationPaused
+        !ap.isAnimationPaused
       ) {
         ap.isAnimationPaused = true;
         for (
@@ -241,8 +239,13 @@ function animate() {
       GlobalVariables.isAlgoComputed = true;
       computeAlgo();
     }
-    startAnimation();
-    drawAnimation();
+    if (
+      GlobalVariables.animationParams.backendArray.length != 0 &&
+      GlobalVariables.animationParams.backendArray[0][2] == TravelMode.forward
+    ) {
+      startAnimation();
+      drawAnimation();
+    }
   }
   drawNodes();
   requestAnimationFrame(animate);
