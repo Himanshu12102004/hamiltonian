@@ -7,6 +7,9 @@ class CanvasEvents {
   static dragStartX = 0;
   static dragStartY = 0;
   static addEvents() {
+    window.addEventListener('resize', () => {
+      CanvasEvents.onResize();
+    });
     GlobalVariables.canvas.addEventListener(
       'wheel',
       (e) => {
@@ -43,6 +46,41 @@ class CanvasEvents {
       CanvasEvents.handleKeyEvents(e);
     })
   }
+  static onResize(e: MouseEvent | undefined = undefined) {
+    GlobalVariables.screenDimensions.height =GlobalVariables.canvasParent.clientHeight;
+    GlobalVariables.screenDimensions.width = GlobalVariables.canvasParent.clientWidth;
+    GlobalVariables.canvas!.height = GlobalVariables.screenDimensions.height;
+    GlobalVariables.canvas!.width = GlobalVariables.screenDimensions.width;
+    GlobalVariables.gl.viewport(
+      0,
+      0,
+      GlobalVariables.screenDimensions.width,
+      GlobalVariables.screenDimensions.height
+    );
+
+    let centerX =
+      (GlobalVariables.bounds.maxX + GlobalVariables.bounds.minX) / 2;
+    let centerY =
+      (GlobalVariables.bounds.maxY + GlobalVariables.bounds.minY) / 2;
+    GlobalVariables.bounds.maxX =
+      centerX +
+      GlobalVariables.screenDimensions.width /
+        (2 * GlobalVariables.graphScale.scale);
+    GlobalVariables.bounds.minX =
+      centerX -
+      GlobalVariables.screenDimensions.width /
+        (2 * GlobalVariables.graphScale.scale);
+    GlobalVariables.bounds.maxY =
+      centerY +
+      GlobalVariables.screenDimensions.height /
+        (2 * GlobalVariables.graphScale.scale);
+    GlobalVariables.bounds.minY =
+      centerY -
+      GlobalVariables.screenDimensions.height /
+        (2 * GlobalVariables.graphScale.scale);
+    
+  }
+  
   static convertClientToCanvas(xi: number, yi: number) {
     let distance = GlobalVariables.graphScale.scale;
     let rightBound = GlobalVariables.screenDimensions.width / (2 * distance);
