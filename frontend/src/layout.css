@@ -1,0 +1,63 @@
+/* css variable */
+:root {
+  --custom_one: 1rem;
+}
+
+.content {
+  flex: 1;
+}
+.content * {
+  height: 100%;
+  width: 100%;
+}
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  gap: var(--custom_one);
+}
+.chats {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  flex: 1;
+  gap: var(--custom_one);
+  padding: 1.2rem;
+  overflow: hidden;
+  background-color: white;
+}
+.controls {
+  display: flex;
+  align-self: stretch;
+  height: 12rem;
+  flex-direction: row;
+  gap: var(--custom_one);
+  background-color: white;
+}
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.head_text {
+  font-size: 2.2rem;
+  font-weight: 600;
+}
+.description {
+  font-size: 1.3rem;
+  font-weight: 400;
+  letter-spacing: 0.1px;
+}
+.line {
+  height: 1px;
+  background-color: #e0e0e0;
+  width: 100%;
+  margin: 0.8rem 0;
+}
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  max-height: 100%;
+  overflow: auto;
+}

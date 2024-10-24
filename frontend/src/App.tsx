@@ -1,6 +1,13 @@
-import './App.css';
-import CanvasParent from './Components/CanvasParent';
+import "./App.css";
+
+import CanvasParent from "./Components/CanvasParent";
+import Layout from "./Components/Layout";
+
 function App() {
-  return <CanvasParent></CanvasParent>
+  return (
+    <Layout>
+      <CanvasParent></CanvasParent>
+    </Layout>
+  );
 }
 export default App;
