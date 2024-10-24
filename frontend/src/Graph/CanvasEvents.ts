@@ -1,33 +1,33 @@
-import { GlobalVariables } from './GlobalVariables';
-import Train from './world/components/MouseTrain';
-import Point from './world/helpers/point';
+import { GlobalVariables } from "./GlobalVariables";
+import Train from "./world/components/MouseTrain";
+import Point from "./world/helpers/point";
 class CanvasEvents {
   static isPanning = false;
   static isDragging = false;
   static dragStartX = 0;
   static dragStartY = 0;
   static addEvents() {
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       CanvasEvents.onResize();
     });
     GlobalVariables.canvas.addEventListener(
-      'wheel',
+      "wheel",
       (e) => {
         CanvasEvents.onZoom(e);
       },
       { passive: true }
     );
-    GlobalVariables.canvas.addEventListener('mousemove', (e) => {
+    GlobalVariables.canvas.addEventListener("mousemove", (e) => {
       CanvasEvents.onPan(e);
     });
-    GlobalVariables.canvas.addEventListener('mousedown', (e) => {
+    GlobalVariables.canvas.addEventListener("mousedown", (e) => {
       CanvasEvents.isDragging = false;
-      CanvasEvents.dragStartX = e.clientX;
-      CanvasEvents.dragStartY = e.clientY;
+      CanvasEvents.dragStartX = e.clientX - GlobalVariables.canvas.offsetLeft;
+      CanvasEvents.dragStartY = e.clientY - GlobalVariables.canvas.offsetTop;
     });
-    GlobalVariables.canvas.addEventListener('mouseup', (e) => {
-      const dragEndX = e.clientX;
-      const dragEndY = e.clientY;
+    GlobalVariables.canvas.addEventListener("mouseup", (e) => {
+      const dragEndX = e.clientX - GlobalVariables.canvas.offsetLeft;
+      const dragEndY = e.clientY - GlobalVariables.canvas.offsetTop;
       const distance = Math.hypot(
         dragEndX - CanvasEvents.dragStartX,
         dragEndY - CanvasEvents.dragStartY
@@ -37,18 +37,23 @@ class CanvasEvents {
       } else {
         CanvasEvents.isDragging = true;
       }
-      GlobalVariables.canvas.style.cursor = 'pointer';
-      let pt = CanvasEvents.convertClientToCanvas(e.clientX, e.clientY);
+      GlobalVariables.canvas.style.cursor = "pointer";
+      let pt = CanvasEvents.convertClientToCanvas(
+        e.clientX - GlobalVariables.canvas.offsetLeft,
+        e.clientY - GlobalVariables.canvas.offsetTop
+      );
       GlobalVariables.graph.checkForConnectionsAndConnect(pt);
     });
-    GlobalVariables.canvas.setAttribute('tabindex', '0');
-    GlobalVariables.canvas.addEventListener("keydown",(e:KeyboardEvent)=>{
+    GlobalVariables.canvas.setAttribute("tabindex", "0");
+    GlobalVariables.canvas.addEventListener("keydown", (e: KeyboardEvent) => {
       CanvasEvents.handleKeyEvents(e);
-    })
+    });
   }
   static onResize(e: MouseEvent | undefined = undefined) {
-    GlobalVariables.screenDimensions.height =GlobalVariables.canvasParent.clientHeight;
-    GlobalVariables.screenDimensions.width = GlobalVariables.canvasParent.clientWidth;
+    GlobalVariables.screenDimensions.height =
+      GlobalVariables.canvasParent.clientHeight;
+    GlobalVariables.screenDimensions.width =
+      GlobalVariables.canvasParent.clientWidth;
     GlobalVariables.canvas!.height = GlobalVariables.screenDimensions.height;
     GlobalVariables.canvas!.width = GlobalVariables.screenDimensions.width;
     GlobalVariables.gl.viewport(
@@ -78,9 +83,8 @@ class CanvasEvents {
       centerY -
       GlobalVariables.screenDimensions.height /
         (2 * GlobalVariables.graphScale.scale);
-    
   }
-  
+
   static convertClientToCanvas(xi: number, yi: number) {
     let distance = GlobalVariables.graphScale.scale;
     let rightBound = GlobalVariables.screenDimensions.width / (2 * distance);
@@ -104,7 +108,10 @@ class CanvasEvents {
     return new Point(x, y);
   }
   static onclick(e: MouseEvent) {
-    let pt = CanvasEvents.convertClientToCanvas(e.clientX, e.clientY);
+    let pt = CanvasEvents.convertClientToCanvas(
+      e.clientX - GlobalVariables.canvas.offsetLeft,
+      e.clientY - GlobalVariables.canvas.offsetTop
+    );
     GlobalVariables.graph.handleNodes(pt);
   }
 
@@ -139,7 +146,10 @@ class CanvasEvents {
   }
   static onPan(e: MouseEvent) {
     if (e.buttons === 1) {
-      let pt = CanvasEvents.convertClientToCanvas(e.clientX, e.clientY);
+      let pt = CanvasEvents.convertClientToCanvas(
+        e.clientX - GlobalVariables.canvas.offsetLeft,
+        e.clientY - GlobalVariables.canvas.offsetTop
+      );
       if (GlobalVariables.graph.isConnectionInitiated)
         GlobalVariables.mouseTrain.updateVector(pt);
       GlobalVariables.graph.handleConnections(pt);
@@ -155,23 +165,20 @@ class CanvasEvents {
         GlobalVariables.bounds.maxY += iDelta;
         GlobalVariables.bounds.minX -= rDelta;
         GlobalVariables.bounds.maxX -= rDelta;
-        GlobalVariables.canvas.style.cursor = 'grabbing';
+        GlobalVariables.canvas.style.cursor = "grabbing";
       }
     }
   }
-  static handleKeyEvents(e:KeyboardEvent){
-   if(e.code=='KeyK'){
-     GlobalVariables.playPause();
-   }
-   else if(e.code=='KeyR'){
-    GlobalVariables.reset();
-   }
-   else if(e.code=='KeyF'){
-    GlobalVariables.fastForward();
-   }
-   else if(e.code=='KeyS'){
-    GlobalVariables.start();
-   }
+  static handleKeyEvents(e: KeyboardEvent) {
+    if (e.code == "KeyK") {
+      GlobalVariables.playPause();
+    } else if (e.code == "KeyR") {
+      GlobalVariables.reset();
+    } else if (e.code == "KeyF") {
+      GlobalVariables.fastForward();
+    } else if (e.code == "KeyS") {
+      GlobalVariables.start();
+    }
   }
 }
 export default CanvasEvents;

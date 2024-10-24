@@ -33,7 +33,7 @@ function Layout(props: { children: React.ReactNode }) {
             <option value={3}>Path 3</option>
             <option value={4}>Path 4</option>
           </select>
-          <div className="line"></div>
+          <div className="divide-y-2"></div>
           <div className="flex flex-col gap-2 overflow-auto max-h-full">
             <AlgoStep
               stepNumber={12}
@@ -85,7 +85,9 @@ function Layout(props: { children: React.ReactNode }) {
               isActive={false}
             />
           </div>
+          <div className="line"></div>
         </div>
+
         <div className="flex flex-col gap-4 h-32 bg-white p-3">
           <div className="flex items-center justify-center ml-auto outline outline-1 outline-stone-800 p-1 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer">
             <Settings size={20} strokeWidth={1.5} />
