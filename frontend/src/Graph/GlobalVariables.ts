@@ -145,8 +145,8 @@ class GlobalVariables {
     GlobalVariables.animationParams.start=true;
   }
   static reset(){
-    GlobalVariables.screenDimensions.height = window.innerHeight;
-    GlobalVariables.screenDimensions.width = window.innerWidth;
+    GlobalVariables.screenDimensions.height = GlobalVariables.canvasParent.clientHeight;
+    GlobalVariables.screenDimensions.width = GlobalVariables.canvasParent.clientWidth;
     GlobalVariables.bounds = {
       maxX:
         GlobalVariables.screenDimensions.width /
