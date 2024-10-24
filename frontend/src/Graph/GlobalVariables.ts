@@ -36,6 +36,7 @@ class GlobalVariables {
   static backgroundColor: number[];
   static animationConnectionWidth:number;
   static isAlgoComputed:boolean;
+  static canvasParent:HTMLDivElement;
   static animationParams={
      speed: 0.01,
      start: false,
@@ -81,8 +82,9 @@ class GlobalVariables {
   GlobalVariables.animationParams.isAnimationPaused=false
   }
   static init(canvas: HTMLCanvasElement) {
-    GlobalVariables.screenDimensions.height = window.innerHeight;
-    GlobalVariables.screenDimensions.width = window.innerWidth;
+    GlobalVariables.canvasParent=document.querySelector("#canvas_parent")!;
+    GlobalVariables.screenDimensions.height = GlobalVariables.canvasParent.clientHeight;
+    GlobalVariables.screenDimensions.width = GlobalVariables.canvasParent.clientWidth;
     GlobalVariables.bounds = {
       maxX:
         GlobalVariables.screenDimensions.width /
