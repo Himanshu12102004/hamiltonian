@@ -44,12 +44,17 @@ class CanvasEvents {
       );
       GlobalVariables.graph.checkForConnectionsAndConnect(pt);
     });
-    GlobalVariables.canvas.setAttribute("tabindex", "0");
-    GlobalVariables.canvas.addEventListener("keydown", (e: KeyboardEvent) => {
+    GlobalVariables.canvas.setAttribute('tabindex', '0');
+    GlobalVariables.canvas.addEventListener('keydown', (e: KeyboardEvent) => {
       CanvasEvents.handleKeyEvents(e);
+    });
     });
   }
   static onResize(e: MouseEvent | undefined = undefined) {
+    GlobalVariables.screenDimensions.height =
+      GlobalVariables.canvasParent.clientHeight;
+    GlobalVariables.screenDimensions.width =
+      GlobalVariables.canvasParent.clientWidth;
     GlobalVariables.screenDimensions.height =
       GlobalVariables.canvasParent.clientHeight;
     GlobalVariables.screenDimensions.width =
@@ -84,6 +89,7 @@ class CanvasEvents {
       GlobalVariables.screenDimensions.height /
         (2 * GlobalVariables.graphScale.scale);
   }
+
 
   static convertClientToCanvas(xi: number, yi: number) {
     let distance = GlobalVariables.graphScale.scale;
@@ -170,13 +176,13 @@ class CanvasEvents {
     }
   }
   static handleKeyEvents(e: KeyboardEvent) {
-    if (e.code == "KeyK") {
+    if (e.code == 'KeyK') {
       GlobalVariables.playPause();
-    } else if (e.code == "KeyR") {
+    } else if (e.code == 'KeyR') {
       GlobalVariables.reset();
-    } else if (e.code == "KeyF") {
+    } else if (e.code == 'KeyF') {
       GlobalVariables.fastForward();
-    } else if (e.code == "KeyS") {
+    } else if (e.code == 'KeyS') {
       GlobalVariables.start();
     }
   }
