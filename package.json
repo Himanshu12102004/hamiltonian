@@ -1,0 +1,16 @@
+{
+  "name": "your-monorepo",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "start": "concurrently \"npm run dev --prefix backend\" \"npm run start --prefix frontend\"",
+    "build": "npm run build --prefix frontend && npm run build --prefix backend",
+    "test": "npm run test --prefix frontend && npm run test --prefix backend"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
+}
