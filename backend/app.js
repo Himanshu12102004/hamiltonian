@@ -6,6 +6,5 @@ dotenv.config({
 });
 
 const app = express();
-const tes = 5;
 
 module.exports = app;
