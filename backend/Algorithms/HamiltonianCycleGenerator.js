@@ -1,3 +1,5 @@
+const { CustomError } = require("../utils/CustomError");
+
 /**
  * Finds all Hamiltonian cycles in a given graph represented as an adjacency matrix.
  * A Hamiltonian cycle is a cycle that visits each vertex exactly once and returns to the starting vertex.
@@ -41,7 +43,7 @@
  * //    { from: 1, to: 2, isForward: true },]
  * // ]
  */
-function hamiltonianCycle(
+function HamiltonianCycleGenerator(
   graphMatrix = [[]],
   startNode = 0,
   options = {
@@ -49,23 +51,26 @@ function hamiltonianCycle(
   }
 ) {
   if (graphMatrix.length < 3) {
-    throw new Error("The graph must have at least 3 vertices");
+    // status code for invalid input is 422
+    throw new CustomError("The graph must have at least 3 vertices", 422);
   }
   for (let i = 0; i < graphMatrix.length; i++) {
     if (graphMatrix.length !== graphMatrix[i].length) {
-      throw new Error("The input matrix must be square");
+      throw new CustomError("The input matrix must be square", 422);
     }
     for (let j = 0; j < graphMatrix[i].length; j++) {
       if (options.weighted) {
         if (graphMatrix[i][j] < 0 || typeof graphMatrix[i][j] !== "number") {
-          throw new Error(
-            "The input matrix must contain only non-negative values"
+          throw new CustomError(
+            "The input matrix must contain only non-negative values",
+            422
           );
         }
       } else {
         if (graphMatrix[i][j] !== 0 && graphMatrix[i][j] !== 1) {
-          throw new Error(
-            "An unweighted input matrix must contain only 0s and 1s"
+          throw new CustomError(
+            "An unweighted input matrix must contain only 0s and 1s",
+            422
           );
         }
       }
@@ -165,4 +170,4 @@ function hamiltonianCycle(
 // const pathsTwo = hamiltonianCycle(graph_two, 5);
 // // console.log(paths);
 // console.log(pathsTwo);
-module.exports = { hamiltonianCycle };
+module.exports = { HamiltonianCycleGenerator };
