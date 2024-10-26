@@ -1,5 +1,3 @@
-const worker = require("node:worker_threads");
-
 /**
  * Finds all Hamiltonian cycles in a given graph represented as an adjacency matrix.
  * A Hamiltonian cycle is a cycle that visits each vertex exactly once and returns to the starting vertex.
@@ -146,25 +144,25 @@ function hamiltonianCycle(
   findAllPaths(startNode);
   return paths;
 }
-const graph = [
-  [0, 1, 0, 1, 0],
-  [1, 0, 1, 1, 1],
-  [0, 1, 0, 0, 1],
-  [1, 1, 0, 0, 1],
-  [0, 1, 1, 1, 0],
-];
+// const graph = [
+//   [0, 1, 0, 1, 0],
+//   [1, 0, 1, 1, 1],
+//   [0, 1, 0, 0, 1],
+//   [1, 1, 0, 0, 1],
+//   [0, 1, 1, 1, 0],
+// ];
 
-const graph_two = [
-  [0, 1, 0, 1, 1, 1],
-  [1, 0, 1, 0, 0, 1],
-  [0, 1, 0, 0, 0, 1],
-  [1, 0, 0, 0, 1, 1],
-  [1, 0, 0, 1, 0, 0],
-  [1, 1, 1, 1, 1, 0],
-];
+// const graph_two = [
+//   [0, 1, 0, 1, 1, 1],
+//   [1, 0, 1, 0, 0, 1],
+//   [0, 1, 0, 0, 0, 1],
+//   [1, 0, 0, 0, 1, 1],
+//   [1, 0, 0, 1, 0, 0],
+//   [1, 1, 1, 1, 1, 0],
+// ];
 
-const paths = hamiltonianCycle(graph, 1);
-const pathsTwo = hamiltonianCycle(graph_two, 5);
-// console.log(paths);
-console.log(pathsTwo);
-module.exports = hamiltonianCycle;
+// const paths = hamiltonianCycle(graph, 1);
+// const pathsTwo = hamiltonianCycle(graph_two, 5);
+// // console.log(paths);
+// console.log(pathsTwo);
+module.exports = { hamiltonianCycle };
