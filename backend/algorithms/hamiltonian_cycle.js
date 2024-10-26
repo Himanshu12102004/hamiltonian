@@ -50,7 +50,6 @@ function hamiltonianCycle(
     weighted: false,
   }
 ) {
-  // Input validation
   if (graphMatrix.length < 3) {
     throw new Error("The graph must have at least 3 vertices");
   }
@@ -75,7 +74,6 @@ function hamiltonianCycle(
     }
   }
 
-  // Initialize variables
   const n = graphMatrix.length;
   const visited = new Array(n).fill(0);
   const paths = [];
@@ -87,13 +85,6 @@ function hamiltonianCycle(
   function allVisited() {
     return visited.every((vertex) => vertex === 1);
   }
-  function startNodeVistedOtherNotVisited() {
-    return (
-      visited[startNode] === 1 &&
-      visited.filter((vertex) => vertex === 1).length === 1
-    );
-  }
-
   function findAllPaths(currentVertex) {
     for (let i = 0; i < n; i++) {
       if (graphMatrix[currentVertex][i] === 1 && visited[i] === 0) {
@@ -109,7 +100,7 @@ function hamiltonianCycle(
         if (allVisited()) {
           tempPath.push(startNode);
           currentPath.push({
-            from: startNode,
+            from: i,
             to: startNode,
             TravelMode: 2,
             nodes: [],
@@ -117,12 +108,38 @@ function hamiltonianCycle(
           });
           paths.push([...currentPath]);
           tempPath.pop();
+          currentPath.push({
+            from: i,
+            to: currentVertex,
+            TravelMode: 1,
+            nodes: [...tempPath],
+            completed: false,
+          });
         } else {
           findAllPaths(i);
         }
         visited[i] = 0;
         tempPath.pop();
-        currentPath.pop();
+        currentPath.push({
+          from: i,
+          to: currentVertex,
+          TravelMode: 1,
+          nodes: [...tempPath],
+          completed: false,
+        });
+        if (tempPath.length == 1) {
+          if (currentPath.filter((x) => x.completed == true).length == 0) {
+            currentPath.push({
+              from: startNode,
+              to: startNode,
+              TravelMode: 2,
+              nodes: [],
+              completed: false,
+            });
+            paths.push([...currentPath]);
+          }
+          currentPath = [];
+        }
       }
     }
   }
@@ -137,7 +154,17 @@ const graph = [
   [0, 1, 1, 1, 0],
 ];
 
-const paths = hamiltonianCycle(graph, 1);
-console.log(paths);
+const graph_two = [
+  [0, 1, 0, 1, 1, 1],
+  [1, 0, 1, 0, 0, 1],
+  [0, 1, 0, 0, 0, 1],
+  [1, 0, 0, 0, 1, 1],
+  [1, 0, 0, 1, 0, 0],
+  [1, 1, 1, 1, 1, 0],
+];
 
+const paths = hamiltonianCycle(graph, 1);
+const pathsTwo = hamiltonianCycle(graph_two, 5);
+// console.log(paths);
+console.log(pathsTwo);
 module.exports = hamiltonianCycle;
