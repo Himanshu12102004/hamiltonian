@@ -35,6 +35,7 @@ function Layout(props: { children: React.ReactNode }) {
           <div className="line"></div>
           <select className="self-stretch py-2 px-3 h-fit bg-white outline outline-1 rounded-md outline-gray-300">
             <option value={0}>Path 0</option>
+            <div className="divide-y-2"></div>
             <option value={1}>Path 1</option>
             <option value={2}>Path 2</option>
             <option value={3}>Path 3</option>
