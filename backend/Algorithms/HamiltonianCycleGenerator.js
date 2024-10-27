@@ -85,60 +85,38 @@ function HamiltonianCycleGenerator(
 
   visited[startNode] = 1;
   tempPath.push(startNode);
+
   function allVisited() {
     return visited.every((vertex) => vertex === 1);
   }
+
   function findAllPaths(currentVertex) {
     for (let i = 0; i < n; i++) {
       if (graphMatrix[currentVertex][i] === 1 && visited[i] === 0) {
         visited[i] = 1;
         tempPath.push(i);
-        currentPath.push({
-          from: currentVertex,
-          to: i,
-          TravelMode: 0,
-          nodes: [],
-          completed: false,
-        });
+        currentPath.push([currentVertex, i, 0, [], false]);
         if (allVisited()) {
           tempPath.push(startNode);
-          currentPath.push({
-            from: i,
-            to: startNode,
-            TravelMode: 2,
-            nodes: [],
-            completed: true,
-          });
+          currentPath.push([
+            i,
+            startNode,
+            2,
+            [],
+            graphMatrix[i][startNode] === 1,
+          ]);
           paths.push([...currentPath]);
           tempPath.pop();
-          currentPath.push({
-            from: i,
-            to: currentVertex,
-            TravelMode: 1,
-            nodes: [...tempPath],
-            completed: false,
-          });
+          currentPath.push([i, currentVertex, 1, [...tempPath], false]);
         } else {
           findAllPaths(i);
         }
         visited[i] = 0;
         tempPath.pop();
-        currentPath.push({
-          from: i,
-          to: currentVertex,
-          TravelMode: 1,
-          nodes: [...tempPath],
-          completed: false,
-        });
+        currentPath.push([i, currentVertex, 1, [...tempPath], false]);
         if (tempPath.length == 1) {
           if (currentPath.filter((x) => x.completed == true).length == 0) {
-            currentPath.push({
-              from: startNode,
-              to: startNode,
-              TravelMode: 2,
-              nodes: [],
-              completed: false,
-            });
+            currentPath.push([startNode, startNode, 2, [], false]);
             paths.push([...currentPath]);
           }
           currentPath = [];
@@ -149,25 +127,30 @@ function HamiltonianCycleGenerator(
   findAllPaths(startNode);
   return paths;
 }
-// const graph = [
-//   [0, 1, 0, 1, 0],
-//   [1, 0, 1, 1, 1],
-//   [0, 1, 0, 0, 1],
-//   [1, 1, 0, 0, 1],
-//   [0, 1, 1, 1, 0],
-// ];
 
-// const graph_two = [
-//   [0, 1, 0, 1, 1, 1],
-//   [1, 0, 1, 0, 0, 1],
-//   [0, 1, 0, 0, 0, 1],
-//   [1, 0, 0, 0, 1, 1],
-//   [1, 0, 0, 1, 0, 0],
-//   [1, 1, 1, 1, 1, 0],
-// ];
-
-// const paths = hamiltonianCycle(graph, 1);
-// const pathsTwo = hamiltonianCycle(graph_two, 5);
-// // console.log(paths);
-// console.log(pathsTwo);
 module.exports = { HamiltonianCycleGenerator };
+
+// 0 - 1 2 3 7
+// 1 - 0 4 5
+// 2 - 0 5 6
+// 3 - 0 4 10
+// 4 - 1 3 8
+// 5 - 1 2 8 9
+// 6 - 2 7 9
+// 7 - 0 6 10
+// 8 - 4 5 10
+// 9 - 5 6 10
+// 10 - 3 7 8 9
+// const herschel_graph = [
+//   [0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0],
+//   [1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+//   [1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+//   [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+//   [0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+//   [0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+//   [0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0],
+//   [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+//   [0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1],
+//   [0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1],
+//   [0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0],
+// ];
