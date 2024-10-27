@@ -1,6 +1,7 @@
 // // disable is lint for this file because it is a jsx file
 // /* eslint-disable */
 import AlgoStep from "./AlgoStep";
+import Overlay from "./Overlay";
 import "../layout.css";
 import {
   ChevronLeft,
@@ -10,10 +11,16 @@ import {
   StepBack,
   StepForward,
 } from "lucide-react";
+import { useState } from "react";
 
 function Layout(props: { children: React.ReactNode }) {
+  const [overlay, setOverlay] = useState(false);
+  function hideOverlay() {
+    setOverlay(false);
+  }
   return (
-    <div className="flex gap-3 h-screen w-screen overflow-hidden p-3">
+    <div className="flex relative gap-3 h-screen w-screen overflow-hidden p-3">
+      {overlay && <Overlay hideOverlay={hideOverlay} />}
       <div className="content" id="canvas_parent">
         {props.children}
       </div>
@@ -89,7 +96,10 @@ function Layout(props: { children: React.ReactNode }) {
         </div>
 
         <div className="flex flex-col gap-4 h-32 bg-white p-3">
-          <div className="flex items-center justify-center ml-auto outline outline-1 outline-stone-800 p-1 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer">
+          <div
+            onClick={() => setOverlay((prev) => !prev)}
+            className="flex items-center justify-center ml-auto outline outline-1 outline-stone-800 p-1 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
+          >
             <Settings size={20} strokeWidth={1.5} />
           </div>
           <div className="flex flex-row justify-around items-center">
