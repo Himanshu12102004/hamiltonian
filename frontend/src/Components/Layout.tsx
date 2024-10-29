@@ -1,8 +1,9 @@
-// // disable is lint for this file because it is a jsx file
 // /* eslint-disable */
 import AlgoStep from "./AlgoStep";
 import Overlay from "./Overlay";
+
 import "../layout.css";
+
 import {
   ChevronLeft,
   ChevronRight,
@@ -11,6 +12,7 @@ import {
   StepBack,
   StepForward,
 } from "lucide-react";
+
 import { useState } from "react";
 
 function Layout(props: { children: React.ReactNode }) {
@@ -35,7 +37,6 @@ function Layout(props: { children: React.ReactNode }) {
           <div className="line"></div>
           <select className="self-stretch py-2 px-3 h-fit bg-white outline outline-1 rounded-md outline-gray-300">
             <option value={0}>Path 0</option>
-            <div className="divide-y-2"></div>
             <option value={1}>Path 1</option>
             <option value={2}>Path 2</option>
             <option value={3}>Path 3</option>

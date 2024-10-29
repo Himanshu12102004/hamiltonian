@@ -9,6 +9,7 @@ import {
   Workflow,
 } from "lucide-react";
 import { useState } from "react";
+import ColorInput from "./GeneralComponents/ColorInput";
 
 const pages = [
   {
@@ -50,26 +51,91 @@ function Home() {
     </>
   );
 }
+
+const colors = [
+  {
+    name: "Clicked",
+    color: "#146FF9",
+    opacity: 100,
+    description: "Color of the node when clicked",
+    globalVariableName: "test",
+  },
+  {
+    name: "In Visinity",
+    color: "#34D399",
+    opacity: 100,
+    description: "Color of the node when in the visinity",
+    globalVariableName: "test",
+  },
+  {
+    name: "Accepted",
+    color: "#25DD91",
+    opacity: 100,
+    description: "Color of the node when accepted",
+    globalVariableName: "test",
+  },
+  {
+    name: "Rejected",
+    color: "#FF3E3E",
+    opacity: 100,
+    description: "Color of the node when rejected",
+    globalVariableName: "test",
+  },
+  {
+    name: "Selected",
+    color: "#D1D5DB",
+    opacity: 100,
+    description: "Default color of the node",
+    globalVariableName: "test",
+  },
+  {
+    name: "Connected",
+    color: "#2563EB",
+    opacity: 100,
+    description: "Color of the node when connected",
+    globalVariableName: "test",
+  },
+  {
+    name: "Normal",
+    color: "#BDBDBD",
+    opacity: 100,
+    description: "Color of node that is not connected",
+    globalVariableName: "test",
+  },
+  {
+    name: "Visited",
+    color: "#D97706",
+    opacity: 100,
+    description: "Color of the node when visited",
+    globalVariableName: "test",
+  },
+];
+
 function Nodes() {
+  const [colorValues, setColorValues] = useState(colors);
+  function setValues(name, color, opacity) {
+    setColorValues((prev) =>
+      prev.map((value) =>
+        value.name === name ? { ...value, color, opacity } : value
+      )
+    );
+  }
   return (
     <>
       <Title Icon={<Palette size={18} />} title="Nodes Colors" />
       <span className="text-stone-400 text-sm">
         Select the colors for the nodes in different states from this page.
       </span>
-      <div className="mx-2 mt-5 grid grid-cols-2 gap-2 self-stretch items-center justify-center">
-        <div className="w-3/4 h-8 text-xs outline outline-1 outline-stone-300">
-          Chagne with color filler
-        </div>
-        <div className="w-3/4 h-8 text-xs outline outline-1 outline-stone-300">
-          Chagne with color filler
-        </div>
-        <div className="w-3/4 h-8 text-xs outline outline-1 outline-stone-300">
-          Chagne with color filler
-        </div>
-        <div className="w-3/4 h-8 text-xs outline outline-1 outline-stone-300">
-          Chagne with color filler
-        </div>
+      <div className="mx-2 mt-5 grid grid-cols-2 gap-2 gap-x-8 self-stretch  justify-center">
+        {colorValues.map((color) => (
+          <ColorInput
+            key={color.name}
+            name={color.name}
+            values={{ color: color.color, opacity: color.opacity }}
+            setValues={setValues}
+            description={color.description}
+          />
+        ))}
       </div>
       <Divide />
       <Title Icon={<Expand size={18} />} title="Node Properties" />
@@ -137,7 +203,7 @@ export default function Overlay({ hideOverlay = () => {} }) {
         onClick={(e) => e.stopPropagation()}
         className="px-4 pb-4 rounded-md w-1/2 h-3/5 bg-white shadow-xl flex flex-col overflow-hidden"
       >
-        <div className="w-full py-3 flex flex-row justify-between items-center">
+        <div className="w-full py-3 flex flex-row justify-between items-center ">
           <div className="flex flex-row items-center gap-2">
             <Settings size={16} className="stroke-stone-6" />
             <span className="text-sm font-semibold text-stone-6">
@@ -170,7 +236,10 @@ export default function Overlay({ hideOverlay = () => {} }) {
             ))}
           </div>
           <div className="self-stretch bg-stone-200 w-[1px]"></div>
-          <div id="details" className="flex-1 flex flex-col gap-1">
+          <div
+            id="details"
+            className="flex-1 flex flex-col gap-1 max-h-full overflow-scroll"
+          >
             {selectedPage === "Home" && <Home />}
             {selectedPage === "Nodes" && <Nodes />}
             {selectedPage === "Animation" && <Animation />}
