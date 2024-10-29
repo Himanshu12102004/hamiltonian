@@ -1,15 +1,21 @@
 import {
   ArrowDownLeftFromCircleIcon,
+  ArrowUp01,
+  BicepsFlexed,
   ChartGantt,
   CircleX,
+  Droplets,
   Expand,
   HomeIcon,
   Palette,
+  Radius,
   Settings,
+  TrainFront,
   Workflow,
 } from "lucide-react";
 import { useState } from "react";
 import ColorInput from "./GeneralComponents/ColorInput";
+import Slider from "./GeneralComponents/Slider";
 
 const pages = [
   {
@@ -113,6 +119,35 @@ const colors = [
 
 function Nodes() {
   const [colorValues, setColorValues] = useState(colors);
+  const [sliders, setSliders] = useState([
+    {
+      name: "Polygon Count",
+      value: 3,
+      min: 3,
+      max: 100,
+      step: 1,
+      icon: <ArrowUp01 className="stroke-1" size={18} />,
+      description: "Number of polygons in the node",
+    },
+    {
+      name: "Node Size",
+      value: 50,
+      min: 0,
+      max: 100,
+      step: 0.1,
+      icon: <Radius className="stroke-1" size={18} />,
+      description: "Size of the node",
+    },
+  ]);
+
+  function setSliderValues(name, value) {
+    setSliders((prev) => {
+      const values = [...prev];
+      values.find((slider) => slider.name === name).value = value;
+      return values;
+    });
+  }
+
   function setValues(name, color, opacity) {
     setColorValues((prev) =>
       prev.map((value) =>
@@ -143,33 +178,118 @@ function Nodes() {
         This section allows you to change the polygon count and size of Node.
       </span>
       <div className="flex flex-col gap-2 mx-2 mt-5">
-        {/* // filler */}
-        <div className="self-stretch h-8 outline outline-1 outline-stone-200">
-          filler boxes
-        </div>
+        {sliders.map((slider) => (
+          <Slider
+            key={slider.name}
+            name={slider.name}
+            value={slider.value}
+            min={slider.min}
+            max={slider.max}
+            icon={slider.icon}
+            step={slider.step}
+            setValue={setSliderValues}
+            description={slider.description}
+          />
+        ))}
       </div>
     </>
   );
 }
 function Animation() {
+  const [animationSpeed, setAnimationSpeed] = useState({
+    value: 0.0001,
+    name: "Animation Speed",
+    min: 0.0001,
+    max: 0.005,
+    step: 0.0001,
+    icon: <ChartGantt size={18} className="stroke-1" />,
+    description: "Speed of the animation",
+  });
+  function setAnimationSpeedSlider(name, value) {
+    setAnimationSpeed((prev) => ({ ...prev, value }));
+  }
   return (
     <>
-      {/* <h1 className="text-stone-600 text-lg font-semibold">Animation Pane</h1> */}
       <Title Icon={<ChartGantt size={18} />} title="Animation Pane" />
       <span className="text-stone-400 text-sm">
-        Animation page is under construction
+        This section allows you to change the speed of the animation.
       </span>
+      <div className="flex flex-row gap-2 items-center mx-2 mt-5">
+        <Slider
+          name={animationSpeed.name}
+          value={animationSpeed.value}
+          min={animationSpeed.min}
+          max={animationSpeed.max}
+          icon={animationSpeed.icon}
+          step={animationSpeed.step}
+          setValue={setAnimationSpeedSlider}
+          description={animationSpeed.description}
+        />
+      </div>
       <Divide />
     </>
   );
 }
 function Forces() {
+  const [sliders, setSliders] = useState([
+    {
+      name: "Gravitation",
+      value: 10,
+      min: 0,
+      max: 100,
+      step: 1,
+      icon: <BicepsFlexed className="stroke-1" size={18} />,
+      description: "Gravitation force",
+    },
+    {
+      name: "Viscosity",
+      value: 20,
+      min: 0,
+      max: 100,
+      step: 1,
+      icon: <Droplets className="stroke-1" size={18} />,
+      description: "Viscosity force",
+    },
+    {
+      name: "Distance",
+      value: 2,
+      min: 0,
+      max: 5,
+      step: 0.5,
+      icon: <TrainFront className="stroke-1" size={18} />,
+      description: "Distance force",
+    },
+  ]);
+
+  function setSliderValues(name, value) {
+    setSliders((prev) => {
+      const values = [...prev];
+      values.find((slider) => slider.name === name).value = value;
+      return values;
+    });
+  }
   return (
     <>
       <Title Icon={<ArrowDownLeftFromCircleIcon size={18} />} title="Forces" />
       <span className="text-stone-400 text-sm">
-        Forces page is under construction
+        This section allows you to change the forces of the animation.
       </span>
+      <div className="flex flex-col gap-2 mx-2 mt-5">
+        {sliders.map((slider) => (
+          <Slider
+            key={slider.name}
+            name={slider.name}
+            value={slider.value}
+            min={slider.min}
+            max={slider.max}
+            icon={slider.icon}
+            step={slider.step}
+            setValue={setSliderValues}
+            description={slider.description}
+          />
+        ))}
+      </div>
+      <Divide />
     </>
   );
 }

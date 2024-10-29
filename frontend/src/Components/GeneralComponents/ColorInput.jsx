@@ -17,7 +17,7 @@ export default function ColorInput({
     if (isNaN(value)) return;
     if (value > 100) value = 100;
     if (value < 0) value = 0;
-    setValues(name, values.color, value.opacity);
+    setValues(name, values.color, value);
   }
 
   return (
