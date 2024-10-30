@@ -1,22 +1,29 @@
-// /* eslint-disable */
 import AlgoStep from "./AlgoStep";
-import Overlay from "./Overlay";
+import Overlay from "./Modal/Overlay";
 
 import "../layout.css";
+
+// todo replace overlay, setOverlay and related setting with areSettingsOpen, setAreSettingsOpen
 
 import {
   ChevronLeft,
   ChevronRight,
   Pause,
   Settings,
+  Play,
   StepBack,
   StepForward,
 } from "lucide-react";
 
 import { useState } from "react";
+import { GlobalVariables } from "../Graph/GlobalVariables";
 
 function Layout(props: { children: React.ReactNode }) {
   const [overlay, setOverlay] = useState(false);
+  const [isPaused, setIsPaused] = useState(true);
+  const [steps, setSteps] = useState(
+    [] as [number, number, number, number[], boolean][]
+  );
   function hideOverlay() {
     setOverlay(false);
   }
@@ -44,55 +51,35 @@ function Layout(props: { children: React.ReactNode }) {
           </select>
           <div className="divide-y-2"></div>
           <div className="flex flex-col gap-2 overflow-auto max-h-full">
-            <AlgoStep
-              stepNumber={12}
-              fromNode={0}
-              toNode={1}
-              isBacktracking={true}
-              isActive={true}
-            />
-            <AlgoStep
-              stepNumber={13}
-              fromNode={1}
-              toNode={2}
-              isBacktracking={false}
-              isActive={false}
-            />
-            <AlgoStep
-              stepNumber={13}
-              fromNode={1}
-              toNode={2}
-              isBacktracking={false}
-              isActive={false}
-            />
-            <AlgoStep
-              stepNumber={13}
-              fromNode={1}
-              toNode={2}
-              isBacktracking={false}
-              isActive={false}
-            />
-            <AlgoStep
-              stepNumber={13}
-              fromNode={1}
-              toNode={2}
-              isBacktracking={false}
-              isActive={false}
-            />
-            <AlgoStep
-              stepNumber={13}
-              fromNode={1}
-              toNode={2}
-              isBacktracking={false}
-              isActive={false}
-            />
-            <AlgoStep
-              stepNumber={13}
-              fromNode={1}
-              toNode={2}
-              isBacktracking={false}
-              isActive={false}
-            />
+            {steps.length ? (
+              steps.map((step, index) => {
+                let motion;
+                switch (step[2]) {
+                  case 0:
+                    motion = "forward";
+                    break;
+                  case 1:
+                    motion = "backtrack";
+                    break;
+                  case 2:
+                    motion = "pause";
+                    break;
+                  default:
+                    motion = "forward";
+                }
+                return (
+                  <AlgoStep
+                    stepNumber={index}
+                    fromNode={step[0]}
+                    toNode={step[1]}
+                    isBacktracking={motion}
+                    isActive={false}
+                  />
+                );
+              })
+            ) : (
+              <p className="text-center">No steps available</p>
+            )}
           </div>
           <div className="line"></div>
         </div>
@@ -107,8 +94,26 @@ function Layout(props: { children: React.ReactNode }) {
           <div className="flex flex-row justify-around items-center">
             <StepBack strokeWidth={1.5} />
             <ChevronLeft strokeWidth={1.5} />
-            <div className="flex items-center justify-center p-[2px] outline outline-2 outline-stone-600 rounded-lg">
-              <Pause size={28} strokeWidth={1.5} />
+            <div
+              onClick={() => {
+                if (!GlobalVariables.animationParams.start) {
+                  setSteps(GlobalVariables.animationParams.backendArray);
+                  GlobalVariables.animationParams.start = true;
+                  return;
+                }
+
+                setIsPaused((prev) => {
+                  GlobalVariables.animationParams.isAnimationPaused = !prev;
+                  return !prev;
+                });
+              }}
+              className="flex items-center justify-center p-[4px] outline outline-2 outline-stone-600 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
+            >
+              {isPaused ? (
+                <Play size={28} strokeWidth={1.25} />
+              ) : (
+                <Pause size={28} strokeWidth={1.25} />
+              )}
             </div>
             <ChevronRight strokeWidth={1.5} />
             <StepForward strokeWidth={1.5} />

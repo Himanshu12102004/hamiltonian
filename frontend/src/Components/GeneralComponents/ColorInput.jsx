@@ -9,6 +9,7 @@ export default function ColorInput({
   values = { color: "#146FF9", opacity: 100 },
   setValues = () => {},
 }) {
+  console.log(values);
   const opacityRef = useRef();
   const parentRef = useRef();
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
@@ -37,7 +38,7 @@ export default function ColorInput({
               setValues(name, color, opacity);
               setDisplayColorPicker(false);
             }}
-            initialColor="#146FF9"
+            initialColor={values.color}
           />
         )}
         <div className="flex flex-row gap-2 my-[6px] items-center h-fit flex-1">
