@@ -1,13 +1,23 @@
-// disable is lint for this file because it is a jsx file
-/* eslint-disable */
-
-const AlgoStep = ({
+// const AlgoStep = ({
+//   stepNumber
+//   fromNode,
+//   toNode,
+//   isBacktracking,
+//   isActive = false,
+// }) => {
+function AlgoStep({
   stepNumber,
   fromNode,
   toNode,
   isBacktracking,
   isActive = false,
-}) => {
+}: {
+  stepNumber: number;
+  fromNode: number;
+  toNode: number;
+  isBacktracking: boolean;
+  isActive: boolean;
+}): JSX.Element {
   return (
     <div
       className={`self-stretch flex flex-col min-h-24 gap-2 m-1 flex-shrink-0 ${
@@ -38,6 +48,6 @@ const AlgoStep = ({
       </div>
     </div>
   );
-};
+}
 
 export default AlgoStep;

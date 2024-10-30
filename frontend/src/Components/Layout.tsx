@@ -4,7 +4,7 @@ import Overlay from "./Modal/Overlay";
 import "../layout.css";
 
 // todo replace overlay, setOverlay and related setting with areSettingsOpen, setAreSettingsOpen
-
+// todo proper linking of global variables with the backend
 import {
   ChevronLeft,
   ChevronRight,
@@ -18,15 +18,17 @@ import {
 import { useState } from "react";
 import { GlobalVariables } from "../Graph/GlobalVariables";
 
-function Layout(props: { children: React.ReactNode }) {
+function Layout(props: { children: React.ReactNode }): JSX.Element {
   const [overlay, setOverlay] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
   const [steps, setSteps] = useState(
     [] as [number, number, number, number[], boolean][]
   );
-  function hideOverlay() {
+
+  function hideOverlay(): void {
     setOverlay(false);
   }
+
   return (
     <div className="flex relative gap-3 h-screen w-screen overflow-hidden p-3">
       {overlay && <Overlay hideOverlay={hideOverlay} />}

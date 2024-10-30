@@ -8,18 +8,30 @@ export default function ColorInput({
   description = "Color Input",
   values = { color: "#146FF9", opacity: 100 },
   setValues = () => {},
+}: {
+  name?: string;
+  description?: string;
+  values?: { color: string; opacity: number };
+  setValues?: (name: string, color: string, opacity: number) => void;
 }) {
-  console.log(values);
-  const opacityRef = useRef();
-  const parentRef = useRef();
+  const opacityRef = useRef(document.createElement("input") as HTMLInputElement); // prettier-ignore
+  const parentRef = useRef(document.createElement("div") as HTMLDivElement);
+
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  function onOpacityChange(value) {
-    if (isNaN(value)) return;
+
+  function onOpacityChange(value: number) {
     if (value > 100) value = 100;
     if (value < 0) value = 0;
     setValues(name, values.color, value);
   }
+
+  useEffect(() => {
+    const hexColor = new RegExp("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$");
+    if (!hexColor.test(values.color)) {
+      throw new Error("Invalid Hex Color");
+    }
+  }, [values.color]);
 
   return (
     <div className="flex flex-col gap-1 w-full">
@@ -77,7 +89,7 @@ export default function ColorInput({
             className="h-6 w-6 text-xs text-stone-500 outline-none border-none"
             value={values.opacity}
             placeholder="100"
-            onChange={(e) => onOpacityChange(e.target.value)}
+            onChange={(e) => onOpacityChange(Number(e.target.value))}
             onFocus={(e) => e.target.select()}
           />
           <span

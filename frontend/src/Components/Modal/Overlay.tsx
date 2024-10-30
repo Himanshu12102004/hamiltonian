@@ -35,11 +35,12 @@ const pages = [
   },
 ];
 
-export default function Overlay({ hideOverlay = () => {} }) {
+export default function Overlay({ hideOverlay = () => {} }): JSX.Element {
   const [selectedPage, setSelectedPage] = useState("Home");
-  function handleClick(name) {
+  function handleClick(name: string): void {
     setSelectedPage(name);
   }
+
   return (
     <div
       onClick={hideOverlay}

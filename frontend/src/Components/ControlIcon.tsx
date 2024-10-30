@@ -1,4 +1,4 @@
-export default function ControlIcon(icon, onClick) {
+export default function ControlIcon(icon, onClick): JSX.Element {
   return (
     <div
       onClick={onClick}

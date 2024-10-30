@@ -8,7 +8,7 @@ import { Divide } from "../Utils/Divide";
 import { Title } from "../Utils/Title";
 import { GlobalVariables } from "../../../Graph/GlobalVariables";
 
-function Animation() {
+function Animation(): JSX.Element {
   const [animationSpeed, setAnimationSpeed] = useState({
     value: 0.0001,
     name: "Animation Speed",
@@ -19,7 +19,7 @@ function Animation() {
     description: "Speed of the animation",
     globalVariableName: "speed",
   });
-  function setAnimationSpeedSlider(name, value) {
+  function setAnimationSpeedSlider(name: string, value: number) {
     setAnimationSpeed((prev) => ({ ...prev, value }));
     GlobalVariables.animationParams.speed = value;
   }
