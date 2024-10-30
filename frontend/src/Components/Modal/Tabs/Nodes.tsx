@@ -2,13 +2,13 @@ import { useState } from "react";
 
 import { ArrowUp01, Radius, Palette, Expand } from "lucide-react";
 
-import ColorInput from "../../GeneralComponents/ColorInput";
-import Slider from "../../GeneralComponents/Slider";
+import ColorInput from "../../GeneralComponents/ColorInput.tsx";
+import Slider from "../../GeneralComponents/Slider.tsx";
 
-import { hexToRgb, rgbToHex } from "../../GeneralComponents/ColorHelpers";
-import { GlobalVariables } from "../../../Graph/GlobalVariables";
-import { Divide } from "../Utils/Divide";
-import { Title } from "../Utils/Title";
+import { hexToRgb, rgbToHex } from "../../GeneralComponents/ColorHelpers.tsx";
+import { GlobalVariables } from "../../../Graph/GlobalVariables.ts";
+import { Divide } from "../Utils/Divide.tsx";
+import { Title } from "../Utils/Title.tsx";
 
 function Nodes() {
   const [colorValues, setColorValues] = useState([
@@ -91,21 +91,16 @@ function Nodes() {
       globalVariableName: "nodeRadius",
     },
   ]);
+  function setSliderValues(name: string, value: number) {
+    const index = sliders.findIndex((slider) => slider.name === name);
+    const values = [...sliders];
+    values[index] = { ...values[index], value };
+    setSliders(values);
 
-  function setSliderValues(name, value) {
-    setSliders((prev) => {
-      const values = [...prev];
-      values.find((slider) => slider.name === name).value = value;
-      return values;
-    });
-    const globalName = sliders.find(
-      (slider) => slider.name === name
-    ).globalVariableName;
-
-    GlobalVariables[globalName] = value;
+    GlobalVariables[sliders[index].globalVariableName] = value;
   }
 
-  function setValues(name, color, opacity) {
+  function setValues(name: string, color: string, opacity: number) {
     const index = colorValues.findIndex((value) => value.name === name);
     const values = [...colorValues];
     values[index] = { ...values[index], color: hexToRgb(color), opacity };

@@ -1,4 +1,14 @@
-function ModalSideButton({ name, icon, selected = false, onClick = () => {} }) {
+function ModalSideButton({
+  name,
+  icon,
+  selected = false,
+  onClick = () => {},
+}: {
+  name: string;
+  icon: JSX.Element;
+  selected?: boolean;
+  onClick?: (name: string) => void;
+}) {
   return (
     <button
       onClick={() => onClick(name)}

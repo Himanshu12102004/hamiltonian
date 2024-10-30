@@ -1,4 +1,4 @@
-function hslToRgb(h, s, l) {
+function hslToRgb(h: number, s: number, l: number): [number, number, number] {
   h /= 360;
   s /= 100;
   l /= 100;
@@ -23,7 +23,7 @@ function hslToRgb(h, s, l) {
   return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 }
 
-function rgbToHex(r, g, b) {
+function rgbToHex(r: number, g: number, b: number): string {
   const toHex = (n) => {
     const hex = Math.round(n).toString(16);
     return hex.length === 1 ? "0" + hex : hex;
@@ -31,7 +31,7 @@ function rgbToHex(r, g, b) {
   return "#" + toHex(r) + toHex(g) + toHex(b);
 }
 
-function hexToRgb(hex) {
+function hexToRgb(hex: string): [number, number, number] {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? [
@@ -41,16 +41,16 @@ function hexToRgb(hex) {
       ]
     : [0, 0, 0];
 }
-function rgbToHsl(r, g, b) {
+function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
   r /= 255;
   g /= 255;
   b /= 255;
 
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
-  let h,
-    s,
-    l = (max + min) / 2;
+  let h: number = 0,
+    s: number = 0;
+  const l = (max + min) / 2;
 
   if (max === min) {
     h = s = 0; // achromatic

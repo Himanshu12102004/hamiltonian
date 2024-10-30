@@ -1,4 +1,10 @@
-function Title({ Icon = <></>, title = "" }) {
+function Title({
+  Icon = <></>,
+  title = "",
+}: {
+  Icon: JSX.Element;
+  title: string;
+}): JSX.Element {
   return (
     <div className="flex flex-row gap-2 items-center">
       {Icon}
