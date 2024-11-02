@@ -17,26 +17,43 @@ const { CustomError } = require("../../../../utils/CustomError");
  */
 const handlePathRequest = (type, path, cycles) => {
   if (path === "complete") {
-    throw new CustomError(
-      "This feature is under maintenance and will be available soon",
-      503
-    );
+    return {
+      hamiltonian_cycles: {
+        complete: cycles.complete,
+        paths: [],
+        nth_path: [],
+      },
+    };
   }
 
   if (path === "all") {
-    return { paths: cycles };
+    return {
+      hamiltonian_cycles: {
+        complete: cycles.complete,
+        paths: cycles.paths,
+        nth_path: [],
+      },
+    };
   }
 
-  if (!isNaN(path) && path >= 0 && path < cycles.length) {
-    return { path: cycles[path] };
+  if (!isNaN(path) && path >= 0 && path < cycles.paths.length) {
+    return {
+      hamiltonian_cycles: {
+        complete: [],
+        paths: [],
+        nth_path: cycles.paths[path],
+      },
+    };
+  } else {
+    throw new CustomError(
+      `Invalid path number. There are total of ${
+        cycles.length
+      } paths in given graph. Valid path numbers are 0 to ${
+        cycles.paths.length - 1
+      }`,
+      422
+    );
   }
-
-  throw new CustomError(
-    `Invalid path number. There are total of ${
-      cycles.length
-    } paths in given graph. Valid path numbers are 0 to ${cycles.length - 1}`,
-    422
-  );
 };
 
 module.exports = { handlePathRequest };

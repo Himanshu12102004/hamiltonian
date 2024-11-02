@@ -1,5 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const cors = require("cors");
 
 const AlgorithmRouter = require("./Routes/AlgorithmRoutes");
 const { CustomError } = require("./utils/CustomError");
@@ -10,6 +11,11 @@ dotenv.config({
 
 const app = express();
 
+app.use(
+  cors({
+    origin: "http://localhost:5173", // allow to server to accept request from different origin
+  })
+);
 app.use(
   express.json({
     limit: "100kb",
@@ -26,9 +32,10 @@ app.all("*", (req, res, next) => {
 // * Special to express, if there are 4 parameters in the callback function, express will treat it as an error handler
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-  res.status(err.statusCode).json({
+  res.status(err.statusCode | 500).json({
     status: "error",
     message: err.message,
+    stack: err.stack,
   });
 });
 
