@@ -1,7 +1,7 @@
 import { Title } from "../Utils/Title";
 import { HomeIcon } from "lucide-react";
 
-function Home() {
+function Home(): JSX.Element {
   return (
     <>
       <Title Icon={<HomeIcon size={18} />} title="Home" />
