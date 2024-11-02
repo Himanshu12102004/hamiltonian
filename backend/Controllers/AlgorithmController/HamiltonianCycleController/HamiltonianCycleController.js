@@ -9,7 +9,11 @@ const {
 } = require("./utils/imports");
 
 const HamiltonianCycleController = catchAsync(async (req, res) => {
-  const { type = "path", path = "all" } = req.query;
+  const {
+    type = "path",
+    path = "all",
+    graph_type = "matrix_graph",
+  } = req.query;
   const { graph, startNode } = req.body;
 
   // Validate request type
@@ -21,11 +25,14 @@ const HamiltonianCycleController = catchAsync(async (req, res) => {
     );
   }
 
-  const cycles = HamiltonianCycleGenerator(graph, startNode);
+  const cycles = HamiltonianCycleGenerator(graph, startNode, {
+    graph_type: graph_type,
+    weighted: false,
+  });
 
   if (type === "info") {
     const info = getCycleInfo(cycles);
-    return res.status(200).json({ info });
+    return res.status(200).json(info);
   }
 
   if (type === "path") {

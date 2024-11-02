@@ -8,11 +8,12 @@
  */
 const getCycleInfo = (cycles) => {
   const info = {
-    total_paths: cycles.length,
+    animation: 1,
+    total_paths: cycles.paths.length + 1,
     hamiltonian_paths: 0,
     non_hamiltonian_paths: 0,
   };
-  cycles.forEach((cycle) => {
+  cycles.paths.forEach((cycle) => {
     if (cycle[cycle.length - 1].completed) {
       info.hamiltonian_paths++;
     } else {
