@@ -79,18 +79,27 @@ function Layout(props) {
             disabled={dropdownLength === 0}
             onChange={async (e) => {
               const pathNumber = parseInt(e.target.value);
-              const response = await requestSolution({
-                graph: GlobalVariables.graph.parseGraph(),
-                startNode: 0,
-                query: {
-                  type: "path",
-                  path: pathNumber,
-                  graphType: "matrix_graph",
-                },
-              });
-              setSteps(response.hamiltonian_cycles.nth_path);
-              GlobalVariables.animationParams.backendArray =
-                response.hamiltonian_cycles.nth_path;
+              let response;
+              if (paths.length === 0) {
+                response = await requestSolution({
+                  graph: GlobalVariables.graph.parseGraph(),
+                  startNode: 0,
+                  query: {
+                    type: "path",
+                    path: pathNumber,
+                    graphType: "matrix_graph",
+                  },
+                });
+                setSteps(response.hamiltonian_cycles.nth_path);
+                GlobalVariables.animationParams.backendArray =
+                  response.hamiltonian_cycles.nth_path;
+              } else {
+                if (pathNumber > paths.length || pathNumber < 0) return;
+                response = paths[pathNumber];
+                setSteps(response);
+                GlobalVariables.animationParams.backendArray = response;
+              }
+
               GlobalVariables.animationParams.start = false;
               GlobalVariables.animationParams.isAnimationPaused = true;
               GlobalVariables.animationParams.backendArrayPtr = -1;
@@ -137,6 +146,7 @@ function Layout(props) {
                   },
                 });
                 setSteps(response.hamiltonian_cycles.complete);
+                setPaths(response.hamiltonian_cycles.paths);
                 setDropdownLength(response.hamiltonian_cycles.paths.length);
 
                 GlobalVariables.animationParams.backendArray =
