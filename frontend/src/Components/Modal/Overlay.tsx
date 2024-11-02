@@ -3,6 +3,7 @@ import {
   ChartGantt,
   CircleX,
   HomeIcon,
+  PaintRoller,
   Settings,
   Workflow,
 } from "lucide-react";
@@ -15,6 +16,7 @@ import Animation from "./Tabs/Animation";
 import Forces from "./Tabs/Forces";
 import Home from "./Tabs/Home";
 import Nodes from "./Tabs/Nodes";
+import Background from "./Tabs/Background";
 
 const pages = [
   {
@@ -32,6 +34,10 @@ const pages = [
   {
     name: "Forces",
     icon: <ArrowDownLeftFromCircleIcon size={18} />,
+  },
+  {
+    name: "Background",
+    icon: <PaintRoller size={18} />,
   },
 ];
 
@@ -91,6 +97,7 @@ export default function Overlay({ hideOverlay = () => {} }): JSX.Element {
             {selectedPage === "Nodes" && <Nodes />}
             {selectedPage === "Animation" && <Animation />}
             {selectedPage === "Forces" && <Forces />}
+            {selectedPage === "Background" && <Background />}
           </div>
         </div>
       </div>

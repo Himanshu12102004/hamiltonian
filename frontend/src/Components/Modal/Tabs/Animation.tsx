@@ -29,7 +29,6 @@ function Animation(): JSX.Element {
       <span className="text-stone-400 text-sm">
         This section allows you to change the speed of the animation.
       </span>
-      ``
       <div className="flex flex-row gap-2 items-center mx-2 mt-5">
         <Slider
           name={animationSpeed.name}

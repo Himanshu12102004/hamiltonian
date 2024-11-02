@@ -41,6 +41,7 @@ function hexToRgb(hex: string): [number, number, number] {
       ]
     : [0, 0, 0];
 }
+
 function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
   r /= 255;
   g /= 255;

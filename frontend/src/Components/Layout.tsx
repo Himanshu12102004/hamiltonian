@@ -5,14 +5,14 @@ import "../layout.css";
 
 // todo replace overlay, setOverlay and related setting with areSettingsOpen, setAreSettingsOpen
 // todo proper linking of global variables with the backend
+
 import {
-  ChevronLeft,
-  ChevronRight,
   Pause,
   Settings,
   Play,
   StepBack,
   StepForward,
+  Trash2,
 } from "lucide-react";
 
 import { useState } from "react";
@@ -31,6 +31,23 @@ function Layout(props: { children: React.ReactNode }): JSX.Element {
 
   return (
     <div className="flex relative gap-3 h-screen w-screen overflow-hidden p-3">
+      <div className="absolute top-6 -translate-x-28 roundedshadow-2xl shadow-slate-100 flex flex-col gap-4 justify-between self-stretch">
+        <div
+          onClick={GlobalVariables.reset}
+          className="flex items-center justify-end gap-2 bg-white shadow-xl shadow-neutral-300 px-5 py-3 rounded-full hover:bg-stone-100 cursor-pointer hover:translate-x-14 transition-all"
+        >
+          <Trash2 size={20} strokeWidth={1.5} />
+          <span className="text-stone-800 text-sm select-none">Clear All</span>
+        </div>
+        <div
+          className="flex relative items-center justify-end gap-2 bg-white shadow-xl shadow-neutral-300 px-5 py-3 rounded-full hover:bg-stone-100 cursor-pointer hover:translate-x-14 transition-all"
+          onClick={() => setOverlay((prev) => !prev)}
+        >
+          <div className="h-full w-12"></div>
+          <Settings size={20} strokeWidth={1.5} />
+          <span className="text-stone-800 text-sm select-none">Settings</span>
+        </div>
+      </div>
       {overlay && <Overlay hideOverlay={hideOverlay} />}
       <div className="content" id="canvas_parent">
         {props.children}
@@ -86,28 +103,21 @@ function Layout(props: { children: React.ReactNode }): JSX.Element {
           <div className="line"></div>
         </div>
 
-        <div className="flex flex-col gap-4 h-32 bg-white p-3">
-          <div
-            onClick={() => setOverlay((prev) => !prev)}
-            className="flex items-center justify-center ml-auto outline outline-1 outline-stone-800 p-1 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
-          >
-            <Settings size={20} strokeWidth={1.5} />
-          </div>
+        <div className="flex flex-col gap-4 h-fit py-4 bg-white p-3">
           <div className="flex flex-row justify-around items-center">
-            <StepBack strokeWidth={1.5} />
-            <ChevronLeft strokeWidth={1.5} />
+            <StepBack strokeWidth={1.5} className="stroke-slate-500" />
             <div
               onClick={() => {
                 if (!GlobalVariables.animationParams.start) {
                   setSteps(GlobalVariables.animationParams.backendArray);
-                  GlobalVariables.animationParams.start = true;
+                  GlobalVariables.start();
+                  setIsPaused(
+                    GlobalVariables.animationParams.isAnimationPaused
+                  );
                   return;
                 }
-
-                setIsPaused((prev) => {
-                  GlobalVariables.animationParams.isAnimationPaused = !prev;
-                  return !prev;
-                });
+                GlobalVariables.playPause();
+                setIsPaused(GlobalVariables.animationParams.isAnimationPaused);
               }}
               className="flex items-center justify-center p-[4px] outline outline-2 outline-stone-600 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
             >
@@ -117,7 +127,6 @@ function Layout(props: { children: React.ReactNode }): JSX.Element {
                 <Pause size={28} strokeWidth={1.25} />
               )}
             </div>
-            <ChevronRight strokeWidth={1.5} />
             <StepForward strokeWidth={1.5} />
           </div>
         </div>
