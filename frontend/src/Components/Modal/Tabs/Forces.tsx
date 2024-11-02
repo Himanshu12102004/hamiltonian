@@ -12,7 +12,7 @@ import Slider from "../../GeneralComponents/Slider";
 import { Divide } from "../Utils/Divide";
 import { Title } from "../Utils/Title";
 
-function Forces() {
+function Forces(): JSX.Element {
   const [sliders, setSliders] = useState([
     {
       name: "Gravitation",
@@ -46,17 +46,17 @@ function Forces() {
     },
   ]);
 
-  function setSliderValues(name, value) {
+  function setSliderValues(name: string, value: number) {
     setSliders((prev) => {
       const values = [...prev];
-      values.find((slider) => slider.name === name).value = value;
+      const findVal = values.find((slider) => slider.name === name);
+      if (!findVal) return values;
+
+      findVal.value = value;
+      const globalName = findVal.globalVariableName;
+      GlobalVariables[globalName] = value;
       return values;
     });
-    const globalName = sliders.find(
-      (slider) => slider.name === name
-    ).globalVariableName;
-
-    GlobalVariables[globalName] = value;
   }
   return (
     <>
