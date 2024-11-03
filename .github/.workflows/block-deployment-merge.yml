@@ -1,0 +1,16 @@
+name: Block Deployment to Main
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if PR is from `deployment` branch
+        if: github.head_ref == 'deployment'
+        run: |
+          echo "Merging from deployment to main is not allowed."
+          exit 1

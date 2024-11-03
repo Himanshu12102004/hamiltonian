@@ -1,2 +1,3 @@
 config.env merge=ours
 secret.env merge=ours
+README.md merge=ours
