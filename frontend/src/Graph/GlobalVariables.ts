@@ -46,7 +46,7 @@ class GlobalVariables {
     backendArrayPtr: -1,
     isAnimationPaused: false,
   };
-
+  static timeOut: NodeJS.Timeout;
   static shaders = {
     line: {
       fragmentShader: null as WebGLShader | null,
@@ -101,7 +101,7 @@ class GlobalVariables {
         (2 * GlobalVariables.graphScale.scale),
     };
     GlobalVariables.canvas = canvas;
-    let renderingContext = canvas.getContext('webgl2');
+    let renderingContext = canvas.getContext('webgl2', { antialias: true });
     if (!renderingContext) {
       alert('Webgl2 not supported');
       return;
@@ -150,6 +150,7 @@ class GlobalVariables {
     GlobalVariables.animationParams.start = true;
   }
   static reset() {
+    GlobalVariables.killTimeOut();
     GlobalVariables.screenDimensions.height =
       GlobalVariables.canvasParent.clientHeight;
     GlobalVariables.screenDimensions.width =
@@ -171,9 +172,14 @@ class GlobalVariables {
     GlobalVariables.graph.reset();
     GlobalVariables.isAlgoComputed = false;
     GlobalVariables.animationParamsInit();
-    console.log(this.animationParams);
   }
-
+  static killTimeOut() {
+    clearTimeout(GlobalVariables.timeOut);
+  }
+  static resetNodeStates() {
+    console.log('Hello');
+    this.graph.resetStates();
+  }
   static fastForward() {
     let ap = GlobalVariables.animationParams;
     if (ap.backendArrayPtr != ap.backendArray.length) {

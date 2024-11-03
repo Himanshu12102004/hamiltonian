@@ -43,22 +43,35 @@ function drawMouseTrain() {
 }
 function drawAnimation() {
   let ap = GlobalVariables.animationParams;
-  if(ap.backendArrayPtr!=-1){
-   if(ap.backendArrayPtr!=ap.backendArray.length){
-  let currAni = ap.frontendArray[ap.frontendArrayPtr];
-  if (ap.backendArray[ap.backendArrayPtr][2] == TravelMode.forward&&!ap.isAnimationPaused) {
-    currAni.incrementT();
-  } else if (ap.backendArray[ap.backendArrayPtr][2] == TravelMode.backTrack&&!ap.isAnimationPaused) {
-    GlobalVariables.graph.nodes[ap.backendArray[ap.backendArrayPtr][1]].removeState(NodeState.selected);
-    currAni.decrementT();
-  }}
-  else {
-    GlobalVariables.graph.nodes[ap.backendArray[0][0]].removeState(NodeState.selected);
-  }
+  if (ap.backendArrayPtr != -1) {
+    // console.log(ap.backendArray)
+    if (ap.backendArrayPtr != ap.backendArray.length) {
+      
+      let currAni = ap.frontendArray[ap.frontendArrayPtr];
+      if (
+        ap.backendArray[ap.backendArrayPtr][2] == TravelMode.forward &&
+        !ap.isAnimationPaused
+      ) {
+        currAni.incrementT();
+      } else if (
+        ap.backendArray[ap.backendArrayPtr][2] == TravelMode.backTrack &&
+        !ap.isAnimationPaused
+      ) {
+        GlobalVariables.graph.nodes[
+          ap.backendArray[ap.backendArrayPtr][1]
+        ].removeState(NodeState.selected);
+        currAni.decrementT();
+      }
+    } else {
+      GlobalVariables.graph.nodes[ap.backendArray[0][0]].removeState(
+        NodeState.selected
+      );
+    }
 
-  for (let i = 0; i <= ap.frontendArrayPtr; i++) {
-    ap.frontendArray[i].setVao();
-    ap.frontendArray[i].draw();
-  }}
+    for (let i = 0; i <= ap.frontendArrayPtr; i++) {
+      ap.frontendArray[i].setVao();
+      ap.frontendArray[i].draw();
+    }
+  }
 }
-export { drawNodes, drawConnections, drawMouseTrain,drawAnimation };
+export { drawNodes, drawConnections, drawMouseTrain, drawAnimation };

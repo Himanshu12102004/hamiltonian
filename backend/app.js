@@ -12,9 +12,11 @@ dotenv.config({
 const app = express();
 
 app.use(
-  cors({
+  cors(
+    {
     origin: "http://localhost:5173", // allow to server to accept request from different origin
-  })
+  }
+)
 );
 app.use(
   express.json({

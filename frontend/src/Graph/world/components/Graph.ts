@@ -165,6 +165,11 @@ class Graph {
     }
     return adjMat;
   }
+  resetStates(){
+    for(let i=0;i<this.nodes.length;i++){
+    this.nodes[i].resetStates();
+    }
+  }
 }
 
 export default Graph;
