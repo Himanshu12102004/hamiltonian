@@ -1,0 +1,40 @@
+# File: install
+#!/bin/bash
+
+# Function to detect OS
+detect_os() {
+    case "$(uname -s)" in
+        Darwin*)    echo 'macos';;
+        Linux*)     echo 'linux';;
+        MINGW*|MSYS*|CYGWIN*) echo 'windows';;
+        *)          echo 'unknown';;
+    esac
+}
+
+# Main installation function
+main() {
+    OS=$(detect_os)
+    echo "🔍 Detected OS: $OS"
+
+    if [ "$OS" = "windows" ]; then
+        echo "🔄 Running Windows setup..."
+        ./setup.bat
+    else
+        echo "🔄 Running Unix setup..."
+        chmod +x setup.sh
+        ./setup.sh
+    fi
+
+    # Verify installation
+    echo "🔍 Verifying installation..."
+    git config merge.ours.driver >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "✅ Merge driver configured successfully"
+    else
+        echo "❌ Merge driver configuration failed"
+        exit 1
+    fi
+}
+
+# Run installation
+main

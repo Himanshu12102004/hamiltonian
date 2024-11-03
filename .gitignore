@@ -1,1 +1,5 @@
 node_modules
+
+# Don't ignore these scripts
+!install.sh
+!setup-hooks.sh
