@@ -30,4 +30,5 @@ jobs:
       - name: Run tests in backend
         run: |
           cd backend
+          npm i --save-dev jest
           jest
