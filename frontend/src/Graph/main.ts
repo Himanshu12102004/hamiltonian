@@ -175,7 +175,7 @@ function startAnimation() {
         }
         let currentAnimationWidth = GlobalVariables.animationConnectionWidth;
         GlobalVariables.animationConnectionWidth = currentAnimationWidth * 2;
-        setTimeout(() => {
+      GlobalVariables.timeOut=  setTimeout(() => {
           ap.isAnimationPaused = false;
           for (
             let i = 0;

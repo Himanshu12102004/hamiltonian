@@ -48,7 +48,7 @@ class Node {
     color.push(1, 1, 1, 1);
     for (let i = 0; i < this.points.length; i++) {
       nodeVertices.push(...Node.getNormalizedPoint(this.points[i]));
-      let appliedState=this.applyState()
+      let appliedState = this.applyState();
       color.push(
         GlobalVariables.nodeColors[appliedState][0] / 255,
         GlobalVariables.nodeColors[appliedState][1] / 255,
@@ -164,17 +164,21 @@ class Node {
     }
   }
   updatePosition() {
-    let viscosity =GlobalVariables.viscosity*0.00001;
-    let firctionX=viscosity>Math.abs(this.netForce.x)?-this.netForce.x:-Math.sign(this.netForce.x)*viscosity;
-    let firctionY=viscosity>Math.abs(this.netForce.y)?-this.netForce.y:-Math.sign(this.netForce.y)*viscosity;
-    this.point.x +=
-      (this.netForce.x+firctionX)*GlobalVariables.timeElapsed;
-    this.point.y +=
-      (this.netForce.y +firctionY)*GlobalVariables.timeElapsed;
+    let viscosity = GlobalVariables.viscosity * 0.00001;
+    let firctionX =
+      viscosity > Math.abs(this.netForce.x)
+        ? -this.netForce.x
+        : -Math.sign(this.netForce.x) * viscosity;
+    let firctionY =
+      viscosity > Math.abs(this.netForce.y)
+        ? -this.netForce.y
+        : -Math.sign(this.netForce.y) * viscosity;
+    this.point.x += (this.netForce.x + firctionX) * GlobalVariables.timeElapsed;
+    this.point.y += (this.netForce.y + firctionY) * GlobalVariables.timeElapsed;
   }
   findNetForce() {
     this.netForce = new Vector(new Point(0, 0), new Point(0, 0));
-    let gravitationalConstant=0.0005*GlobalVariables.gravitationalConstant;
+    let gravitationalConstant = 0.0005 * GlobalVariables.gravitationalConstant;
     for (let i = 0; i < GlobalVariables.graph.nodes.length; i++) {
       const node = GlobalVariables.graph.nodes[i];
 
@@ -185,10 +189,10 @@ class Node {
 
       let forceMagnitude: number;
       if (distance === 0) {
-        forceMagnitude = gravitationalConstant*GlobalVariables.nodeRadius;
+        forceMagnitude = gravitationalConstant * GlobalVariables.nodeRadius;
       } else {
         forceMagnitude =
-          gravitationalConstant*GlobalVariables.nodeRadius /
+          (gravitationalConstant * GlobalVariables.nodeRadius) /
           Math.pow(distance, GlobalVariables.distancePropotionality);
       }
 
@@ -198,6 +202,12 @@ class Node {
       this.netForce = this.netForce.add(force);
     }
     return this.netForce;
+  }
+  resetStates() {
+    this.states = this.states.filter((state) => {
+      return state == NodeState.connected || state == NodeState.normal;
+    });
+    console.log(this.states);
   }
 }
 

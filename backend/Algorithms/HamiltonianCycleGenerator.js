@@ -51,7 +51,7 @@ function HamiltonianCycleGenerator(
     graph_type: "matrix_graph",
   }
 ) {
-  if (graphMatrix.length < 3) {
+  if (graphMatrix.length < 2) {
     throw new CustomError("The graph must have at least 3 vertices", 422);
   }
   if (options.graph_type === "graph_type") {
