@@ -1,0 +1,28 @@
+# File: .github/branch-rules.yml
+
+branches:
+  - name: deployment
+    custom:
+      skipSuggestions: true
+      compareExclude: true
+    protection:
+      required_status_checks:
+        strict: true
+      enforce_admins: true
+      restrictions:
+        users: []
+        teams: ["deployers"]
+      allow_force_pushes: false
+
+  - name: main
+    custom:
+      skipSuggestions: true
+      compareExclude: true
+    protection:
+      required_status_checks:
+        strict: true
+      enforce_admins: true
+      restrictions:
+        users: []
+        teams: ["maintainers"]
+      allow_force_pushes: false
