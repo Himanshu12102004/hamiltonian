@@ -2,83 +2,84 @@
 
 ## Branch Structure and Usage
 
-This project has two main branches: main and deployment.
+This project has two main branches: `main` and `deployment`.
 
-    1. main branch: For local development. Use this branch to run the project on your local machine.
-    2. deployment branch: For deployment to the web. This branch contains production-ready code and deployment configurations.
+1. **main branch**: For local development. Use this branch to run the project on your local machine.
+2. **deployment branch**: For deployment to the web. This branch contains production-ready code and deployment configurations.
 
 ## Getting Started
 
-Follow these instructions to set up the project on your local machine.
+This branch is intended for deploying the application to a production server. Follow these steps to set up and deploy the project.
 
 ### Prerequisites
 
-- Node.js and npm installed (Ensure you're using the latest stable version)
+- **Node.js** and **npm** installed (Ensure you are using the latest stable versions)
+- **Hosting Provider Account** (e.g., AWS, Heroku, Vercel, DigitalOcean, or other)
+- **Environment Variables**: Set up the required environment variables in your hosting provider’s dashboard.
 
 ---
 
 ## Project Structure
 
 ```plaintext
-
 - backend/
-
   - server.js
   - other backend files
 
 - frontend/
   - index.html
   - other frontend files
-
 ```
 
----
+## Deployment Instructions
 
-## Running the Project Locally
+### Backend
 
-1. Clone the Repository
-
-```bash
-git clone https://github.com/AdoredAgenda/Hamiltonian_Cycle
-cd Hamiltonian_Cycle
-```
-
-2. Switch to the main branch
-
-```bash
-git switch main
-```
-
-3. Install Dependencies
-
-```bash
-cd frontend
-npm install
-```
+1. **Install dependencies**
+   Navigate to the backend directory and install dependencies:
 
 ```bash
 cd backend
 npm install
 ```
 
-4. Start the Development Server
+2. **Set Environment Variables**
+   Set the required environment variables in your hosting provider’s dashboard.
+   Configure the following environment variables in your server's environment or in a .env file (if supported):
+
+   - PORT: The port on which the backend will run (e.g., 5000)
+   - Other variables required by your backend setup, such as DATABASE_URL, API_KEY, etc.
+
+3. **Start the Server**
+   Use the following command to start the backend server in production mode:
+
+```bash
+npm start
+```
+
+4. **Deploy to Hosting Provider**
+   Deploy the backend to your hosting provider.
+
+### Frontend
+
+1. **Install dependencies**
+   Navigate to the frontend directory and install dependencies:
 
 ```bash
 cd frontend
-npm run dev
+npm install
 ```
+
+2. Build for Production
+   Build the frontend for production using the following command:
 
 ```bash
-cd backend
-nodemon server
+npm run build
 ```
 
-5. Visit `http://localhost:5173` in your browser.
+3. Deploy to Hosting Provider
+   Deploy the frontend to your hosting provider.
 
 ---
 
-## Notes
-
-1. The project is still in development and may contain bugs. If you find any issues, please report them in the issues section.
-
-2. The project is not open-source and contributions are not welcomed. If you'd like to contribute, please contact the project owner.
+> This markdown code should be used for the `README.md` in your `deployment` branch and provides detailed setup and deployment instructions. Modify the content as needed to suit your project requirements.

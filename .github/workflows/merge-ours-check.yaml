@@ -1,0 +1,25 @@
+# .github/workflows/merge-check.yml
+name: Merge Strategy Check
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - "README.md"
+
+jobs:
+  check-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Check README merge strategy
+        run: |
+          if [ "${{ github.base_ref }}" = "main" ]; then
+            git config --global merge.ours.driver true
+            git config --global user.email "github-actions@github.com"
+            git config --global user.name "GitHub Actions"
+            echo "Checking README.md merge attributes..."
+            git check-attr merge README.md
+          fi
