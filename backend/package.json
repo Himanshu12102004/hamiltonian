@@ -15,6 +15,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "dev": "eslint . --c .js && nodemon server.js"
+    "dev": "eslint . --c .js && nodemon server.js",
+    "test": "jest"
   }
 }
