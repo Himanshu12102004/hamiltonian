@@ -1,5 +1,65 @@
 # Graph Algorithms
 
+## Setup
+
+> **This repository requires mandatory setup before use:**
+> ❌ Git operations will be blocked until setup is complete.
+
+<!-- <blockquote style="background-color: #ED2939;padding: 6px 16px;">**Important**: This project requires certain git hooks to be installed. Ensure you have the latest version of git installed on your machine and follow the instructions below to set up the project.</blockquote><br/>
+
+- After cloning this repository, run the installation script:
+
+### Universal Method
+
+Run the following command in the terminal:
+
+```bash
+./install
+```
+
+### Windows Users
+
+Double-click `setup.bat` or run in Command Prompt:
+
+```bash
+setup.bat
+```
+
+### Unix (Mac/Linux) Users
+
+Unix (Mac/Linux Users) users can run the following command in the terminal:
+
+```bash
+chmod +x setup.sh
+./install.sh
+```
+
+This will:
+
+- Set up necessary git configurations
+- Configure merge strategies
+- Install git hooks
+- Create required files
+-->
+
+## Manual Setup (if needed)
+
+If the automatic setup doesn't work, you can manually configure:
+
+```bash
+git config merge.ours.driver true
+```
+
+## Verification
+
+To verify the setup:
+
+```bash
+git check-attr merge README.md
+```
+
+Should output: `README.md: merge: ours`
+
 ## Branch Structure and Usage
 
 This project has two main branches: `main` and `deployment`.
