@@ -1,3 +1,4 @@
-config.env merge=ours
-secret.env merge=ours
-README.md merge=ours
+./backend/config.env merge=ours
+./backend/secret.env merge=ours
+
+./README.md merge=ours
