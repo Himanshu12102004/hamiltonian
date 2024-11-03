@@ -1,5 +1,7 @@
 node_modules
 
+git-setup-verify.bat
+
 # Don't ignore these scripts
 !install.sh
 !setup-hooks.sh

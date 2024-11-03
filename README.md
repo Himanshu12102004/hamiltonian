@@ -2,9 +2,10 @@
 
 ## Setup
 
-<!-- > **Important**: This project requires certain git hooks to be installed. Ensure you have the latest version of git installed on your machine and follow the instructions below to set up the project. -->
+> **This repository requires mandatory setup before use:**
+> ❌ Git operations will be blocked until setup is complete.
 
-<blockquote style="background-color: #ED2939;padding: 6px 16px;">**Important**: This project requires certain git hooks to be installed. Ensure you have the latest version of git installed on your machine and follow the instructions below to set up the project.</blockquote><br/>
+<!-- <blockquote style="background-color: #ED2939;padding: 6px 16px;">**Important**: This project requires certain git hooks to be installed. Ensure you have the latest version of git installed on your machine and follow the instructions below to set up the project.</blockquote><br/>
 
 - After cloning this repository, run the installation script:
 
@@ -39,6 +40,7 @@ This will:
 - Configure merge strategies
 - Install git hooks
 - Create required files
+-->
 
 ## Manual Setup (if needed)
 
