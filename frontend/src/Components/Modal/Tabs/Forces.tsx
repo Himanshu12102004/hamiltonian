@@ -11,6 +11,7 @@ import Slider from "../../GeneralComponents/Slider";
 
 import { Divide } from "../Utils/Divide";
 import { Title } from "../Utils/Title";
+import { GlobalVariables } from "../../../Graph/GlobalVariables";
 
 function Forces(): JSX.Element {
   const [sliders, setSliders] = useState([
