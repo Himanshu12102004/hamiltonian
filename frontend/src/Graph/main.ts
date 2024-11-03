@@ -32,6 +32,7 @@ function compileShader(
   );
   return { vertexShader, fragmentShader };
 }
+
 function datInit() {
   const gui = new GUI();
   let controls = gui.addFolder("Controls");
