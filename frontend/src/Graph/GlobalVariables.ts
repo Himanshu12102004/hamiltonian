@@ -101,7 +101,7 @@ class GlobalVariables {
         (2 * GlobalVariables.graphScale.scale),
     };
     GlobalVariables.canvas = canvas;
-    let renderingContext = canvas.getContext('webgl2');
+    let renderingContext = canvas.getContext('webgl2', { antialias: true });
     if (!renderingContext) {
       alert('Webgl2 not supported');
       return;
