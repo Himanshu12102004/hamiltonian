@@ -1,6 +1,6 @@
 import { CircleX } from "lucide-react";
 import { useEffect, useState } from "react";
-import { socket } from "../socket";
+import { getSocket } from "../socket";
 
 // const MAX_HISTORY = 6;
 
@@ -9,14 +9,24 @@ export default function GraphLoading({
   onClose = () => {},
 }): JSX.Element {
   const [loadingHistory, setLoadingHistory] = useState([] as string[]);
+  const [isFadingOut, setIsFadingOut] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const socket = getSocket();
 
   function closeWindow() {
-    setLoadingHistory([]);
-    abortController.abort();
-    onClose();
+    setIsFadingOut(true);
+    setTimeout(() => {
+      setLoadingHistory([]);
+      abortController.abort();
+      onClose();
+    }, 1000);
   }
+
   useEffect(() => {
+    if (socket.disconnected) socket.connect();
+
     socket.on("HamiltonianCycle", (data: string) => {
+      console.log(data);
       setLoadingHistory((prev: string[]) => {
         if (prev.length > 5) {
           prev.shift();
@@ -24,13 +34,27 @@ export default function GraphLoading({
         return [...prev, data];
       });
     });
+
+    setTimeout(() => {
+      setIsVisible(false);
+      setIsFadingOut(true);
+      setTimeout(() => {
+        onClose();
+      }, 1000);
+    }, 3000);
+
     return () => {
       socket.off("HamiltonianCycle");
+      socket.disconnect();
     };
-  }, []);
+  }, [socket, onClose]);
 
   return (
-    <div className="absolute top-2 left-2 bottom-2 right-2 bg-stone-800/40 backdrop-blur-md z-20">
+    <div
+      className={`absolute top-2 left-2 bottom-2 right-2 bg-stone-800/40 backdrop-blur-md z-20 transition-opacity duration-1000 ${
+        isFadingOut ? "opacity-0" : "opacity-100"
+      } ${isVisible ? "" : "hidden"}`}
+    >
       <div className="flex flex-col gap-8 items-center h-full">
         <div className="flex flex-col items-center gap-4 mt-auto">
           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-stone-600"></div>
@@ -41,7 +65,7 @@ export default function GraphLoading({
                 style={{
                   opacity: index * 0.3,
                 }}
-                className="text-stone-200 text-xs tracking-wider"
+                className="text-stone-200 text-xs tracking-wider animate-pulse"
               >
                 {item}
               </p>

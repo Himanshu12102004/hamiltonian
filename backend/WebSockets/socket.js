@@ -1,5 +1,3 @@
-let globalSocket = null;
-
 class Socket {
   constructor(
     server,
@@ -17,8 +15,6 @@ class Socket {
         console.log("user disconnected");
       });
     });
-
-    globalSocket = this;
   }
   checkConnection() {
     return this.io.engine.clientsCount;
@@ -32,4 +28,17 @@ class Socket {
   }
 }
 
-module.exports = { Socket, globalSocket };
+let socketInstance;
+
+function initializeSocket(server) {
+  socketInstance = new Socket(server);
+}
+
+function getSocketInstance() {
+  if (!socketInstance) {
+    throw new Error("Socket is not initialized. Call initializeSocket first.");
+  }
+  return socketInstance;
+}
+
+module.exports = { initializeSocket, getSocketInstance };
