@@ -1,7 +1,7 @@
-import AlgoStep from './AlgoStep';
-import Overlay from './Modal/Overlay';
+import AlgoStep from "./AlgoStep";
+import Overlay from "./Modal/Overlay";
 
-import '../layout.css';
+import "../layout.css";
 
 // todo replace overlay, setOverlay and related setting with areSettingsOpen, setAreSettingsOpen
 // todo proper linking of global variables with the backend
@@ -13,12 +13,12 @@ import {
   StepBack,
   StepForward,
   Trash2,
-} from 'lucide-react';
+} from "lucide-react";
 
-import { useState } from 'react';
-import { GlobalVariables } from '../Graph/GlobalVariables';
-import GraphLoading from './Loadings/GraphLoading';
-import AdjacencyGraphToMatrixGraph from './temp_util/adj_graph_to_matrix';
+import { useState } from "react";
+import { GlobalVariables } from "../Graph/GlobalVariables";
+import GraphLoading from "./Loadings/GraphLoading";
+import AdjacencyGraphToMatrixGraph from "./temp_util/adj_graph_to_matrix";
 
 function Layout(props) {
   const [overlay, setOverlay] = useState(false);
@@ -47,7 +47,14 @@ function Layout(props) {
       )}
       <div className="absolute top-6 -translate-x-28 roundedshadow-2xl shadow-slate-100 flex flex-col gap-4 justify-between self-stretch">
         <div
-          onClick={GlobalVariables.reset}
+          onClick={() => {
+            setShowLoading(true);
+            setSteps([]);
+            setPaths([]);
+            setDropdownLength(0);
+            GlobalVariables.reset();
+            setShowLoading(false);
+          }}
           className="flex items-center justify-end gap-2 bg-white shadow-xl shadow-neutral-300 px-5 py-3 rounded-full hover:bg-stone-100 cursor-pointer hover:translate-x-14 transition-all"
         >
           <Trash2 size={20} strokeWidth={1.5} />
@@ -78,6 +85,7 @@ function Layout(props) {
           <select
             disabled={dropdownLength === 0}
             onChange={async (e) => {
+              setShowLoading(true);
               const pathNumber = parseInt(e.target.value);
               let response;
               if (paths.length === 0) {
@@ -85,9 +93,9 @@ function Layout(props) {
                   graph: GlobalVariables.graph.parseGraph(),
                   startNode: 0,
                   query: {
-                    type: 'path',
+                    type: "path",
                     path: pathNumber,
-                    graphType: 'matrix_graph',
+                    graphType: "matrix_graph",
                   },
                 });
                 setSteps(response.hamiltonian_cycles.nth_path);
@@ -99,15 +107,18 @@ function Layout(props) {
                 setSteps(response);
                 GlobalVariables.animationParams.backendArray = response;
               }
+              GlobalVariables.animationParams.backendArrayPtr = -1;
+
               GlobalVariables.animationParams.frontendArray = [];
               GlobalVariables.animationParams.isAnimationPaused = false;
-              console.log('Hidfdjfhjsh');
+
               GlobalVariables.resetNodeStates();
               GlobalVariables.killTimeOut();
               GlobalVariables.animationParams.backendArrayPtr = -1;
               GlobalVariables.animationParams.frontendArrayPtr = -1;
               GlobalVariables.start();
-              console.log(GlobalVariables.animationParams);
+
+              setShowLoading(false);
             }}
             className="self-stretch py-2 px-3 h-fit bg-white outline outline-1 rounded-md outline-gray-300"
           >
@@ -139,23 +150,26 @@ function Layout(props) {
             <StepBack strokeWidth={1.5} className="stroke-slate-500" />
             <div
               onClick={async () => {
+                setShowLoading(true);
                 const response = await requestSolution({
                   graph: GlobalVariables.graph.parseGraph(),
                   startNode: 0,
                   query: {
-                    type: 'path',
-                    path: 'all',
-                    graphType: 'matrix_graph',
+                    type: "path",
+                    path: "all",
+                    graphType: "matrix_graph",
                   },
                 });
                 setSteps(response.hamiltonian_cycles.complete);
                 setPaths(response.hamiltonian_cycles.paths);
                 setDropdownLength(response.hamiltonian_cycles.paths.length);
 
+                setShowLoading(false);
+
                 GlobalVariables.animationParams.backendArray =
                   response.hamiltonian_cycles.complete;
-                GlobalVariables.animationParams.start = false;
-                GlobalVariables.animationParams.isAnimationPaused = true;
+
+                GlobalVariables.animationParams.isAnimationPaused = false;
                 GlobalVariables.animationParams.backendArrayPtr = -1;
 
                 GlobalVariables.start();
@@ -183,9 +197,9 @@ async function requestSolution({
 }) {
   const URL = `http://localhost:5000/api/v1/hamiltonian-cycle?type=${type}&path=${path}&graph_type=${graphType}`;
   const response = await fetch(URL, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       graph: AdjacencyGraphToMatrixGraph(graph),

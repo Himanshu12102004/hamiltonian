@@ -6,6 +6,7 @@ const {
   getCycleInfo,
   handlePathRequest,
   handleHelpRequest,
+  Socket,
 } = require("./utils/imports");
 
 const HamiltonianCycleController = catchAsync(async (req, res) => {
@@ -25,18 +26,40 @@ const HamiltonianCycleController = catchAsync(async (req, res) => {
     );
   }
 
-  const cycles = HamiltonianCycleGenerator(graph, startNode, {
-    graph_type: graph_type,
-    weighted: false,
-  });
+  // todo Try avoiding passing Socket to HamiltonianCycleGenerator
+  const cycles = HamiltonianCycleGenerator(
+    graph,
+    startNode,
+    {
+      graph_type: graph_type,
+      weighted: false,
+    },
+    Socket
+  );
 
   if (type === "info") {
-    const info = getCycleInfo(cycles);
+    Socket.sendMessage(
+      "HamiltonianCycle",
+      "Generating Info of Hamiltonian Cycle of the Graph"
+    );
+    const info = getCycleInfo(cycles, Socket);
+    Socket.sendMessage(
+      "HamiltonianCycle",
+      "Info of Hamiltonian Cycle of the Graph Generated"
+    );
     return res.status(200).json(info);
   }
 
   if (type === "path") {
-    const result = handlePathRequest(type, path, cycles);
+    Socket.sendMessage(
+      "HamiltonianCycle",
+      "Generating Hamiltonian Cycle of the Graph"
+    );
+    const result = handlePathRequest(type, path, cycles, Socket);
+    Socket.sendMessage(
+      "HamiltonianCycle",
+      "Hamiltonian Cycle of the Graph Generated"
+    );
     return res.status(200).json(result);
   }
 

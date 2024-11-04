@@ -35,20 +35,66 @@ function HamiltonianCycleGenerator(
   options = {
     graph_type: "adjacency_list",
     test: false,
-  }
+  },
+  Socket = null
 ) {
+  Socket.sendMessage(
+    "HamiltonianCycle",
+    "Generating Hamiltonian Cycle of the Graph"
+  );
   if (graph.length == 0) {
+    Socket.sendMessage("HamiltonianCycle", "Graph is empty");
     // todo - Change the status code to valid status code
     throw new CustomError("Graph is empty", 400);
   }
 
   if (options.graph_type == "adjacency_list") {
+    Socket.sendMessage(
+      "HamiltonianCycle",
+      "Graph is already in adjacency list format"
+    );
     // * do nothing as the graph is already in adjacency list format
   } else if (options.graph_type == "matrix_graph") {
+    Socket.sendMessage(
+      "HamiltonianCycle",
+      "Converting Graph to adjacency list format"
+    );
     graph = MatrixGraphToAdjacencyGraph(graph);
   } else {
+    Socket.sendMessage(
+      "HamiltonianCycle",
+      "Either Graph type is not supported or invalid"
+    );
     // todo - Change the status code to valid status code
     throw new CustomError("Either Graph type is not supported or invalid", 400);
+  }
+
+  // ? Handling special case when the graph has only 2 vertices
+  if (graph.length == 2) {
+    if (options.test) {
+      return [];
+    }
+    const paths = [
+      [0, 1, 0, [], false],
+      [-1, -1, 2, [0, 1], false],
+    ];
+    const complete = [...paths];
+    return {
+      paths,
+      complete,
+    };
+  }
+  // ? Handling special case when the graph has only 1 vertices
+  if (graph.length == 1) {
+    if (options.test) {
+      return [[0]];
+    }
+    const paths = [[-1, -1, 2, [0], true]];
+    const complete = [...paths];
+    return {
+      paths,
+      complete,
+    };
   }
 
   const n = graph.length;
@@ -58,9 +104,11 @@ function HamiltonianCycleGenerator(
   let currentPath = [];
   let tempPath = [];
   let testPaths = [];
+  Socket.sendMessage("HamiltonianCycle", "Initializing variables");
 
   visited[startNode] = 1;
   tempPath.push(startNode);
+  Socket.sendMessage("HamiltonianCycle", "Added start node to the path");
 
   function allVisited() {
     return visited.every((vertex) => vertex === 1);
@@ -71,9 +119,11 @@ function HamiltonianCycleGenerator(
   }
 
   function generateStep(cur, next, mode = 0, completed = false) {
-    return [cur, next, mode, [], completed];
+    return [cur, next, mode, allVisited() ? [...tempPath] : [], completed];
   }
+  Socket.sendMessage("HamiltonianCycle", "Generated Helper functions");
 
+  Socket.sendMessage("HamiltonianCycle", "Starting to find all paths");
   function findAllPaths(currentVertex) {
     for (const nextVertex of graph[currentVertex]) {
       if (visited[nextVertex] === 0) {
@@ -86,14 +136,13 @@ function HamiltonianCycleGenerator(
 
         if (allVisited()) {
           const isCompleteCycle = isAdjacent(nextVertex, startNode);
-          const completionStep = generateStep(
-            nextVertex,
-            startNode,
-            2,
-            isCompleteCycle
-          );
+          const completionStep = generateStep(nextVertex, startNode, 2, false);
+          const deadEndStep = generateStep(-1, -1, 2, true);
           currentPath.push(completionStep);
+          currentPath.push(deadEndStep);
+
           complete.push(completionStep);
+          complete.push(deadEndStep);
 
           if (isCompleteCycle) {
             paths.push([...currentPath]);
@@ -128,11 +177,11 @@ function HamiltonianCycleGenerator(
       }
     }
   }
+  Socket.sendMessage("HamiltonianCycle", "Finished finding all paths");
 
   findAllPaths(startNode);
 
   if (options.test) {
-    console.log(testPaths);
     return testPaths;
   }
   return {

@@ -1,5 +1,6 @@
 import { CircleX } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { socket } from "../socket";
 
 // const MAX_HISTORY = 6;
 
@@ -7,13 +8,26 @@ export default function GraphLoading({
   abortController = new AbortController(),
   onClose = () => {},
 }): JSX.Element {
-  const [loadingHistory, setLoadingHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState([] as string[]);
 
   function closeWindow() {
     setLoadingHistory([]);
     abortController.abort();
     onClose();
   }
+  useEffect(() => {
+    socket.on("HamiltonianCycle", (data: string) => {
+      setLoadingHistory((prev: string[]) => {
+        if (prev.length > 5) {
+          prev.shift();
+        }
+        return [...prev, data];
+      });
+    });
+    return () => {
+      socket.off("HamiltonianCycle");
+    };
+  }, []);
 
   return (
     <div className="absolute top-2 left-2 bottom-2 right-2 bg-stone-800/40 backdrop-blur-md z-20">
