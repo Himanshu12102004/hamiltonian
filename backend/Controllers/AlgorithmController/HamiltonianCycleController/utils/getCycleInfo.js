@@ -6,13 +6,15 @@
  * @property {number} hamiltonian_paths - Number of Hamiltonian paths
  * @property {number} non_hamiltonian_paths - Number of non-Hamiltonian paths
  */
-const getCycleInfo = (cycles) => {
+
+const getCycleInfo = (cycles, Socket) => {
   const info = {
     animation: 1,
     total_paths: cycles.paths.length + 1,
     hamiltonian_paths: 0,
     non_hamiltonian_paths: 0,
   };
+  Socket.sendMessage("HamiltonianCycle", "Started Counting Hamiltonian Paths");
   cycles.paths.forEach((cycle) => {
     if (cycle[cycle.length - 1].completed) {
       info.hamiltonian_paths++;
@@ -20,6 +22,7 @@ const getCycleInfo = (cycles) => {
       info.non_hamiltonian_paths++;
     }
   });
+  Socket.sendMessage("HamiltonianCycle", "Finished Counting Hamiltonian Paths");
   return info;
 };
 

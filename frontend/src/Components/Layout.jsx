@@ -1,7 +1,7 @@
-import AlgoStep from './AlgoStep';
-import Overlay from './Modal/Overlay';
+import AlgoStep from "./AlgoStep";
+import Overlay from "./Modal/Overlay";
 
-import '../layout.css';
+import "../layout.css";
 
 // todo replace overlay, setOverlay and related setting with areSettingsOpen, setAreSettingsOpen
 // todo proper linking of global variables with the backend
@@ -13,12 +13,12 @@ import {
   StepBack,
   StepForward,
   Trash2,
-} from 'lucide-react';
+} from "lucide-react";
 
-import { useState } from 'react';
-import { GlobalVariables } from '../Graph/GlobalVariables';
-import GraphLoading from './Loadings/GraphLoading';
-import AdjacencyGraphToMatrixGraph from './temp_util/adj_graph_to_matrix';
+import { useState } from "react";
+import { GlobalVariables } from "../Graph/GlobalVariables";
+import GraphLoading from "./Loadings/GraphLoading";
+import AdjacencyGraphToMatrixGraph from "./temp_util/adj_graph_to_matrix";
 
 function Layout(props) {
   const [overlay, setOverlay] = useState(false);
@@ -35,19 +35,59 @@ function Layout(props) {
     setOverlay(false);
   }
 
+  async function generateSteps() {
+    setShowLoading(true);
+    const newAbortController = new AbortController();
+    setAbortController(newAbortController);
+    const response = await requestSolution({
+      graph: GlobalVariables.graph.parseGraph(),
+      startNode: 0,
+      query: {
+        type: "path",
+        path: "all",
+        graphType: "matrix_graph",
+      },
+      signal: newAbortController.signal,
+    });
+    setSteps(response.hamiltonian_cycles.complete);
+    setPaths(response.hamiltonian_cycles.paths);
+    setDropdownLength(response.hamiltonian_cycles.paths.length);
+
+    setTimeout(() => {
+      setShowLoading(false);
+      GlobalVariables.start();
+    }, 3000);
+
+    GlobalVariables.animationParams.backendArray =
+      response.hamiltonian_cycles.complete;
+
+    GlobalVariables.animationParams.isAnimationPaused = false;
+    GlobalVariables.animationParams.backendArrayPtr = -1;
+  }
+
   return (
     <div className="flex relative gap-3 h-screen w-screen overflow-hidden p-3">
       {showLoading && (
         <GraphLoading
           onClose={() => {
-            setShowLoading(false);
+            setTimeout(() => {
+              setShowLoading(false);
+              GlobalVariables.start();
+            }, 3000);
           }}
-          abortController={new AbortController()}
+          abortController={abortController}
         />
       )}
       <div className="absolute top-6 -translate-x-28 roundedshadow-2xl shadow-slate-100 flex flex-col gap-4 justify-between self-stretch">
         <div
-          onClick={GlobalVariables.reset}
+          onClick={() => {
+            setShowLoading(true);
+            setSteps([]);
+            setPaths([]);
+            setDropdownLength(0);
+            GlobalVariables.reset();
+            setShowLoading(false);
+          }}
           className="flex items-center justify-end gap-2 bg-white shadow-xl shadow-neutral-300 px-5 py-3 rounded-full hover:bg-stone-100 cursor-pointer hover:translate-x-14 transition-all"
         >
           <Trash2 size={20} strokeWidth={1.5} />
@@ -78,17 +118,35 @@ function Layout(props) {
           <select
             disabled={dropdownLength === 0}
             onChange={async (e) => {
+              setShowLoading(true);
               const pathNumber = parseInt(e.target.value);
+              const newAbortController = new AbortController();
+              setAbortController(newAbortController);
               let response;
-              if (paths.length === 0) {
+              if (pathNumber === -1) {
                 response = await requestSolution({
                   graph: GlobalVariables.graph.parseGraph(),
                   startNode: 0,
                   query: {
-                    type: 'path',
-                    path: pathNumber,
-                    graphType: 'matrix_graph',
+                    type: "path",
+                    path: "all",
+                    graphType: "matrix_graph",
                   },
+                  signal: newAbortController.signal,
+                });
+                setSteps(response.hamiltonian_cycles.complete);
+                GlobalVariables.animationParams.backendArray =
+                  response.hamiltonian_cycles.complete;
+              } else if (paths.length === 0) {
+                response = await requestSolution({
+                  graph: GlobalVariables.graph.parseGraph(),
+                  startNode: 0,
+                  query: {
+                    type: "path",
+                    path: pathNumber,
+                    graphType: "matrix_graph",
+                  },
+                  signal: newAbortController.signal,
                 });
                 setSteps(response.hamiltonian_cycles.nth_path);
                 GlobalVariables.animationParams.backendArray =
@@ -99,18 +157,24 @@ function Layout(props) {
                 setSteps(response);
                 GlobalVariables.animationParams.backendArray = response;
               }
+              GlobalVariables.animationParams.backendArrayPtr = -1;
+
               GlobalVariables.animationParams.frontendArray = [];
               GlobalVariables.animationParams.isAnimationPaused = false;
-              console.log('Hidfdjfhjsh');
+
               GlobalVariables.resetNodeStates();
               GlobalVariables.killTimeOut();
               GlobalVariables.animationParams.backendArrayPtr = -1;
               GlobalVariables.animationParams.frontendArrayPtr = -1;
-              GlobalVariables.start();
-              console.log(GlobalVariables.animationParams);
+
+              setTimeout(() => {
+                setShowLoading(false);
+                GlobalVariables.start();
+              }, 3000);
             }}
             className="self-stretch py-2 px-3 h-fit bg-white outline outline-1 rounded-md outline-gray-300"
           >
+            <option value={-1}>Complete Path</option>
             {Array.from({ length: dropdownLength }, (_, i) => (
               <option value={i}>Path {i + 1}</option>
             ))}
@@ -128,7 +192,15 @@ function Layout(props) {
                 />
               ))
             ) : (
-              <p className="text-center">No steps available</p>
+              <>
+                <p className="text-center">No steps available</p>
+                <button
+                  onClick={generateSteps}
+                  className="self-center py-2 px-4 bg-blue-500 text-white rounded-md"
+                >
+                  Generate Steps
+                </button>
+              </>
             )}
           </div>
           <div className="line"></div>
@@ -138,27 +210,9 @@ function Layout(props) {
           <div className="flex flex-row justify-around items-center">
             <StepBack strokeWidth={1.5} className="stroke-slate-500" />
             <div
-              onClick={async () => {
-                const response = await requestSolution({
-                  graph: GlobalVariables.graph.parseGraph(),
-                  startNode: 0,
-                  query: {
-                    type: 'path',
-                    path: 'all',
-                    graphType: 'matrix_graph',
-                  },
-                });
-                setSteps(response.hamiltonian_cycles.complete);
-                setPaths(response.hamiltonian_cycles.paths);
-                setDropdownLength(response.hamiltonian_cycles.paths.length);
-
-                GlobalVariables.animationParams.backendArray =
-                  response.hamiltonian_cycles.complete;
-                GlobalVariables.animationParams.start = false;
-                GlobalVariables.animationParams.isAnimationPaused = true;
-                GlobalVariables.animationParams.backendArrayPtr = -1;
-
-                GlobalVariables.start();
+              onClick={() => {
+                setIsPaused((prev) => !prev);
+                GlobalVariables.animationParams.isAnimationPaused = !isPaused;
               }}
               className="flex items-center justify-center p-[4px] outline outline-2 outline-stone-600 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
             >
@@ -180,17 +234,19 @@ async function requestSolution({
   graph,
   startNode,
   query: { type, path, graphType },
+  signal,
 }) {
   const URL = `http://localhost:5000/api/v1/hamiltonian-cycle?type=${type}&path=${path}&graph_type=${graphType}`;
   const response = await fetch(URL, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       graph: AdjacencyGraphToMatrixGraph(graph),
       startNode,
     }),
+    signal,
   });
 
   const data = await response.json();

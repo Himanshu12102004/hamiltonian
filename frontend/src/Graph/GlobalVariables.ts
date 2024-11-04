@@ -1,6 +1,6 @@
-import AnimationTrain from './world/components/AnimationTrain';
-import Graph from './world/components/Graph';
-import MouseTrain from './world/components/MouseTrain';
+import AnimationTrain from "./world/components/AnimationTrain";
+import Graph from "./world/components/Graph";
+import MouseTrain from "./world/components/MouseTrain";
 enum NodeState {
   clicked,
   inVisinity,
@@ -81,7 +81,7 @@ class GlobalVariables {
     GlobalVariables.animationParams.isAnimationPaused = false;
   }
   static init(canvas: HTMLCanvasElement) {
-    GlobalVariables.canvasParent = document.querySelector('#canvas_parent')!;
+    GlobalVariables.canvasParent = document.querySelector("#canvas_parent")!;
     GlobalVariables.screenDimensions.height =
       GlobalVariables.canvasParent.clientHeight;
     GlobalVariables.screenDimensions.width =
@@ -101,9 +101,9 @@ class GlobalVariables {
         (2 * GlobalVariables.graphScale.scale),
     };
     GlobalVariables.canvas = canvas;
-    let renderingContext = canvas.getContext('webgl2', { antialias: true });
+    let renderingContext = canvas.getContext("webgl2", { antialias: true });
     if (!renderingContext) {
-      alert('Webgl2 not supported');
+      alert("Webgl2 not supported");
       return;
     } else {
       GlobalVariables.gl = renderingContext;
@@ -128,13 +128,14 @@ class GlobalVariables {
     GlobalVariables.timeElapsed = 0;
     GlobalVariables.backgroundColor = [255, 255, 255];
 
-    for (let i = 0; i < Object.keys(NodeState).length / 2; i++) {
-      GlobalVariables.nodeColors.push([]);
-      for (let j = 0; j < 3; j++)
-        GlobalVariables.nodeColors[i].push(Math.random() * 255);
-    }
-    GlobalVariables.nodeColors[3] = [0, 255, 0];
-    GlobalVariables.nodeColors[4] = [255, 0, 0];
+    GlobalVariables.nodeColors[0] = [131, 67, 193];
+    GlobalVariables.nodeColors[1] = [172, 75, 222];
+    GlobalVariables.nodeColors[2] = [28, 27, 24];
+    GlobalVariables.nodeColors[3] = [4, 181, 82];
+    GlobalVariables.nodeColors[4] = [227, 55, 55];
+    GlobalVariables.nodeColors[5] = [92, 189, 222];
+    GlobalVariables.nodeColors[6] = [167, 165, 180];
+    GlobalVariables.nodeColors[7] = [203, 211, 230];
 
     GlobalVariables.animationParamsInit();
     GlobalVariables.graphIsDirected = false;
@@ -177,7 +178,7 @@ class GlobalVariables {
     clearTimeout(GlobalVariables.timeOut);
   }
   static resetNodeStates() {
-    console.log('Hello');
+    console.log("Hello");
     this.graph.resetStates();
   }
   static fastForward() {

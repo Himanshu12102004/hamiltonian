@@ -20,6 +20,7 @@ const { validTypes } = require("./info");
 const { getCycleInfo } = require("./getCycleInfo");
 const { handlePathRequest } = require("./handlePathRequest");
 const { handleHelpRequest } = require("./handleHelpRequest");
+const { getSocketInstance } = require("../../../../WebSockets/socket");
 
 module.exports = {
   HamiltonianCycleGenerator,
@@ -29,4 +30,5 @@ module.exports = {
   getCycleInfo,
   handlePathRequest,
   handleHelpRequest,
+  getSocketInstance,
 };
