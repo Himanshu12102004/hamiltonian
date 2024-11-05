@@ -21,7 +21,7 @@ import GraphLoading from "./Loadings/GraphLoading";
 import AdjacencyGraphToMatrixGraph from "./temp_util/adj_graph_to_matrix";
 
 function Layout(props) {
-  const [overlay, setOverlay] = useState(false);
+  const [areSettingsOpen, setAreSettingsOpen] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
   const [showLoading, setShowLoading] = useState(false);
 
@@ -32,7 +32,7 @@ function Layout(props) {
   const [steps, setSteps] = useState([]);
 
   function hideOverlay() {
-    setOverlay(false);
+    setAreSettingsOpen(false);
   }
 
   async function generateSteps() {
@@ -52,23 +52,22 @@ function Layout(props) {
     setSteps(response.hamiltonian_cycles.complete);
     setPaths(response.hamiltonian_cycles.paths);
     setDropdownLength(response.hamiltonian_cycles.paths.length);
+    GlobalVariables.animationParams.backendArray =
+      response.hamiltonian_cycles.complete;
+    GlobalVariables.animationParams.backendArrayPtr = -1;
 
     setTimeout(() => {
       setShowLoading(false);
+      GlobalVariables.animationParams.isAnimationPaused = false;
       GlobalVariables.start();
     }, 3000);
-
-    GlobalVariables.animationParams.backendArray =
-      response.hamiltonian_cycles.complete;
-
-    GlobalVariables.animationParams.isAnimationPaused = false;
-    GlobalVariables.animationParams.backendArrayPtr = -1;
   }
 
   return (
     <div className="flex relative gap-3 h-screen w-screen overflow-hidden p-3">
       {showLoading && (
         <GraphLoading
+          socketKey="HamiltonianCycle"
           onClose={() => {
             setTimeout(() => {
               setShowLoading(false);
@@ -95,14 +94,14 @@ function Layout(props) {
         </div>
         <div
           className="flex relative items-center justify-end gap-2 bg-white shadow-xl shadow-neutral-300 px-5 py-3 rounded-full hover:bg-stone-100 cursor-pointer hover:translate-x-14 transition-all"
-          onClick={() => setOverlay((prev) => !prev)}
+          onClick={() => setAreSettingsOpen((prev) => !prev)}
         >
           <div className="h-full w-12"></div>
           <Settings size={20} strokeWidth={1.5} />
           <span className="text-stone-800 text-sm select-none">Settings</span>
         </div>
       </div>
-      {overlay && <Overlay hideOverlay={hideOverlay} />}
+      {areSettingsOpen && <Overlay hideOverlay={hideOverlay} />}
       <div className="content" id="canvas_parent">
         {props.children}
       </div>
@@ -118,18 +117,28 @@ function Layout(props) {
           <select
             disabled={dropdownLength === 0}
             onChange={async (e) => {
-              setShowLoading(true);
               const pathNumber = parseInt(e.target.value);
               const newAbortController = new AbortController();
+
+              if (!paths[pathNumber]) {
+                setShowLoading(true);
+                GlobalVariables.animationParams.isAnimationPaused = true;
+                GlobalVariables.animationParams.frontendArray = [];
+                GlobalVariables.animationParams.frontendArrayPtr = -1;
+                GlobalVariables.animationParams.backendArrayPtr = -1;
+                GlobalVariables.killTimeOut();
+              }
+
               setAbortController(newAbortController);
               let response;
+
               if (pathNumber === -1) {
                 response = await requestSolution({
                   graph: GlobalVariables.graph.parseGraph(),
                   startNode: 0,
                   query: {
                     type: "path",
-                    path: "all",
+                    path: "complete",
                     graphType: "matrix_graph",
                   },
                   signal: newAbortController.signal,
@@ -137,7 +146,7 @@ function Layout(props) {
                 setSteps(response.hamiltonian_cycles.complete);
                 GlobalVariables.animationParams.backendArray =
                   response.hamiltonian_cycles.complete;
-              } else if (paths.length === 0) {
+              } else if (!paths[pathNumber]) {
                 response = await requestSolution({
                   graph: GlobalVariables.graph.parseGraph(),
                   startNode: 0,
@@ -149,34 +158,40 @@ function Layout(props) {
                   signal: newAbortController.signal,
                 });
                 setSteps(response.hamiltonian_cycles.nth_path);
-                GlobalVariables.animationParams.backendArray =
-                  response.hamiltonian_cycles.nth_path;
+                response = response.hamiltonian_cycles.nth_path;
               } else {
-                if (pathNumber > paths.length || pathNumber < 0) return;
                 response = paths[pathNumber];
                 setSteps(response);
-                GlobalVariables.animationParams.backendArray = response;
               }
-              GlobalVariables.animationParams.backendArrayPtr = -1;
 
               GlobalVariables.animationParams.frontendArray = [];
-              GlobalVariables.animationParams.isAnimationPaused = false;
+              GlobalVariables.animationParams.isAnimationPaused = true;
 
               GlobalVariables.resetNodeStates();
               GlobalVariables.killTimeOut();
-              GlobalVariables.animationParams.backendArrayPtr = -1;
+
               GlobalVariables.animationParams.frontendArrayPtr = -1;
 
               setTimeout(() => {
                 setShowLoading(false);
+                GlobalVariables.animationParams.isAnimationPaused = false;
                 GlobalVariables.start();
               }, 3000);
+
+              GlobalVariables.animationParams.backendArray = response;
+              GlobalVariables.animationParams.backendArrayPtr = -1;
+              GlobalVariables.animationParams.isAnimationPaused = false;
             }}
             className="self-stretch py-2 px-3 h-fit bg-white outline outline-1 rounded-md outline-gray-300"
           >
-            <option value={-1}>Complete Path</option>
+            <option value={-1} disabled={dropdownLength === 0}>
+              Complete Path
+            </option>
+
             {Array.from({ length: dropdownLength }, (_, i) => (
-              <option value={i}>Path {i + 1}</option>
+              <option key={i} value={i}>
+                Path {i + 1}
+              </option>
             ))}
           </select>
           <div className="divide-y-2"></div>
@@ -184,9 +199,10 @@ function Layout(props) {
             {steps.length ? (
               steps.map((step, index) => (
                 <AlgoStep
+                  key={index + "step"}
                   stepNumber={index}
-                  fromNode={step[0]}
-                  toNode={step[1]}
+                  fromNode={step[2] == 1 ? step[1] : step[0]}
+                  toNode={step[2] == 1 ? step[0] : step[1]}
                   isBacktracking={step[2] === 1}
                   isActive={false}
                 />

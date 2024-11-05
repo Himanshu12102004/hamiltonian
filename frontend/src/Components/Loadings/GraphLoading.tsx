@@ -7,6 +7,7 @@ import { getSocket } from "../socket";
 export default function GraphLoading({
   abortController = new AbortController(),
   onClose = () => {},
+  socketKey = "GenKey",
 }): JSX.Element {
   const [loadingHistory, setLoadingHistory] = useState([] as string[]);
   const [isFadingOut, setIsFadingOut] = useState(false);
@@ -25,7 +26,7 @@ export default function GraphLoading({
   useEffect(() => {
     if (socket.disconnected) socket.connect();
 
-    socket.on("HamiltonianCycle", (data: string) => {
+    socket.on(socketKey, (data: string) => {
       console.log(data);
       setLoadingHistory((prev: string[]) => {
         if (prev.length > 5) {
@@ -47,7 +48,7 @@ export default function GraphLoading({
       socket.off("HamiltonianCycle");
       socket.disconnect();
     };
-  }, [socket, onClose]);
+  }, [socket, onClose, socketKey]);
 
   return (
     <div
