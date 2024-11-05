@@ -107,81 +107,61 @@ function HamiltonianCycleGenerator(
   Socket.sendMessage("HamiltonianCycle", "Initializing variables");
 
   visited[startNode] = 1;
-  tempPath.push(startNode);
   Socket.sendMessage("HamiltonianCycle", "Added start node to the path");
 
   function allVisited() {
     return visited.every((vertex) => vertex === 1);
   }
 
-  function isAdjacent(vertex1, vertex2) {
-    return graph[vertex1].includes(vertex2);
-  }
-
   function generateStep(cur, next, mode = 0, completed = false) {
-    return [cur, next, mode, allVisited() ? [...tempPath] : [], completed];
+    return [
+      cur,
+      next,
+      mode,
+      allVisited() ? [...tempPath] : [...tempPath],
+      completed,
+    ];
   }
+
+  function isAdjacent(cur, next) {
+    return graph[cur].includes(next);
+  }
+
   Socket.sendMessage("HamiltonianCycle", "Generated Helper functions");
-
   Socket.sendMessage("HamiltonianCycle", "Starting to find all paths");
-  function findAllPaths(currentVertex) {
-    for (const nextVertex of graph[currentVertex]) {
-      if (visited[nextVertex] === 0) {
-        visited[nextVertex] = 1;
-        tempPath.push(nextVertex);
 
-        const forwardStep = generateStep(currentVertex, nextVertex, 0);
-        currentPath.push(forwardStep);
-        complete.push(forwardStep);
-
-        if (allVisited()) {
-          const isCompleteCycle = isAdjacent(nextVertex, startNode);
-          const completionStep = generateStep(nextVertex, startNode, 2, false);
-          const deadEndStep = generateStep(-1, -1, 2, true);
-          currentPath.push(completionStep);
-          currentPath.push(deadEndStep);
-
-          complete.push(completionStep);
-          complete.push(deadEndStep);
-
-          if (isCompleteCycle) {
-            paths.push([...currentPath]);
-            testPaths.push([...tempPath, startNode]);
-          }
-        } else {
-          findAllPaths(nextVertex);
-        }
-
+  function findAllPaths(cur, start) {
+    if (allVisited() && cur == start) {
+      complete.push(generateStep(-1, -1, 2, true));
+      return;
+    }
+    let failed = true;
+    for (let i = 0; i < graph[cur].length; i++) {
+      if (
+        visited[graph[cur][i]] != 1 ||
+        (graph[cur][i] == start && allVisited())
+      ) {
+        failed = false;
+        complete.push(generateStep(cur, graph[cur][i], 0, false));
+        tempPath.push(graph[cur][i]);
+        visited[graph[cur][i]] = 1;
+        findAllPaths(graph[cur][i], start);
+        visited[graph[cur][i]] = 0;
+        complete.push(generateStep(cur, graph[cur][i], 1, false));
         tempPath.pop();
-        visited[nextVertex] = 0;
-
-        if (
-          tempPath.length > 1 ||
-          (tempPath.length === 1 &&
-            !currentPath[currentPath.length - 1].completed)
-        ) {
-          const backwardStep = generateStep(nextVertex, currentVertex, 1);
-          currentPath.push(backwardStep);
-          complete.push(backwardStep);
-        }
-
-        if (
-          tempPath.length === 1 &&
-          !currentPath[currentPath.length - 1].completed
-        ) {
-          const deadEndStep = generateStep(nextVertex, startNode, 2, false);
-          currentPath.push(deadEndStep);
-          paths.push([...currentPath]);
-          currentPath = [];
-        }
       }
     }
+    if (failed) {
+      complete.push(generateStep(-1, -1, 2, false));
+    }
   }
+
   Socket.sendMessage("HamiltonianCycle", "Finished finding all paths");
 
-  findAllPaths(startNode);
+  findAllPaths(startNode, startNode);
 
   if (options.test) {
+    console.log(testPaths);
     return testPaths;
   }
   return {

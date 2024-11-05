@@ -10,10 +10,15 @@ describe("Hamiltonian Cycle Generator", () => {
       [1, 1, 0, 1],
       [1, 1, 1, 0],
     ];
-    const cycle = HamiltonianCycleGenerator(graph, 0, {
-      test: true,
-      graph_type: "matrix_graph",
-    });
+    const cycle = HamiltonianCycleGenerator(
+      graph,
+      0,
+      {
+        test: true,
+        graph_type: "matrix_graph",
+      },
+      { sendMessage: () => {} }
+    );
     expect(cycle).toEqual([
       [0, 1, 2, 3, 0],
       [0, 1, 3, 2, 0],
@@ -31,10 +36,15 @@ describe("Hamiltonian Cycle Generator", () => {
       [0, 1, 0, 1],
       [1, 0, 1, 0],
     ];
-    const cycle = HamiltonianCycleGenerator(graph, 0, {
-      test: true,
-      graph_type: "matrix_graph",
-    });
+    const cycle = HamiltonianCycleGenerator(
+      graph,
+      0,
+      {
+        test: true,
+        graph_type: "matrix_graph",
+      },
+      { sendMessage: () => {} }
+    );
     // array with no elements
     expect(cycle).toEqual([
       [0, 1, 2, 3, 0],
@@ -48,20 +58,30 @@ describe("Hamiltonian Cycle Generator", () => {
       [1, 0, 1],
     ];
     expect(() =>
-      HamiltonianCycleGenerator(invalidGraph, 0, {
-        test: true,
-        graph_type: "matrix_graph",
-      })
+      HamiltonianCycleGenerator(
+        invalidGraph,
+        0,
+        {
+          test: true,
+          graph_type: "matrix_graph",
+        },
+        { sendMessage: () => {} }
+      )
     ).toThrow(CustomError);
   });
 
   it("should throw an error for an empty graph", () => {
     const emptyGraph = [];
     expect(() =>
-      HamiltonianCycleGenerator(emptyGraph, 0, {
-        test: true,
-        graph_type: "matrix_graph",
-      })
+      HamiltonianCycleGenerator(
+        emptyGraph,
+        0,
+        {
+          test: true,
+          graph_type: "matrix_graph",
+        },
+        { sendMessage: () => {} }
+      )
     ).toThrow(CustomError);
   });
 });
