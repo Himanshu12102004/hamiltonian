@@ -227,7 +227,7 @@ function animate() {
   if (GlobalVariables.animationParams.start) {
     if (!GlobalVariables.isAlgoComputed) {
       GlobalVariables.isAlgoComputed = true;
-      // computeAlgo();
+      computeAlgo();
     }
     if (
       GlobalVariables.animationParams.backendArray.length != 0 &&
