@@ -1,7 +1,8 @@
 import AlgoStep from "./AlgoStep";
 import Overlay from "./Modal/Overlay";
 
-import "../layout.css";
+// import "../layout.css";
+// import "../tailwind.css";
 
 // todo replace overlay, setOverlay and related setting with areSettingsOpen, setAreSettingsOpen
 // todo proper linking of global variables with the backend
@@ -13,17 +14,18 @@ import {
   StepBack,
   StepForward,
   Trash2,
+  RefreshCcw,
 } from "lucide-react";
 
 import { useState } from "react";
 import { GlobalVariables } from "../Graph/GlobalVariables";
 import GraphLoading from "./Loadings/GraphLoading";
-import AdjacencyGraphToMatrixGraph from "./temp_util/adj_graph_to_matrix";
 
 function Layout(props) {
   const [areSettingsOpen, setAreSettingsOpen] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
   const [showLoading, setShowLoading] = useState(false);
+  const [startNode, setStartNode] = useState(GlobalVariables.startNode || 0);
 
   const [paths, setPaths] = useState([]);
   const [dropdownLength, setDropdownLength] = useState(0);
@@ -39,28 +41,38 @@ function Layout(props) {
     setShowLoading(true);
     const newAbortController = new AbortController();
     setAbortController(newAbortController);
+
+    GlobalVariables.animationParams.isAnimationPaused = true;
+    GlobalVariables.animationParams.frontendArray = [];
+    GlobalVariables.animationParams.frontendArrayPtr = -1;
+    GlobalVariables.animationParams.backendArrayPtr = -1;
+    GlobalVariables.animationParams.backendArray = [];
+    GlobalVariables.killTimeOut();
+    GlobalVariables.resetNodeStates();
+
     const response = await requestSolution({
       graph: GlobalVariables.graph.parseGraph(),
-      startNode: 0,
+      startNode: startNode,
       query: {
         type: "path",
         path: "all",
-        graphType: "matrix_graph",
+        graphType: "adjacency_list",
       },
       signal: newAbortController.signal,
     });
     setSteps(response.hamiltonian_cycles.complete);
     setPaths(response.hamiltonian_cycles.paths);
     setDropdownLength(response.hamiltonian_cycles.paths.length);
-    GlobalVariables.animationParams.backendArray =
-      response.hamiltonian_cycles.complete;
     GlobalVariables.animationParams.backendArrayPtr = -1;
 
     setTimeout(() => {
       setShowLoading(false);
       GlobalVariables.animationParams.isAnimationPaused = false;
+      GlobalVariables.animationParams.backendArray =
+        response.hamiltonian_cycles.complete;
       GlobalVariables.start();
-    }, 3000);
+      setIsPaused(false);
+    }, 1500);
   }
 
   return (
@@ -72,7 +84,7 @@ function Layout(props) {
             setTimeout(() => {
               setShowLoading(false);
               GlobalVariables.start();
-            }, 3000);
+            }, 1500);
           }}
           abortController={abortController}
         />
@@ -102,19 +114,18 @@ function Layout(props) {
         </div>
       </div>
       {areSettingsOpen && <Overlay hideOverlay={hideOverlay} />}
-      <div className="content" id="canvas_parent">
+      <div className="content flex-1" id="canvas_parent">
         {props.children}
       </div>
       <div className="flex flex-col gap-2 shrink-0 w-80 h-full">
-        <div className="flex flex-col gap-2 h-full bg-white p-3 overflow-hidden">
-          <div className="heading">
+        <div className="divide-y-2 flex flex-col gap-2 h-full bg-white p-3 overflow-hidden">
+          <div className="flex flex-col gap-2">
             <h1 className="text-2xl font-bold">Steps</h1>
             <span className="text-md">
               This section will show the steps of the algorithm
             </span>
           </div>
-          <div className="line"></div>
-          <select
+          {/* <select
             disabled={dropdownLength === 0}
             onChange={async (e) => {
               const pathNumber = parseInt(e.target.value);
@@ -139,7 +150,7 @@ function Layout(props) {
                   query: {
                     type: "path",
                     path: "complete",
-                    graphType: "matrix_graph",
+                    graphType: "adjacency_list",
                   },
                   signal: newAbortController.signal,
                 });
@@ -153,7 +164,7 @@ function Layout(props) {
                   query: {
                     type: "path",
                     path: pathNumber,
-                    graphType: "matrix_graph",
+                    graphType: "adjacency_list",
                   },
                   signal: newAbortController.signal,
                 });
@@ -193,9 +204,28 @@ function Layout(props) {
                 Path {i + 1}
               </option>
             ))}
-          </select>
-          <div className="divide-y-2"></div>
-          <div className="flex flex-col gap-2 overflow-auto max-h-full">
+          </select> */}
+          <div className="flex flex-col gap-2 pt-4 pb-2">
+            <div className="flex flex-row gap-4 items-center">
+              <span className="text-md text-stone-600">Start Node</span>
+              <input
+                type="number"
+                value={startNode}
+                onChange={(e) => {
+                  GlobalVariables.startNode = parseInt(e.target.value);
+                  setStartNode(parseInt(e.target.value));
+                }}
+                className="flex-1 h-10 text-center border border-gray-300 rounded-md"
+              />
+            </div>
+            <button
+              onClick={generateSteps}
+              className="py-2 px-4 bg-blue-500 text-white rounded-md"
+            >
+              Generate Steps
+            </button>
+          </div>
+          <div className="flex flex-col gap-2 overflow-auto max-h-full py-4">
             {steps.length ? (
               steps.map((step, index) => (
                 <AlgoStep
@@ -208,18 +238,9 @@ function Layout(props) {
                 />
               ))
             ) : (
-              <>
-                <p className="text-center">No steps available</p>
-                <button
-                  onClick={generateSteps}
-                  className="self-center py-2 px-4 bg-blue-500 text-white rounded-md"
-                >
-                  Generate Steps
-                </button>
-              </>
+              <p className="text-center">No steps available</p>
             )}
           </div>
-          <div className="line"></div>
         </div>
 
         <div className="flex flex-col gap-4 h-fit py-4 bg-white p-3">
@@ -232,6 +253,8 @@ function Layout(props) {
               }}
               className="flex items-center justify-center p-[4px] outline outline-2 outline-stone-600 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
             >
+              {/* {showReload ? (
+                <RefreshCcw size={28} strokeWidth={1.25} /> : */}
               {isPaused ? (
                 <Play size={28} strokeWidth={1.25} />
               ) : (
@@ -259,7 +282,7 @@ async function requestSolution({
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      graph: AdjacencyGraphToMatrixGraph(graph),
+      graph: graph,
       startNode,
     }),
     signal,
