@@ -105,7 +105,7 @@ function isAnimationCompleted() {
     ap.frontendArray.pop();
     ap.frontendArrayPtr--;
     ap.backendArrayPtr++;
-    const event = new CustomEvent("pointerPostion");
+    const event = new CustomEvent('pointerPostion');
     document.dispatchEvent(event);
     return true;
   } else if (
@@ -116,7 +116,7 @@ function isAnimationCompleted() {
       ap.backendArray[ap.backendArrayPtr][1]
     ].addState(NodeState.selected);
     ap.backendArrayPtr++;
-    const event = new CustomEvent("pointerPostion");
+    const event = new CustomEvent('pointerPostion');
     document.dispatchEvent(event);
     return true;
   }
@@ -130,7 +130,7 @@ function startAnimation() {
   ) {
     if (ap.backendArrayPtr == -1) {
       ++ap.backendArrayPtr;
-      const event = new CustomEvent("pointerPostion");
+      const event = new CustomEvent('pointerPostion');
       document.dispatchEvent(event);
       ++ap.frontendArrayPtr;
       ap.frontendArray.push(
@@ -204,7 +204,7 @@ function startAnimation() {
             else ap.frontendArray[i].removeState(NodeState.rejected);
           }
           GlobalVariables.animationParams.backendArrayPtr++;
-          const event = new CustomEvent("pointerPostion");
+          const event = new CustomEvent('pointerPostion');
           document.dispatchEvent(event);
           GlobalVariables.animationConnectionWidth = currentAnimationWidth;
         }, 1000);
@@ -232,10 +232,6 @@ function animate() {
   drawConnections();
   drawMouseTrain();
   if (GlobalVariables.animationParams.start) {
-    if (!GlobalVariables.isAlgoComputed) {
-      GlobalVariables.isAlgoComputed = true;
-      // computeAlgo();
-    }
     if (
       GlobalVariables.animationParams.backendArray.length != 0 &&
       GlobalVariables.animationParams.backendArray[0][2] == TravelMode.forward
@@ -283,7 +279,7 @@ async function init() {
 function main(canvas: HTMLCanvasElement) {
   GlobalVariables.init(canvas);
   CanvasEvents.addEvents();
-  // datInit();
+  datInit();
   init().then(() => {
     animate();
   });
