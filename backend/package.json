@@ -1,0 +1,22 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "eslint": "^9.13.0",
+    "globals": "^15.11.0",
+    "jest": "^29.7.0",
+    "jsdoc": "^4.0.4"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "eslint . --c .js && nodemon server.js",
+    "test": "jest"
+  }
+}
