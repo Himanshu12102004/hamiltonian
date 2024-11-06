@@ -206,7 +206,6 @@ function startAnimation() {
 }
 let lastTime = performance.now();
 let x = true;
-
 function animate() {
   const currentTime = performance.now();
   const deltaTime = currentTime - lastTime;

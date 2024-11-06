@@ -1,9 +1,8 @@
-import { GlobalVariables, NodeState } from '../../GlobalVariables';
-import createVao from '../../helpers/createVao';
-import updateVao from '../../helpers/updateVao';
-import Point from '../helpers/point';
-import Vector from '../helpers/vector';
-
+import { GlobalVariables, NodeState } from "../../GlobalVariables";
+import createVao from "../../helpers/createVao";
+import updateVao from "../../helpers/updateVao";
+import Point from "../helpers/point";
+import Vector from "../helpers/vector";
 class MouseTrain {
   vec: Vector;
   t: number;
@@ -42,26 +41,33 @@ class MouseTrain {
         1,
     ];
   }
-  calcPointsOfRect(pt1:Point,pt2:Point){
-    let dy=(pt2.y-pt1.y);
-    let perpM=(pt1.x-pt2.x)/dy;
-    let vertexArray:Point[]=[];
-    let lsinThetha=Math.sin(Math.atan(perpM))*GlobalVariables.connectionWidth/2;
-    let lcosThetha=Math.cos(Math.atan(perpM))*GlobalVariables.connectionWidth/2;
-    vertexArray.push(new Point(pt1.x+lcosThetha,pt1.y+lsinThetha),new Point(pt1.x-lcosThetha,pt1.y-lsinThetha),new Point(pt2.x+lcosThetha,pt2.y+lsinThetha),new Point(pt2.x-lcosThetha,pt2.y-lsinThetha));
+  calcPointsOfRect(pt1: Point, pt2: Point) {
+    let dy = pt2.y - pt1.y;
+    let perpM = (pt1.x - pt2.x) / dy;
+    let vertexArray: Point[] = [];
+    let lsinThetha =
+      (Math.sin(Math.atan(perpM)) * GlobalVariables.connectionWidth) / 2;
+    let lcosThetha =
+      (Math.cos(Math.atan(perpM)) * GlobalVariables.connectionWidth) / 2;
+    vertexArray.push(
+      new Point(pt1.x + lcosThetha, pt1.y + lsinThetha),
+      new Point(pt1.x - lcosThetha, pt1.y - lsinThetha),
+      new Point(pt2.x + lcosThetha, pt2.y + lsinThetha),
+      new Point(pt2.x - lcosThetha, pt2.y - lsinThetha)
+    );
     return vertexArray;
   }
   setVao() {
     GlobalVariables.gl.useProgram(GlobalVariables.program.line);
     let vertexLocation = GlobalVariables.gl.getAttribLocation(
       GlobalVariables.program.line!,
-      'vertex'
+      "vertex"
     );
     let colorUniformLocation = GlobalVariables.gl.getUniformLocation(
       GlobalVariables.program.line!,
-      'userColor'
+      "userColor"
     );
-    let rect=this.calcPointsOfRect(this.start,this.calcTermination())
+    let rect = this.calcPointsOfRect(this.start, this.calcTermination());
     let connectionVertices = [
       ...MouseTrain.getNormalizedPoint(rect[0]),
       ...MouseTrain.getNormalizedPoint(rect[1]),
