@@ -1,5 +1,43 @@
 # Graph Algorithms
 
+## To Run the Project
+
+1. Run the following command to install the dependencies:
+
+```bash
+cd Hamiltonian_Cycle
+```
+
+2. To install backend
+
+```bash
+cd backend
+npm install
+nodemon server.js
+```
+
+3. To install frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## General Information
+
+1. Clear the graph from top left button Clear All to make a new graph.
+
+2. Click on the nodes to delete them.
+
+3. If you select and drag between two nodes then it will create an edge between them. Repeating the same will delete the edge.
+
+4. Canvas is draggable and zoomable.
+
+> Do not delete a node when animation is running as it may cause the graph to crash.
+
+> Don't try to run graph with more than 14 nodes or a highly connected graph as it will take a lot of RAM on your browser to save them and may crash your browser tab.
+
 ## Setup
 
 > **This repository requires mandatory setup before use:**
@@ -15,7 +53,7 @@ Run the following command in the terminal:
 
 ```bash
 ./install
-```
+````
 
 ### Windows Users
 
@@ -40,7 +78,7 @@ This will:
 - Configure merge strategies
 - Install git hooks
 - Create required files
--->
+  -->
 
 ## Manual Setup (if needed)
 
