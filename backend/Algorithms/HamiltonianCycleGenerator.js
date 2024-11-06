@@ -48,28 +48,7 @@ function HamiltonianCycleGenerator(
     throw new CustomError('Graph is empty', 400);
   }
 
-  if (options.graph_type == "adjacency_list") {
-    Socket.sendMessage(
-      "HamiltonianCycle",
-      "Graph is already in adjacency list format"
-    );
-    // * do nothing as the graph is already in adjacency list format
-  } else if (options.graph_type == "matrix_graph") {
-    Socket.sendMessage(
-      "HamiltonianCycle",
-      "Converting Graph to adjacency list format"
-    );
-    graph = MatrixGraphToAdjacencyGraph(graph);
-    console.log(graph);
-  } else {
-    Socket.sendMessage(
-      "HamiltonianCycle",
-      "Either Graph type is not supported or invalid"
-    );
-    // todo - Change the status code to valid status code
-    throw new CustomError("Either Graph type is not supported or invalid", 400);
-  }
-  if (options.graph_type == "adjacency_list") {
+  if (options.graph_type == 'adjacency_list') {
     Socket.sendMessage(
       'HamiltonianCycle',
       'Graph is already in adjacency list format'
@@ -88,7 +67,28 @@ function HamiltonianCycleGenerator(
       'Either Graph type is not supported or invalid'
     );
     // todo - Change the status code to valid status code
-    throw new CustomError("Either Graph type is not supported or invalid", 400);
+    throw new CustomError('Either Graph type is not supported or invalid', 400);
+  }
+  if (options.graph_type == 'adjacency_list') {
+    Socket.sendMessage(
+      'HamiltonianCycle',
+      'Graph is already in adjacency list format'
+    );
+    // * do nothing as the graph is already in adjacency list format
+  } else if (options.graph_type == 'matrix_graph') {
+    Socket.sendMessage(
+      'HamiltonianCycle',
+      'Converting Graph to adjacency list format'
+    );
+    graph = MatrixGraphToAdjacencyGraph(graph);
+    console.log(graph);
+  } else {
+    Socket.sendMessage(
+      'HamiltonianCycle',
+      'Either Graph type is not supported or invalid'
+    );
+    // todo - Change the status code to valid status code
+    throw new CustomError('Either Graph type is not supported or invalid', 400);
   }
   if (options.graph_type == 'adjacency_list') {
     Socket.sendMessage(
@@ -113,11 +113,10 @@ function HamiltonianCycleGenerator(
 
   const n = graph.length;
   const visited = new Array(n).fill(0);
-  const paths = [];
+  let paths = [];
   paths.push([]);
   const complete = [];
-  let currentPath = [];
-  let tempPath = [];
+  let tempPath = [startNode];
   let testPaths = [];
   Socket.sendMessage('HamiltonianCycle', 'Initializing variables');
 
@@ -138,12 +137,19 @@ function HamiltonianCycleGenerator(
 
   Socket.sendMessage('HamiltonianCycle', 'Generated Helper functions');
   Socket.sendMessage('HamiltonianCycle', 'Starting to find all paths');
-
-  function findAllPaths(cur, start,stepArray) {
+  function copyArray(arrayToBeCopied) {
+    let copiedArray = arrayToBeCopied.filter(() => {
+      return true;
+    });
+    return copiedArray;
+  }
+  function findAllPaths(cur, start, pathArray) {
+    let copiedArray = copyArray(pathArray);
     if (allVisited() && cur == start) {
       complete.push(generateStep(-1, -1, 2, true));
-      paths[paths.length - 1].push(generateStep(-1, -1, 2, true));
-      paths.push([]);
+      copiedArray.push(complete.length - 1);
+      console.log(copiedArray);
+      paths.push(copiedArray);
       return;
     }
     let failed = true;
@@ -154,30 +160,28 @@ function HamiltonianCycleGenerator(
       ) {
         failed = false;
         complete.push(generateStep(cur, graph[cur][i], 0, false));
-        paths[paths.length - 1].push(
-          generateStep(cur, graph[cur][i], 0, false)
-        );
+        copiedArray.push(complete.length - 1);
         tempPath.push(graph[cur][i]);
         visited[graph[cur][i]] = 1;
-        findAllPaths(graph[cur][i], start,step);
-        if (graph[cur][i] != startNode) visited[graph[cur][i]] = 0;
+        findAllPaths(graph[cur][i], start, copiedArray);
+        if (graph[cur][i] != startNode) {
+          visited[graph[cur][i]] = 0;
+          tempPath.pop();
+        }
         complete.push(generateStep(cur, graph[cur][i], 1, false));
-        // paths[paths.length - 1].push(
-        //   generateStep(cur, graph[cur][i], 1, false)
-        // );
-        tempPath.pop();
       }
     }
     if (failed) {
       complete.push(generateStep(-1, -1, 2, false));
-      paths[paths.length - 1].push(generateStep(-1, -1, 2, false));
-      paths.push([]);
+      copiedArray.push(complete.length - 1);
+      console.log(copiedArray);
+      paths.push(copiedArray);
     }
   }
 
   Socket.sendMessage('HamiltonianCycle', 'Finished finding all paths');
 
-  findAllPaths(startNode, startNode);
+  findAllPaths(startNode, startNode, []);
 
   if (options.test) {
     console.log(testPaths);
