@@ -20,6 +20,10 @@ function Animation(): JSX.Element {
     globalVariableName: "speed",
   });
   function setAnimationSpeedSlider(name: string, value: number) {
+    console.log(
+      "Just to stop TS error, rmeove when this is used actually",
+      name
+    );
     setAnimationSpeed((prev) => ({ ...prev, value }));
     GlobalVariables.animationParams.speed = value;
   }

@@ -157,9 +157,9 @@ function Layout(props) {
                   graph: GlobalVariables.graph.parseGraph(),
                   startNode: 0,
                   query: {
-                    type: "path",
-                    path: "complete",
-                    graphType: "adjacency_list",
+                    type: 'path',
+                    path: 'complete',
+                    graphType: 'adjacency_list',
                   },
                   signal: newAbortController.signal,
                 });
@@ -171,9 +171,9 @@ function Layout(props) {
                   graph: GlobalVariables.graph.parseGraph(),
                   startNode: 0,
                   query: {
-                    type: "path",
+                    type: 'path',
                     path: pathNumber,
-                    graphType: "adjacency_list",
+                    graphType: 'adjacency_list',
                   },
                   signal: newAbortController.signal,
                 });
