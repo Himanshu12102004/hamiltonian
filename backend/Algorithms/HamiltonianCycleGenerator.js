@@ -90,33 +90,25 @@ function HamiltonianCycleGenerator(
     // todo - Change the status code to valid status code
     throw new CustomError("Either Graph type is not supported or invalid", 400);
   }
-
-  // ? Handling special case when the graph has only 2 vertices
-  if (graph.length == 2) {
-    if (options.test) {
-      return [];
-    }
-    const paths = [
-      [0, 1, 0, [], false],
-      [-1, -1, 2, [0, 1], false],
-    ];
-    const complete = [...paths];
-    return {
-      paths,
-      complete,
-    };
-  }
-  // ? Handling special case when the graph has only 1 vertices
-  if (graph.length == 1) {
-    if (options.test) {
-      return [[0]];
-    }
-    const paths = [[-1, -1, 2, [0], true]];
-    const complete = [...paths];
-    return {
-      paths,
-      complete,
-    };
+  if (options.graph_type == 'adjacency_list') {
+    Socket.sendMessage(
+      'HamiltonianCycle',
+      'Graph is already in adjacency list format'
+    );
+    // * do nothing as the graph is already in adjacency list format
+  } else if (options.graph_type == 'matrix_graph') {
+    Socket.sendMessage(
+      'HamiltonianCycle',
+      'Converting Graph to adjacency list format'
+    );
+    graph = MatrixGraphToAdjacencyGraph(graph);
+  } else {
+    Socket.sendMessage(
+      'HamiltonianCycle',
+      'Either Graph type is not supported or invalid'
+    );
+    // todo - Change the status code to valid status code
+    throw new CustomError('Either Graph type is not supported or invalid', 400);
   }
 
   const n = graph.length;
