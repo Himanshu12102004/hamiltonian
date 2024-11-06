@@ -39,7 +39,7 @@ class GlobalVariables {
   static canvasParent: HTMLDivElement;
   static startNode: number;
   static animationParams = {
-    speed: 0.01,
+    speed: 0.0001,
     start: false,
     frontendArray: [] as AnimationTrain[],
     backendArray: [] as [number, number, TravelMode, number[], boolean][],

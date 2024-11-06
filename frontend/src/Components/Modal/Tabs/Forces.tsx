@@ -17,7 +17,7 @@ function Forces(): JSX.Element {
   const [sliders, setSliders] = useState([
     {
       name: "Gravitation",
-      value: 10,
+      value: GlobalVariables.gravitationalConstant,
       min: 0,
       max: 100,
       step: 1,
@@ -27,7 +27,7 @@ function Forces(): JSX.Element {
     },
     {
       name: "Viscosity",
-      value: 20,
+      value: GlobalVariables.viscosity,
       min: 0,
       max: 100,
       step: 1,
@@ -37,7 +37,7 @@ function Forces(): JSX.Element {
     },
     {
       name: "Distance",
-      value: 2,
+      value: GlobalVariables.distancePropotionality,
       min: 0,
       max: 5,
       step: 0.5,

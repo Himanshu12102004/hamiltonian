@@ -10,7 +10,7 @@ import { GlobalVariables } from "../../../Graph/GlobalVariables";
 
 function Animation(): JSX.Element {
   const [animationSpeed, setAnimationSpeed] = useState({
-    value: 0.0001,
+    value: GlobalVariables.animationParams.speed,
     name: "Animation Speed",
     min: 0.0001,
     max: 0.005,

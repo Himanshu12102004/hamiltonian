@@ -72,7 +72,7 @@ function Nodes() {
   const [sliders, setSliders] = useState([
     {
       name: "Polygon Count",
-      value: 3,
+      value: GlobalVariables.noOfTriangles,
       min: 3,
       max: 100,
       step: 1,
@@ -82,7 +82,7 @@ function Nodes() {
     },
     {
       name: "Node Size",
-      value: 50,
+      value: GlobalVariables.nodeRadius,
       min: 0,
       max: 100,
       step: 0.1,
