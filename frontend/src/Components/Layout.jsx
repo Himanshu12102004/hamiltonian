@@ -29,14 +29,15 @@ function Layout(props) {
   const [showLoading, setShowLoading] = useState(false);
   const [startNode, setStartNode] = useState(GlobalVariables.startNode || 0);
   const [currentStep, setCurrentStep] = useState(0);
-
   const [paths, setPaths] = useState([]);
   const [dropdownLength, setDropdownLength] = useState(0);
   const [abortController, setAbortController] = useState(new AbortController());
-
+  const [completePath, setCompletePath] = useState([]);
   const [steps, setSteps] = useState([]);
 
   function hideOverlay() {
+    GlobalVariables.animationParams.isAnimationPaused = false;
+    setIsPaused(false);
     setAreSettingsOpen(false);
   }
 
@@ -44,7 +45,6 @@ function Layout(props) {
     setShowLoading(true);
     const newAbortController = new AbortController();
     setAbortController(newAbortController);
-
     GlobalVariables.animationParams.isAnimationPaused = true;
     GlobalVariables.animationParams.frontendArray = [];
     GlobalVariables.animationParams.frontendArrayPtr = -1;
@@ -52,7 +52,6 @@ function Layout(props) {
     GlobalVariables.animationParams.backendArray = [];
     GlobalVariables.killTimeOut();
     GlobalVariables.resetNodeStates();
-
     const response = await requestSolution({
       graph: GlobalVariables.graph.parseGraph(),
       startNode: startNode,
@@ -69,7 +68,7 @@ function Layout(props) {
     setDropdownLength(response.hamiltonian_cycles.paths.length);
 
     GlobalVariables.animationParams.backendArrayPtr = -1;
-
+    setCompletePath(response.hamiltonian_cycles.complete);
     setTimeout(() => {
       setShowLoading(false);
       GlobalVariables.animationParams.isAnimationPaused = false;
@@ -83,6 +82,13 @@ function Layout(props) {
   useEffect(() => {
     document.addEventListener("pointerPostion", (e) => {
       setCurrentStep(GlobalVariables.animationParams.backendArrayPtr);
+      if (
+        GlobalVariables.animationParams.backendArrayPtr ==
+        GlobalVariables.animationParams.backendArray.length
+      ) {
+        GlobalVariables.animationParams.start = false;
+        GlobalVariables.resetNodeStates();
+      }
     });
   }, []);
 
@@ -106,7 +112,7 @@ function Layout(props) {
             setShowLoading(true);
             setSteps([]);
             setPaths([]);
-
+            setCompletePath([]);
             setDropdownLength(0);
             GlobalVariables.reset();
             setShowLoading(false);
@@ -118,7 +124,11 @@ function Layout(props) {
         </div>
         <div
           className="flex relative items-center justify-end gap-2 bg-white shadow-xl shadow-neutral-300 px-5 py-3 rounded-full hover:bg-stone-100 cursor-pointer hover:translate-x-14 transition-all"
-          onClick={() => setAreSettingsOpen((prev) => !prev)}
+          onClick={() => {
+            GlobalVariables.animationParams.isAnimationPaused = true;
+            setIsPaused(true);
+            setAreSettingsOpen((prev) => !prev);
+          }}
         >
           <div className="h-full w-12"></div>
           <Settings size={20} strokeWidth={1.5} />
@@ -137,74 +147,30 @@ function Layout(props) {
               This section will show the steps of the algorithm
             </span>
           </div>
-          {/* <select
+          <select
             disabled={dropdownLength === 0}
             onChange={async (e) => {
               const pathNumber = parseInt(e.target.value);
+              console.log(pathNumber);
               const newAbortController = new AbortController();
-
-              if (!paths[pathNumber]) {
-                setShowLoading(true);
-                GlobalVariables.animationParams.isAnimationPaused = true;
-                GlobalVariables.animationParams.frontendArray = [];
-                GlobalVariables.animationParams.frontendArrayPtr = -1;
-                GlobalVariables.animationParams.backendArrayPtr = -1;
-                GlobalVariables.killTimeOut();
-              }
-
-              setAbortController(newAbortController);
-              let response;
-
-              if (pathNumber === -1) {
-                response = await requestSolution({
-                  graph: GlobalVariables.graph.parseGraph(),
-                  startNode: 0,
-                  query: {
-                    type: 'path',
-                    path: 'complete',
-                    graphType: 'adjacency_list',
-                  },
-                  signal: newAbortController.signal,
-                });
-                setSteps(response.hamiltonian_cycles.complete);
-                GlobalVariables.animationParams.backendArray =
-                  response.hamiltonian_cycles.complete;
-              } else if (!paths[pathNumber]) {
-                response = await requestSolution({
-                  graph: GlobalVariables.graph.parseGraph(),
-                  startNode: 0,
-                  query: {
-                    type: 'path',
-                    path: pathNumber,
-                    graphType: 'adjacency_list',
-                  },
-                  signal: newAbortController.signal,
-                });
-                setSteps(response.hamiltonian_cycles.nth_path);
-                response = response.hamiltonian_cycles.nth_path;
-              } else {
-               
-                response = paths[pathNumber];
-                setSteps(response);
-              }
-
               GlobalVariables.animationParams.frontendArray = [];
-              GlobalVariables.animationParams.isAnimationPaused = true;
-
+              GlobalVariables.animationParams.frontendArrayPtr = -1;
+              GlobalVariables.animationParams.backendArrayPtr = -1;
+              GlobalVariables.animationParams.start = true;
               GlobalVariables.resetNodeStates();
               GlobalVariables.killTimeOut();
-
-              GlobalVariables.animationParams.frontendArrayPtr = -1;
-
-              setTimeout(() => {
-                setShowLoading(false);
-                GlobalVariables.animationParams.isAnimationPaused = false;
-                GlobalVariables.start();
-              }, 3000);
-
-              GlobalVariables.animationParams.backendArray = response;
-              GlobalVariables.animationParams.backendArrayPtr = -1;
-              GlobalVariables.animationParams.isAnimationPaused = false;
+              if (pathNumber == -1) {
+                setSteps(completePath);
+                GlobalVariables.animationParams.backendArray = completePath;
+              } else {
+                let stepsArray = [];
+                for (let i = 0; i < paths[pathNumber].length; i++) {
+                  stepsArray.push(completePath[paths[pathNumber][i]]);
+                }
+                setSteps(stepsArray);
+                GlobalVariables.animationParams.backendArray = stepsArray;
+              }
+              setAbortController(newAbortController);
             }}
             className="self-stretch py-2 px-3 h-fit bg-white outline outline-1 rounded-md outline-gray-300"
           >
@@ -217,7 +183,7 @@ function Layout(props) {
                 Path {i + 1}
               </option>
             ))}
-          </select> */}
+          </select>
           <div className="flex flex-col gap-2 pt-4 pb-2">
             <div className="flex flex-row gap-4 items-center">
               <span className="text-md text-stone-600">Start Node</span>

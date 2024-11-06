@@ -24,6 +24,7 @@ class Graph {
     this.connectionInitiatedFrom = -1;
   }
   handleNodes(pt: Point) {
+    if(!GlobalVariables.animationParams.start){
     for (let i = 0; i < this.nodes.length; i++) {
       if (
         Point.distance(pt, this.nodes[i].point) <
@@ -33,9 +34,10 @@ class Graph {
         return;
       }
     }
-    this.addNode(pt);
+    this.addNode(pt);}
   }
   handleConnections(pt: Point) {
+    if(!GlobalVariables.animationParams.start){
     if (!this.isConnectionInitiated) {
       for (let i = 0; i < this.nodes.length; i++) {
         if (
@@ -54,7 +56,7 @@ class Graph {
           return;
         }
       }
-    }
+    }}
   }
   handleConnectionVicinity(pt: Point) {
     if (this.isConnectionInitiated) {
