@@ -2,15 +2,15 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: monospace;
 }
 body {
   font-family: "Roboto", sans-serif;
   background-color: #f4f4f4;
   color: #333;
 }
-.dg .c input[type=text] {
+.dg .c input[type="text"] {
   border: 0;
+  box-sizing: ;
   margin-top: 4px;
   padding: 3px;
   width: 100%;

@@ -1,31 +1,32 @@
-import { GlobalVariables } from './GlobalVariables';
-import Train from './world/components/MouseTrain';
-import Point from './world/helpers/point';
+import { GlobalVariables } from "./GlobalVariables";
+import Train from "./world/components/MouseTrain";
+import Point from "./world/helpers/point";
+import { gui } from "./main"; // Import the gui object
 class CanvasEvents {
   static isPanning = false;
   static isDragging = false;
   static dragStartX = 0;
   static dragStartY = 0;
   static addEvents() {
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       CanvasEvents.onResize();
     });
     GlobalVariables.canvas.addEventListener(
-      'wheel',
+      "wheel",
       (e) => {
         CanvasEvents.onZoom(e);
       },
       { passive: true }
     );
-    GlobalVariables.canvas.addEventListener('mousemove', (e) => {
+    GlobalVariables.canvas.addEventListener("mousemove", (e) => {
       CanvasEvents.onPan(e);
     });
-    GlobalVariables.canvas.addEventListener('mousedown', (e) => {
+    GlobalVariables.canvas.addEventListener("mousedown", (e) => {
       CanvasEvents.isDragging = false;
       CanvasEvents.dragStartX = e.clientX - GlobalVariables.canvas.offsetLeft;
       CanvasEvents.dragStartY = e.clientY - GlobalVariables.canvas.offsetTop;
     });
-    GlobalVariables.canvas.addEventListener('mouseup', (e) => {
+    GlobalVariables.canvas.addEventListener("mouseup", (e) => {
       const dragEndX = e.clientX - GlobalVariables.canvas.offsetLeft;
       const dragEndY = e.clientY - GlobalVariables.canvas.offsetTop;
       const distance = Math.hypot(
@@ -37,7 +38,7 @@ class CanvasEvents {
       } else {
         CanvasEvents.isDragging = true;
       }
-      GlobalVariables.canvas.style.cursor = 'pointer';
+      GlobalVariables.canvas.style.cursor = "pointer";
       let pt = CanvasEvents.convertClientToCanvas(
         e.clientX - GlobalVariables.canvas.offsetLeft,
         e.clientY - GlobalVariables.canvas.offsetTop
@@ -165,20 +166,25 @@ class CanvasEvents {
         GlobalVariables.bounds.maxY += iDelta;
         GlobalVariables.bounds.minX -= rDelta;
         GlobalVariables.bounds.maxX -= rDelta;
-        GlobalVariables.canvas.style.cursor = 'grabbing';
+        GlobalVariables.canvas.style.cursor = "grabbing";
       }
     }
   }
   static handleKeyEvents(e: KeyboardEvent) {
-    if (e.code == 'KeyK') {
+    if (e.code == "KeyK") {
       GlobalVariables.playPause();
-    } else if (e.code == 'KeyR') {
+    } else if (e.code == "KeyR") {
       GlobalVariables.reset();
-    } else if (e.code == 'KeyF') {
+    } else if (e.code == "KeyF") {
       GlobalVariables.fastForward();
     } else if (e.code == "KeyS") {
-      console.log("Hi");
       GlobalVariables.start();
+    } else if (e.code == "KeyH") {
+      if (gui.domElement.style.display === "none") {
+        gui.show();
+      } else {
+        gui.hide();
+      }
     }
   }
 }
