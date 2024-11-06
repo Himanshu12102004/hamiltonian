@@ -84,7 +84,7 @@ function Nodes() {
       name: "Node Size",
       value: GlobalVariables.nodeRadius,
       min: 0,
-      max: 100,
+      max: 30,
       step: 0.1,
       icon: <Radius className="stroke-1" size={18} />,
       description: "Size of the node",

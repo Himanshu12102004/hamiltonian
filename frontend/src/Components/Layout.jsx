@@ -79,7 +79,6 @@ function Layout(props) {
   }
 
   useEffect(() => {
-    // event listener for pointerPostion on document
     document.addEventListener("pointermove", (e) => {
       setCurrentStep(GlobalVariables.animationParams.backendArrayPtr);
     });
