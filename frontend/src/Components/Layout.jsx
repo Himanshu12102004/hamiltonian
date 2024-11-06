@@ -1,8 +1,7 @@
-import AlgoStep from "./AlgoStep";
-import Overlay from "./Modal/Overlay";
+import AlgoStep from './AlgoStep';
+import Overlay from './Modal/Overlay';
 
-// import "../layout.css";
-// import "../tailwind.css";
+import '../layout.css';
 
 // todo replace overlay, setOverlay and related setting with areSettingsOpen, setAreSettingsOpen
 // todo proper linking of global variables with the backend
@@ -14,12 +13,12 @@ import {
   StepBack,
   StepForward,
   Trash2,
-  RefreshCcw,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { useState } from "react";
-import { GlobalVariables } from "../Graph/GlobalVariables";
-import GraphLoading from "./Loadings/GraphLoading";
+import { useState } from 'react';
+import { GlobalVariables } from '../Graph/GlobalVariables';
+import GraphLoading from './Loadings/GraphLoading';
+import AdjacencyGraphToMatrixGraph from './temp_util/adj_graph_to_matrix';
 
 function Layout(props) {
   const [areSettingsOpen, setAreSettingsOpen] = useState(false);
@@ -54,9 +53,9 @@ function Layout(props) {
       graph: GlobalVariables.graph.parseGraph(),
       startNode: startNode,
       query: {
-        type: "path",
-        path: "all",
-        graphType: "adjacency_list",
+        type: 'path',
+        path: 'all',
+        graphType: 'adjacency_list',
       },
       signal: newAbortController.signal,
     });
@@ -148,9 +147,9 @@ function Layout(props) {
                   graph: GlobalVariables.graph.parseGraph(),
                   startNode: 0,
                   query: {
-                    type: "path",
-                    path: "complete",
-                    graphType: "adjacency_list",
+                    type: 'path',
+                    path: 'complete',
+                    graphType: 'adjacency_list',
                   },
                   signal: newAbortController.signal,
                 });
@@ -162,9 +161,9 @@ function Layout(props) {
                   graph: GlobalVariables.graph.parseGraph(),
                   startNode: 0,
                   query: {
-                    type: "path",
+                    type: 'path',
                     path: pathNumber,
-                    graphType: "adjacency_list",
+                    graphType: 'adjacency_list',
                   },
                   signal: newAbortController.signal,
                 });
@@ -229,7 +228,7 @@ function Layout(props) {
             {steps.length ? (
               steps.map((step, index) => (
                 <AlgoStep
-                  key={index + "step"}
+                  key={index + 'step'}
                   stepNumber={index}
                   fromNode={step[2] == 1 ? step[1] : step[0]}
                   toNode={step[2] == 1 ? step[0] : step[1]}
@@ -277,11 +276,12 @@ async function requestSolution({
 }) {
   const URL = `http://localhost:5000/api/v1/hamiltonian-cycle?type=${type}&path=${path}&graph_type=${graphType}`;
   const response = await fetch(URL, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
+      graph: graph,
       graph: graph,
       startNode,
     }),
