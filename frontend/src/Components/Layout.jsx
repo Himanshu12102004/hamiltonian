@@ -1,7 +1,8 @@
-import AlgoStep from './AlgoStep';
-import Overlay from './Modal/Overlay';
+import AlgoStep from "./AlgoStep";
+import Overlay from "./Modal/Overlay";
 
-import '../layout.css';
+// import "../layout.css";
+// import "../tailwind.css";
 
 // todo replace overlay, setOverlay and related setting with areSettingsOpen, setAreSettingsOpen
 // todo proper linking of global variables with the backend
@@ -13,18 +14,21 @@ import {
   StepBack,
   StepForward,
   Trash2,
-} from 'lucide-react';
+  RefreshCcw,
+} from "lucide-react";
 
-import { useState } from 'react';
-import { GlobalVariables } from '../Graph/GlobalVariables';
-import GraphLoading from './Loadings/GraphLoading';
-import AdjacencyGraphToMatrixGraph from './temp_util/adj_graph_to_matrix';
+import { useState } from "react";
+import { GlobalVariables } from "../Graph/GlobalVariables";
+import GraphLoading from "./Loadings/GraphLoading";
+import { successStatus } from "./enums/successState";
+import { useEffect } from "react";
 
 function Layout(props) {
   const [areSettingsOpen, setAreSettingsOpen] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
   const [showLoading, setShowLoading] = useState(false);
   const [startNode, setStartNode] = useState(GlobalVariables.startNode || 0);
+  const [currentStep, setCurrentStep] = useState(0);
 
   const [paths, setPaths] = useState([]);
   const [dropdownLength, setDropdownLength] = useState(0);
@@ -53,9 +57,9 @@ function Layout(props) {
       graph: GlobalVariables.graph.parseGraph(),
       startNode: startNode,
       query: {
-        type: 'path',
-        path: 'all',
-        graphType: 'adjacency_list',
+        type: "path",
+        path: "all",
+        graphType: "adjacency_list",
       },
       signal: newAbortController.signal,
     });
@@ -73,6 +77,12 @@ function Layout(props) {
       setIsPaused(false);
     }, 1500);
   }
+
+  useEffect(() => {
+    document.addEventListener("pointermove", (e) => {
+      setCurrentStep(GlobalVariables.animationParams.backendArrayPtr);
+    });
+  }, []);
 
   return (
     <div className="flex relative gap-3 h-screen w-screen overflow-hidden p-3">
@@ -228,12 +238,27 @@ function Layout(props) {
             {steps.length ? (
               steps.map((step, index) => (
                 <AlgoStep
-                  key={index + 'step'}
+                  key={index + "step"}
                   stepNumber={index}
                   fromNode={step[2] == 1 ? step[1] : step[0]}
                   toNode={step[2] == 1 ? step[0] : step[1]}
-                  isBacktracking={step[2] === 1}
-                  isActive={false}
+                  action={
+                    step[2] === 0
+                      ? "Exploring"
+                      : step[2] === 1
+                      ? "Backtracking"
+                      : step[4]
+                      ? "Solution Found"
+                      : "Solution Not Found"
+                  }
+                  isActive={currentStep === index}
+                  sucessState={
+                    step[0] == -1
+                      ? step[4]
+                        ? successStatus.success
+                        : successStatus.fail
+                      : successStatus.neutral
+                  }
                 />
               ))
             ) : (
@@ -244,7 +269,10 @@ function Layout(props) {
 
         <div className="flex flex-col gap-4 h-fit py-4 bg-white p-3">
           <div className="flex flex-row justify-around items-center">
-            <StepBack strokeWidth={1.5} className="stroke-slate-500" />
+            <StepBack
+              strokeWidth={1.5}
+              className="stroke-slate-500 cursor-not-allowed"
+            />
             <div
               onClick={() => {
                 setIsPaused((prev) => !prev);
@@ -260,7 +288,13 @@ function Layout(props) {
                 <Pause size={28} strokeWidth={1.25} />
               )}
             </div>
-            <StepForward strokeWidth={1.5} />
+            <StepForward
+              strokeWidth={1.5}
+              onClick={() => {
+                GlobalVariables.fastForward();
+              }}
+              className="stroke-slate-500 cursor-pointer hover:stroke-slate-800 tarnsition-all"
+            />
           </div>
         </div>
       </div>
@@ -276,12 +310,11 @@ async function requestSolution({
 }) {
   const URL = `http://localhost:5000/api/v1/hamiltonian-cycle?type=${type}&path=${path}&graph_type=${graphType}`;
   const response = await fetch(URL, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      graph: graph,
       graph: graph,
       startNode,
     }),

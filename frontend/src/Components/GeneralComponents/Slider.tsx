@@ -61,28 +61,39 @@ export default function Slider({
       currentValueRef.current = Math.max(min, Math.min(max, steppedValue));
 
       updateCanvas(currentValueRef.current);
+      setValue(name, currentValueRef.current); // Update the value while dragging
     },
-    [min, max, step, updateCanvas]
+    [min, max, step, updateCanvas, setValue, name]
   );
 
   const handleMouseUp = useCallback(() => {
     if (isDragging.current) {
       setValue(name, currentValueRef.current);
-      isDragging.current = false;
     }
+    isDragging.current = false;
+    parentRef.current.removeEventListener("mousemove", handleMouseMove);
+    parentRef.current.removeEventListener("mouseup", handleMouseUp);
+  }, [name, setValue, handleMouseMove]);
+
+  const handleMouseLeave = useCallback(() => {
+    if (isDragging.current) {
+      setValue(name, currentValueRef.current);
+    }
+    isDragging.current = false;
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
-  }, [name, setValue, handleMouseMove]);
+  }, [name, setValue, handleMouseMove, handleMouseUp]);
 
   const handleMouseDown = useCallback(
     (e: MouseEvent) => {
       e.preventDefault();
       if (e.currentTarget !== e.target) return;
       isDragging.current = true;
-      document.addEventListener("mousemove", handleMouseMove);
-      document.addEventListener("mouseup", handleMouseUp);
+      parentRef.current.addEventListener("mousemove", handleMouseMove);
+      parentRef.current.addEventListener("mouseup", handleMouseUp);
+      parentRef.current.addEventListener("mouseleave", handleMouseLeave);
     },
-    [handleMouseMove, handleMouseUp]
+    [handleMouseMove, handleMouseUp, handleMouseLeave]
   );
 
   const handleCanvasClick = useCallback(
