@@ -232,10 +232,6 @@ function animate() {
   drawConnections();
   drawMouseTrain();
   if (GlobalVariables.animationParams.start) {
-    if (!GlobalVariables.isAlgoComputed) {
-      GlobalVariables.isAlgoComputed = true;
-      // computeAlgo();
-    }
     if (
       GlobalVariables.animationParams.backendArray.length != 0 &&
       GlobalVariables.animationParams.backendArray[0][2] == TravelMode.forward
@@ -283,7 +279,7 @@ async function init() {
 function main(canvas: HTMLCanvasElement) {
   GlobalVariables.init(canvas);
   CanvasEvents.addEvents();
-  // datInit();
+  datInit();
   init().then(() => {
     animate();
   });

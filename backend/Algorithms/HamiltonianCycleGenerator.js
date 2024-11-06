@@ -128,7 +128,11 @@ function HamiltonianCycleGenerator(
   }
 
   function generateStep(cur, next, mode = 0, completed = false) {
-    return [cur, next, mode, [...tempPath], completed];
+    let arr = [];
+    for (let i = 0; i < visited.length; i++) {
+      if (visited[i]) arr.push(i);
+    }
+    return [cur, next, mode, arr, completed];
   }
 
   function isAdjacent(cur, next) {
@@ -150,7 +154,7 @@ function HamiltonianCycleGenerator(
         (graph[cur][i] == start && allVisited())
       ) {
         failed = false;
-        complete.push(generateStep(cur, graph[cur][i], 0, false));
+        complete.push([cur, graph[cur][i], 0, [], false]);
         pathArray.push(complete.length - 1);
         tempPath.push(graph[cur][i]);
         visited[graph[cur][i]] = 1;
@@ -160,7 +164,7 @@ function HamiltonianCycleGenerator(
           visited[graph[cur][i]] = 0;
           tempPath.pop();
         }
-        complete.push(generateStep(cur, graph[cur][i], 1, false));
+        complete.push([cur, graph[cur][i], 1, [], false]);
       }
     }
     if (failed) {
