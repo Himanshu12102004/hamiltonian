@@ -139,7 +139,7 @@ function HamiltonianCycleGenerator(
   Socket.sendMessage('HamiltonianCycle', 'Generated Helper functions');
   Socket.sendMessage('HamiltonianCycle', 'Starting to find all paths');
 
-  function findAllPaths(cur, start) {
+  function findAllPaths(cur, start,stepArray) {
     if (allVisited() && cur == start) {
       complete.push(generateStep(-1, -1, 2, true));
       paths[paths.length - 1].push(generateStep(-1, -1, 2, true));
@@ -159,7 +159,7 @@ function HamiltonianCycleGenerator(
         );
         tempPath.push(graph[cur][i]);
         visited[graph[cur][i]] = 1;
-        findAllPaths(graph[cur][i], start);
+        findAllPaths(graph[cur][i], start,step);
         if (graph[cur][i] != startNode) visited[graph[cur][i]] = 0;
         complete.push(generateStep(cur, graph[cur][i], 1, false));
         // paths[paths.length - 1].push(
