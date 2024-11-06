@@ -27,7 +27,6 @@ export default function GraphLoading({
     if (socket.disconnected) socket.connect();
 
     socket.on(socketKey, (data: string) => {
-      console.log(data);
       setLoadingHistory((prev: string[]) => {
         if (prev.length > 5) {
           prev.shift();

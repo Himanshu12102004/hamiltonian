@@ -23,9 +23,6 @@ function AlgoStep({
   isActive: boolean;
   sucessState: successStatus;
 }): JSX.Element {
-  console.log("isActive", isActive);
-  console.log("sucessStatus", sucessState);
-
   const boxColor = () => {
     // total six colors for the box
     // based on isActive and successStatus

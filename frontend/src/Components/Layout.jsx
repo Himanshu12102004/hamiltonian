@@ -63,9 +63,11 @@ function Layout(props) {
       },
       signal: newAbortController.signal,
     });
+
     setSteps(response.hamiltonian_cycles.complete);
     setPaths(response.hamiltonian_cycles.paths);
     setDropdownLength(response.hamiltonian_cycles.paths.length);
+
     GlobalVariables.animationParams.backendArrayPtr = -1;
 
     setTimeout(() => {
@@ -79,7 +81,7 @@ function Layout(props) {
   }
 
   useEffect(() => {
-    document.addEventListener("pointermove", (e) => {
+    document.addEventListener("pointerPostion", (e) => {
       setCurrentStep(GlobalVariables.animationParams.backendArrayPtr);
     });
   }, []);
@@ -104,6 +106,7 @@ function Layout(props) {
             setShowLoading(true);
             setSteps([]);
             setPaths([]);
+
             setDropdownLength(0);
             GlobalVariables.reset();
             setShowLoading(false);
@@ -180,6 +183,7 @@ function Layout(props) {
                 setSteps(response.hamiltonian_cycles.nth_path);
                 response = response.hamiltonian_cycles.nth_path;
               } else {
+               
                 response = paths[pathNumber];
                 setSteps(response);
               }
