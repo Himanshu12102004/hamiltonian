@@ -176,7 +176,7 @@ function startAnimation() {
         }
         let currentAnimationWidth = GlobalVariables.animationConnectionWidth;
         GlobalVariables.animationConnectionWidth = currentAnimationWidth * 2;
-      GlobalVariables.timeOut=  setTimeout(() => {
+        GlobalVariables.timeOut = setTimeout(() => {
           ap.isAnimationPaused = false;
           for (
             let i = 0;
@@ -206,7 +206,6 @@ function startAnimation() {
 }
 let lastTime = performance.now();
 let x = true;
-
 function animate() {
   const currentTime = performance.now();
   const deltaTime = currentTime - lastTime;
@@ -227,7 +226,7 @@ function animate() {
   if (GlobalVariables.animationParams.start) {
     if (!GlobalVariables.isAlgoComputed) {
       GlobalVariables.isAlgoComputed = true;
-      computeAlgo();
+      // computeAlgo();
     }
     if (
       GlobalVariables.animationParams.backendArray.length != 0 &&

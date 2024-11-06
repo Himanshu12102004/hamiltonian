@@ -15,8 +15,12 @@ const { CustomError } = require("../../../../utils/CustomError");
  * @throws {CustomError} If the requested feature is under maintenance
  *
  */
-const handlePathRequest = (type, path, cycles) => {
+const handlePathRequest = (type, path, cycles, Socket) => {
   if (path === "complete") {
+    Socket.sendMessage(
+      "HamiltonianCycle",
+      "Sending Complete Hamiltonian Cycle of the Graph"
+    );
     return {
       hamiltonian_cycles: {
         complete: cycles.complete,
@@ -27,6 +31,10 @@ const handlePathRequest = (type, path, cycles) => {
   }
 
   if (path === "all") {
+    Socket.sendMessage(
+      "HamiltonianCycle",
+      "Sending All Hamiltonian Cycle of the Graph"
+    );
     return {
       hamiltonian_cycles: {
         complete: cycles.complete,
@@ -37,6 +45,10 @@ const handlePathRequest = (type, path, cycles) => {
   }
 
   if (!isNaN(path) && path >= 0 && path < cycles.paths.length) {
+    Socket.sendMessage(
+      "HamiltonianCycle",
+      `Sending ${path}th Hamiltonian Cycle of the Graph`
+    );
     return {
       hamiltonian_cycles: {
         complete: [],
@@ -45,6 +57,10 @@ const handlePathRequest = (type, path, cycles) => {
       },
     };
   } else {
+    Socket.sendMessage(
+      "HamiltonianCycle",
+      "Invalid Path Number. Error in Generating Hamiltonian Cycle of the Graph"
+    );
     throw new CustomError(
       `Invalid path number. There are total of ${
         cycles.length

@@ -3,7 +3,6 @@ import createVao from '../../helpers/createVao';
 import updateVao from '../../helpers/updateVao';
 import Point from '../helpers/point';
 import Vector from '../helpers/vector';
-
 class MouseTrain {
   vec: Vector;
   t: number;

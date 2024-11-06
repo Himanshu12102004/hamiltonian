@@ -1,5 +1,6 @@
-const { CustomError } = require("../utils/CustomError");
-const { MatrixGraphToAdjacencyGraph } = require("./utils/GraphRepresentations");
+const { CustomError } = require('../utils/CustomError');
+const { MatrixGraphToAdjacencyGraph } = require('./utils/GraphRepresentations');
+
 /**
  * Finds all Hamiltonian cycles in a given graph represented as an adjacency list.
  * A Hamiltonian cycle is a cycle that visits each vertex exactly once and returns to the starting vertex.
@@ -32,91 +33,140 @@ function HamiltonianCycleGenerator(
   graph = [[]],
   startNode = 0,
   options = {
-    graph_type: "adjacency_list",
+    graph_type: 'adjacency_list',
     test: false,
-  }
+  },
+  Socket = null
 ) {
+  Socket.sendMessage(
+    'HamiltonianCycle',
+    'Generating Hamiltonian Cycle of the Graph'
+  );
   if (graph.length == 0) {
+    Socket.sendMessage('HamiltonianCycle', 'Graph is empty');
     // todo - Change the status code to valid status code
-    throw new CustomError("Graph is empty", 400);
+    throw new CustomError('Graph is empty', 400);
   }
 
-  if (options.graph_type == "adjacency_list") {
+  if (options.graph_type == 'adjacency_list') {
+    Socket.sendMessage(
+      'HamiltonianCycle',
+      'Graph is already in adjacency list format'
+    );
     // * do nothing as the graph is already in adjacency list format
-  } else if (options.graph_type == "matrix_graph") {
+  } else if (options.graph_type == 'matrix_graph') {
+    Socket.sendMessage(
+      'HamiltonianCycle',
+      'Converting Graph to adjacency list format'
+    );
+    graph = MatrixGraphToAdjacencyGraph(graph);
+    console.log(graph);
+  } else {
+    Socket.sendMessage(
+      'HamiltonianCycle',
+      'Either Graph type is not supported or invalid'
+    );
+    // todo - Change the status code to valid status code
+    throw new CustomError('Either Graph type is not supported or invalid', 400);
+  }
+  if (options.graph_type == 'adjacency_list') {
+    Socket.sendMessage(
+      'HamiltonianCycle',
+      'Graph is already in adjacency list format'
+    );
+    // * do nothing as the graph is already in adjacency list format
+  } else if (options.graph_type == 'matrix_graph') {
+    Socket.sendMessage(
+      'HamiltonianCycle',
+      'Converting Graph to adjacency list format'
+    );
     graph = MatrixGraphToAdjacencyGraph(graph);
   } else {
+    Socket.sendMessage(
+      'HamiltonianCycle',
+      'Either Graph type is not supported or invalid'
+    );
     // todo - Change the status code to valid status code
-    throw new CustomError("Either Graph type is not supported or invalid", 400);
+    throw new CustomError('Either Graph type is not supported or invalid', 400);
   }
 
   const n = graph.length;
   const visited = new Array(n).fill(0);
   const paths = [];
+  paths.push([]);
   const complete = [];
-  // let currentPath = [];
+  let currentPath = [];
   let tempPath = [];
   let testPaths = [];
+  Socket.sendMessage('HamiltonianCycle', 'Initializing variables');
 
   visited[startNode] = 1;
-  tempPath.push(startNode);
+  Socket.sendMessage('HamiltonianCycle', 'Added start node to the path');
 
   function allVisited() {
     return visited.every((vertex) => vertex === 1);
   }
 
-  // function isAdjacent(vertex1, vertex2) {
-  //   return graph[vertex1].includes(vertex2);
-  // }
-
   function generateStep(cur, next, mode = 0, completed = false) {
-    return [cur, next, mode, allVisited() ? [...tempPath] : [], completed];
+    return [cur, next, mode, [...tempPath], completed];
   }
 
-  function findAllPaths(currentVertex) {
-    if (currentVertex === startNode && allVisited()) {
-      testPaths.push([...tempPath]);
+  function isAdjacent(cur, next) {
+    return graph[cur].includes(next);
+  }
+
+  Socket.sendMessage('HamiltonianCycle', 'Generated Helper functions');
+  Socket.sendMessage('HamiltonianCycle', 'Starting to find all paths');
+
+  function findAllPaths(cur, start) {
+    if (allVisited() && cur == start) {
       complete.push(generateStep(-1, -1, 2, true));
+      paths[paths.length - 1].push(generateStep(-1, -1, 2, true));
+      paths.push([]);
       return;
     }
-    for (let i = 0; i < graph[currentVertex].length; i++) {
-      const next = graph[currentVertex][i];
-      if (!visited[next] || (next == startNode && allVisited())) {
-        visited[next] = 1;
-        tempPath.push(next);
-        complete.push(generateStep(currentVertex, next));
-        findAllPaths(next);
-        visited[next] = 0;
+    let failed = true;
+    for (let i = 0; i < graph[cur].length; i++) {
+      if (
+        visited[graph[cur][i]] != 1 ||
+        (graph[cur][i] == start && allVisited())
+      ) {
+        failed = false;
+        complete.push(generateStep(cur, graph[cur][i], 0, false));
+        paths[paths.length - 1].push(
+          generateStep(cur, graph[cur][i], 0, false)
+        );
+        tempPath.push(graph[cur][i]);
+        visited[graph[cur][i]] = 1;
+        findAllPaths(graph[cur][i], start);
+        if (graph[cur][i] != startNode) visited[graph[cur][i]] = 0;
+        complete.push(generateStep(cur, graph[cur][i], 1, false));
+        // paths[paths.length - 1].push(
+        //   generateStep(cur, graph[cur][i], 1, false)
+        // );
         tempPath.pop();
-        complete.push(generateStep(currentVertex, next, 1));
       }
+    }
+    if (failed) {
+      complete.push(generateStep(-1, -1, 2, false));
+      paths[paths.length - 1].push(generateStep(-1, -1, 2, false));
+      paths.push([]);
     }
   }
 
-  findAllPaths(startNode);
-  console.log(complete);
+  Socket.sendMessage('HamiltonianCycle', 'Finished finding all paths');
+
+  findAllPaths(startNode, startNode);
 
   if (options.test) {
+    console.log(testPaths);
     return testPaths;
   }
+  paths.pop();
   return {
     paths: paths,
     complete: complete,
   };
 }
-
-const graph = [
-  [1, 3],
-  [0, 2],
-  [1, 3],
-  [0, 2],
-];
-
-const result = HamiltonianCycleGenerator(graph, 0, {
-  graph_type: "adjacency_list",
-  test: false,
-});
-
-console.log(result.complete);
 
 module.exports = { HamiltonianCycleGenerator };
