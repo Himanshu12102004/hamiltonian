@@ -3,6 +3,7 @@ import {
   ChartGantt,
   CircleX,
   HomeIcon,
+  Languages,
   PaintRoller,
   Settings,
   Workflow,
@@ -17,6 +18,7 @@ import Forces from "./Tabs/Forces";
 import Home from "./Tabs/Home";
 import Nodes from "./Tabs/Nodes";
 import Background from "./Tabs/Background";
+import Language from "./Tabs/Language";
 
 const pages = [
   {
@@ -38,6 +40,10 @@ const pages = [
   {
     name: "Background",
     icon: <PaintRoller size={18} />,
+  },
+  {
+    name: "Font Family",
+    icon: <Languages size={18} />,
   },
 ];
 
@@ -98,6 +104,7 @@ export default function Overlay({ hideOverlay = () => {} }): JSX.Element {
             {selectedPage === "Animation" && <Animation />}
             {selectedPage === "Forces" && <Forces />}
             {selectedPage === "Background" && <Background />}
+            {selectedPage === "Font Family" && <Language />}
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
-import AlgoStep from './AlgoStep';
-import Overlay from './Modal/Overlay';
+import AlgoStep from "./AlgoStep";
+import Overlay from "./Modal/Overlay";
 
 // import "../layout.css";
 // import "../tailwind.css";
@@ -15,25 +15,31 @@ import {
   StepForward,
   Trash2,
   RefreshCcw,
-} from 'lucide-react';
+} from "lucide-react";
 
-import { useState } from 'react';
-import { GlobalVariables } from '../Graph/GlobalVariables';
-import GraphLoading from './Loadings/GraphLoading';
-import { successStatus } from './enums/successState';
-import { useEffect } from 'react';
+import { useRef, useState } from "react";
+import { GlobalVariables } from "../Graph/GlobalVariables";
+import GraphLoading from "./Loadings/GraphLoading";
+import { successStatus } from "./enums/successState";
+import { useEffect } from "react";
 
 function Layout(props) {
   const [areSettingsOpen, setAreSettingsOpen] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
   const [showLoading, setShowLoading] = useState(false);
   const [startNode, setStartNode] = useState(GlobalVariables.startNode || 0);
+
   const [currentStep, setCurrentStep] = useState(0);
   const [paths, setPaths] = useState([]);
-  const [dropdownLength, setDropdownLength] = useState(0);
-  const [abortController, setAbortController] = useState(new AbortController());
   const [completePath, setCompletePath] = useState([]);
   const [steps, setSteps] = useState([]);
+
+  const [dropdownLength, setDropdownLength] = useState(0);
+
+  const [abortController, setAbortController] = useState(new AbortController());
+
+  const activeAlgoStepRef = useRef(null);
+  const AlgoStepBoxRef = useRef(null);
 
   function hideOverlay() {
     GlobalVariables.animationParams.isAnimationPaused = false;
@@ -43,8 +49,11 @@ function Layout(props) {
 
   async function generateSteps() {
     setShowLoading(true);
+    setDropdownLength(0);
+
     const newAbortController = new AbortController();
     setAbortController(newAbortController);
+
     GlobalVariables.animationParams.isAnimationPaused = true;
     GlobalVariables.animationParams.frontendArray = [];
     GlobalVariables.animationParams.frontendArrayPtr = -1;
@@ -52,19 +61,22 @@ function Layout(props) {
     GlobalVariables.animationParams.backendArray = [];
     GlobalVariables.killTimeOut();
     GlobalVariables.resetNodeStates();
+
     const response = await requestSolution({
       graph: GlobalVariables.graph.parseGraph(),
       startNode: startNode,
       query: {
-        type: 'path',
-        path: 'all',
-        graphType: 'adjacency_list',
+        type: "path",
+        path: "all",
+        graphType: "adjacency_list",
       },
       signal: newAbortController.signal,
     });
+
     setSteps(response.hamiltonian_cycles.complete);
     setPaths(response.hamiltonian_cycles.paths);
     setDropdownLength(response.hamiltonian_cycles.paths.length);
+
     GlobalVariables.animationParams.backendArrayPtr = -1;
     setCompletePath(response.hamiltonian_cycles.complete);
     setTimeout(() => {
@@ -78,14 +90,29 @@ function Layout(props) {
   }
 
   useEffect(() => {
-    document.addEventListener('pointerPostion', (e) => {
+    document.addEventListener("pointerPostion", (e) => {
       setCurrentStep(GlobalVariables.animationParams.backendArrayPtr);
+      AlgoStepBoxRef.current.scrollTo({
+        top: activeAlgoStepRef.current.offsetTop - 175,
+        behavior: "smooth",
+      });
+      if (
+        GlobalVariables.animationParams.backendArrayPtr == 0 ||
+        GlobalVariables.animationParams.backendArrayPtr == -1
+      ) {
+        AlgoStepBoxRef.current.scrollTo({
+          top: 0,
+          behavior: "instant",
+        });
+      }
+
       if (
         GlobalVariables.animationParams.backendArrayPtr ==
         GlobalVariables.animationParams.backendArray.length
       ) {
         GlobalVariables.animationParams.start = false;
         GlobalVariables.resetNodeStates();
+        setIsPaused(true);
       }
     });
   }, []);
@@ -167,6 +194,7 @@ function Layout(props) {
                 }
                 setSteps(stepsArray);
                 GlobalVariables.animationParams.backendArray = stepsArray;
+                GlobalVariables.start();
               }
               setAbortController(newAbortController);
             }}
@@ -202,22 +230,30 @@ function Layout(props) {
               Generate Steps
             </button>
           </div>
-          <div className="flex flex-col gap-2 overflow-auto max-h-full py-4">
+          <div
+            ref={AlgoStepBoxRef}
+            className="flex flex-col gap-2 overflow-auto max-h-full py-4"
+          >
             {steps.length ? (
               steps.map((step, index) => (
                 <AlgoStep
-                  key={index + 'step'}
-                  stepNumber={index}
+                  key={index + "step"}
+                  ref={
+                    currentStep === index
+                      ? activeAlgoStepRef
+                      : { current: null }
+                  }
+                  stepNumber={index + 1}
                   fromNode={step[2] == 1 ? step[1] : step[0]}
                   toNode={step[2] == 1 ? step[0] : step[1]}
                   action={
                     step[2] === 0
-                      ? 'Exploring'
+                      ? "Exploring"
                       : step[2] === 1
-                      ? 'Backtracking'
+                      ? "Backtracking"
                       : step[4]
-                      ? 'Solution Found'
-                      : 'Solution Not Found'
+                      ? "Solution Found"
+                      : "Solution Not Found"
                   }
                   isActive={currentStep === index}
                   sucessState={
@@ -278,9 +314,9 @@ async function requestSolution({
 }) {
   const URL = `http://localhost:5000/api/v1/hamiltonian-cycle?type=${type}&path=${path}&graph_type=${graphType}`;
   const response = await fetch(URL, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       graph: graph,
