@@ -134,7 +134,7 @@ function Layout(props) {
               This section will show the steps of the algorithm
             </span>
           </div>
-          {/* <select
+          <select
             disabled={dropdownLength === 0}
             onChange={async (e) => {
               const pathNumber = parseInt(e.target.value);
@@ -186,7 +186,7 @@ function Layout(props) {
 
               GlobalVariables.animationParams.frontendArray = [];
               GlobalVariables.animationParams.isAnimationPaused = true;
-
+              
               GlobalVariables.resetNodeStates();
               GlobalVariables.killTimeOut();
 
@@ -213,7 +213,7 @@ function Layout(props) {
                 Path {i + 1}
               </option>
             ))}
-          </select> */}
+          </select>
           <div className="flex flex-col gap-2 pt-4 pb-2">
             <div className="flex flex-row gap-4 items-center">
               <span className="text-md text-stone-600">Start Node</span>

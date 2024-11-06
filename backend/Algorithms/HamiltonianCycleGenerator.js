@@ -137,19 +137,10 @@ function HamiltonianCycleGenerator(
 
   Socket.sendMessage('HamiltonianCycle', 'Generated Helper functions');
   Socket.sendMessage('HamiltonianCycle', 'Starting to find all paths');
-  function copyArray(arrayToBeCopied) {
-    let copiedArray = arrayToBeCopied.filter(() => {
-      return true;
-    });
-    return copiedArray;
-  }
   function findAllPaths(cur, start, pathArray) {
-    let copiedArray = copyArray(pathArray);
     if (allVisited() && cur == start) {
       complete.push(generateStep(-1, -1, 2, true));
-      copiedArray.push(complete.length - 1);
-      console.log(copiedArray);
-      paths.push(copiedArray);
+      paths.push([...pathArray, complete.length - 1]);
       return;
     }
     let failed = true;
@@ -160,10 +151,11 @@ function HamiltonianCycleGenerator(
       ) {
         failed = false;
         complete.push(generateStep(cur, graph[cur][i], 0, false));
-        copiedArray.push(complete.length - 1);
+        pathArray.push(complete.length - 1);
         tempPath.push(graph[cur][i]);
         visited[graph[cur][i]] = 1;
-        findAllPaths(graph[cur][i], start, copiedArray);
+        findAllPaths(graph[cur][i], start, pathArray);
+        pathArray.pop();
         if (graph[cur][i] != startNode) {
           visited[graph[cur][i]] = 0;
           tempPath.pop();
@@ -173,21 +165,19 @@ function HamiltonianCycleGenerator(
     }
     if (failed) {
       complete.push(generateStep(-1, -1, 2, false));
-      copiedArray.push(complete.length - 1);
-      console.log(copiedArray);
-      paths.push(copiedArray);
+      paths.push([...pathArray, complete.length - 1]);
     }
   }
 
   Socket.sendMessage('HamiltonianCycle', 'Finished finding all paths');
 
   findAllPaths(startNode, startNode, []);
-
+  console.log(paths);
   if (options.test) {
     console.log(testPaths);
     return testPaths;
   }
-  paths.pop();
+  paths.shift();
   return {
     paths: paths,
     complete: complete,
