@@ -69,38 +69,31 @@ function HamiltonianCycleGenerator(
     // todo - Change the status code to valid status code
     throw new CustomError('Either Graph type is not supported or invalid', 400);
   }
-
-  // ? Handling special case when the graph has only 2 vertices
-  if (graph.length == 2) {
-    if (options.test) {
-      return [];
-    }
-    const paths = [
-      [0, 1, 0, [], false],
-      [-1, -1, 2, [0, 1], false],
-    ];
-    const complete = [...paths];
-    return {
-      paths,
-      complete,
-    };
-  }
-  // ? Handling special case when the graph has only 1 vertices
-  if (graph.length == 1) {
-    if (options.test) {
-      return [[0]];
-    }
-    const paths = [[-1, -1, 2, [0], true]];
-    const complete = [...paths];
-    return {
-      paths,
-      complete,
-    };
+  if (options.graph_type == 'adjacency_list') {
+    Socket.sendMessage(
+      'HamiltonianCycle',
+      'Graph is already in adjacency list format'
+    );
+    // * do nothing as the graph is already in adjacency list format
+  } else if (options.graph_type == 'matrix_graph') {
+    Socket.sendMessage(
+      'HamiltonianCycle',
+      'Converting Graph to adjacency list format'
+    );
+    graph = MatrixGraphToAdjacencyGraph(graph);
+  } else {
+    Socket.sendMessage(
+      'HamiltonianCycle',
+      'Either Graph type is not supported or invalid'
+    );
+    // todo - Change the status code to valid status code
+    throw new CustomError('Either Graph type is not supported or invalid', 400);
   }
 
   const n = graph.length;
   const visited = new Array(n).fill(0);
   const paths = [];
+  paths.push([]);
   const complete = [];
   let currentPath = [];
   let tempPath = [];
@@ -115,13 +108,7 @@ function HamiltonianCycleGenerator(
   }
 
   function generateStep(cur, next, mode = 0, completed = false) {
-    return [
-      cur,
-      next,
-      mode,
-      allVisited() ? [...tempPath] : [...tempPath],
-      completed,
-    ];
+    return [cur, next, mode, [...tempPath], completed];
   }
 
   function isAdjacent(cur, next) {
@@ -134,6 +121,8 @@ function HamiltonianCycleGenerator(
   function findAllPaths(cur, start) {
     if (allVisited() && cur == start) {
       complete.push(generateStep(-1, -1, 2, true));
+      paths[paths.length - 1].push(generateStep(-1, -1, 2, true));
+      paths.push([]);
       return;
     }
     let failed = true;
@@ -144,16 +133,24 @@ function HamiltonianCycleGenerator(
       ) {
         failed = false;
         complete.push(generateStep(cur, graph[cur][i], 0, false));
+        paths[paths.length - 1].push(
+          generateStep(cur, graph[cur][i], 0, false)
+        );
         tempPath.push(graph[cur][i]);
         visited[graph[cur][i]] = 1;
         findAllPaths(graph[cur][i], start);
-        visited[graph[cur][i]] = 0;
+        if (graph[cur][i] != startNode) visited[graph[cur][i]] = 0;
         complete.push(generateStep(cur, graph[cur][i], 1, false));
+        // paths[paths.length - 1].push(
+        //   generateStep(cur, graph[cur][i], 1, false)
+        // );
         tempPath.pop();
       }
     }
     if (failed) {
       complete.push(generateStep(-1, -1, 2, false));
+      paths[paths.length - 1].push(generateStep(-1, -1, 2, false));
+      paths.push([]);
     }
   }
 
@@ -165,6 +162,7 @@ function HamiltonianCycleGenerator(
     console.log(testPaths);
     return testPaths;
   }
+  paths.pop();
   return {
     paths: paths,
     complete: complete,

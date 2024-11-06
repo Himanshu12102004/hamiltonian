@@ -46,7 +46,6 @@ function drawAnimation() {
   if (ap.backendArrayPtr != -1) {
     // console.log(ap.backendArray)
     if (ap.backendArrayPtr != ap.backendArray.length) {
-      
       let currAni = ap.frontendArray[ap.frontendArrayPtr];
       if (
         ap.backendArray[ap.backendArrayPtr][2] == TravelMode.forward &&
@@ -57,9 +56,10 @@ function drawAnimation() {
         ap.backendArray[ap.backendArrayPtr][2] == TravelMode.backTrack &&
         !ap.isAnimationPaused
       ) {
-        GlobalVariables.graph.nodes[
-          ap.backendArray[ap.backendArrayPtr][1]
-        ].removeState(NodeState.selected);
+        if (ap.backendArray[ap.backendArrayPtr][1] != GlobalVariables.startNode)
+          GlobalVariables.graph.nodes[
+            ap.backendArray[ap.backendArrayPtr][1]
+          ].removeState(NodeState.selected);
         currAni.decrementT();
       }
     } else {
