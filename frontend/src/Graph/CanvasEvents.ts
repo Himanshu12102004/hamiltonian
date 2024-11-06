@@ -46,7 +46,7 @@ class CanvasEvents {
     });
     GlobalVariables.canvas.setAttribute("tabindex", "0");
     GlobalVariables.canvas.addEventListener("keydown", (e: KeyboardEvent) => {
-      // CanvasEvents.handleKeyEvents(e);
+      CanvasEvents.handleKeyEvents(e);
     });
   }
   static onResize(e: MouseEvent | undefined = undefined) {
@@ -177,6 +177,7 @@ class CanvasEvents {
     } else if (e.code == "KeyF") {
       GlobalVariables.fastForward();
     } else if (e.code == "KeyS") {
+      console.log("Hi");
       GlobalVariables.start();
     }
   }
