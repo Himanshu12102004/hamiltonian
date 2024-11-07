@@ -31,6 +31,7 @@ export default function Background(): JSX.Element {
       opacity,
     };
     setProperties(newBackgroundColor);
+    // @ts-expect-error This line is added to make the code dynamic
     GlobalVariables[newBackgroundColor[index].GlobalVariableName] =
       hexToRgb(color);
   }

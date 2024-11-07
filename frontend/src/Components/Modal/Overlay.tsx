@@ -2,7 +2,7 @@ import {
   ArrowDownLeftFromCircleIcon,
   ChartGantt,
   CircleX,
-  HomeIcon,
+  // HomeIcon,
   Languages,
   PaintRoller,
   Settings,
@@ -15,16 +15,16 @@ import { ModalSideButton } from "./Utils/ModalSideButton";
 
 import Animation from "./Tabs/Animation";
 import Forces from "./Tabs/Forces";
-import Home from "./Tabs/Home";
+// import Home from "./Tabs/Home";
 import Nodes from "./Tabs/Nodes";
 import Background from "./Tabs/Background";
 import Language from "./Tabs/Language";
 
 const pages = [
-  {
-    name: "Home",
-    icon: <HomeIcon size={18} />,
-  },
+  // {
+  //   name: "Home",
+  //   icon: <HomeIcon size={18} />,
+  // },
   {
     name: "Nodes",
     icon: <Workflow size={18} />,
@@ -48,7 +48,7 @@ const pages = [
 ];
 
 export default function Overlay({ hideOverlay = () => {} }): JSX.Element {
-  const [selectedPage, setSelectedPage] = useState("Home");
+  const [selectedPage, setSelectedPage] = useState("Nodes");
   function handleClick(name: string): void {
     setSelectedPage(name);
   }
@@ -99,7 +99,7 @@ export default function Overlay({ hideOverlay = () => {} }): JSX.Element {
             id="details"
             className="flex-1 flex flex-col gap-1 max-h-full overflow-scroll"
           >
-            {selectedPage === "Home" && <Home />}
+            {/* {selectedPage === "Home" && <Home />} */}
             {selectedPage === "Nodes" && <Nodes />}
             {selectedPage === "Animation" && <Animation />}
             {selectedPage === "Forces" && <Forces />}

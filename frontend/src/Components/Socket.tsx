@@ -1,19 +1,19 @@
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 
-let socket;
+let socket: Socket | undefined;
 
-const initializeSocket = () => {
+const initializeSocket = (): Socket => {
   socket = io("http://localhost:5000", {
     autoConnect: false,
   });
   // when connection is established, log the connection id
   socket.on("connect", () => {
-    console.log(socket.id);
+    console.log(socket?.id);
   });
 
   return socket;
 };
 
-const getSocket = () => socket;
+const getSocket = (): Socket | undefined => socket;
 
 export { initializeSocket, getSocket };

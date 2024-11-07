@@ -1,8 +1,8 @@
-import { GlobalVariables, NodeState } from '../../GlobalVariables';
-import createVao from '../../helpers/createVao';
-import updateVao from '../../helpers/updateVao';
-import Point from '../helpers/point';
-import Vector from '../helpers/vector';
+import { GlobalVariables, NodeState } from "../../GlobalVariables";
+import createVao from "../../helpers/createVao";
+import updateVao from "../../helpers/updateVao";
+import Point from "../helpers/point";
+import Vector from "../helpers/vector";
 
 class Node {
   point: Point;
@@ -43,12 +43,12 @@ class Node {
 
   setVao() {
     GlobalVariables.gl.useProgram(GlobalVariables.program.node);
-    let nodeVertices = [];
-    let color = [];
+    const nodeVertices = [];
+    const color = [];
     color.push(1, 1, 1, 1);
     for (let i = 0; i < this.points.length; i++) {
       nodeVertices.push(...Node.getNormalizedPoint(this.points[i]));
-      let appliedState = this.applyState();
+      const appliedState = this.applyState();
       color.push(
         GlobalVariables.nodeColors[appliedState][0] / 255,
         GlobalVariables.nodeColors[appliedState][1] / 255,
@@ -56,16 +56,16 @@ class Node {
         1.0
       );
     }
-    let vertexLocation = GlobalVariables.gl.getAttribLocation(
+    const vertexLocation = GlobalVariables.gl.getAttribLocation(
       GlobalVariables.program.node!,
-      'vertex'
+      "vertex"
     );
-    let colorLocation = GlobalVariables.gl.getAttribLocation(
+    const colorLocation = GlobalVariables.gl.getAttribLocation(
       GlobalVariables.program.node!,
-      'color'
+      "color"
     );
-    let float32color = new Float32Array(color);
-    let float32vertex = new Float32Array(nodeVertices);
+    const float32color = new Float32Array(color);
+    const float32vertex = new Float32Array(nodeVertices);
     if (this.vao == null) {
       this.vao = createVao(
         [
@@ -117,10 +117,6 @@ class Node {
   draw() {
     this.establishedOn++;
     GlobalVariables.gl.useProgram(GlobalVariables.program.node);
-    let colorUniform = GlobalVariables.gl.getUniformLocation(
-      GlobalVariables.program.node!,
-      'userColor'
-    );
     GlobalVariables.gl.bindVertexArray(this.vao);
     GlobalVariables.gl.drawArrays(
       GlobalVariables.gl.TRIANGLE_FAN,
@@ -164,12 +160,12 @@ class Node {
     }
   }
   updatePosition() {
-    let viscosity = GlobalVariables.viscosity * 0.00001;
-    let firctionX =
+    const viscosity = GlobalVariables.viscosity * 0.00001;
+    const firctionX =
       viscosity > Math.abs(this.netForce.x)
         ? -this.netForce.x
         : -Math.sign(this.netForce.x) * viscosity;
-    let firctionY =
+    const firctionY =
       viscosity > Math.abs(this.netForce.y)
         ? -this.netForce.y
         : -Math.sign(this.netForce.y) * viscosity;
@@ -178,7 +174,8 @@ class Node {
   }
   findNetForce() {
     this.netForce = new Vector(new Point(0, 0), new Point(0, 0));
-    let gravitationalConstant = 0.0005 * GlobalVariables.gravitationalConstant;
+    const gravitationalConstant =
+      0.0005 * GlobalVariables.gravitationalConstant;
     for (let i = 0; i < GlobalVariables.graph.nodes.length; i++) {
       const node = GlobalVariables.graph.nodes[i];
 

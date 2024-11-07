@@ -147,7 +147,7 @@ export default function Slider({
     updateCanvas,
   ]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = Math.max(min, Math.min(max, Number(e.target.value)));
     setValue(name, newValue);
   };

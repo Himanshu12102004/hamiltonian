@@ -38,7 +38,7 @@ export default function ColorInput({
       <label className="text-xs text-stone-500 font-bold">{name}</label>
       <div
         ref={parentRef}
-        className="relative flex flex-row self-stretch w-full gap-2 rounded-sm px-[6px] h-fit w-fit outline outline-1 outline-stone-300"
+        className="relative flex flex-row self-stretch gap-2 rounded-sm px-[6px] h-fit w-fit outline outline-1 outline-stone-300"
       >
         {displayColorPicker && (
           <ColorPicker

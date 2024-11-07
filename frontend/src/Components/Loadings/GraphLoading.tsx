@@ -1,6 +1,6 @@
 import { CircleX } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getSocket } from "../socket";
+import { getSocket } from "../Socket";
 
 // const MAX_HISTORY = 6;
 
@@ -24,9 +24,9 @@ export default function GraphLoading({
   }
 
   useEffect(() => {
-    if (socket.disconnected) socket.connect();
+    if (socket?.disconnected) socket.connect();
 
-    socket.on(socketKey, (data: string) => {
+    socket?.on(socketKey, (data: string) => {
       setLoadingHistory((prev: string[]) => {
         if (prev.length > 5) {
           prev.shift();
@@ -44,8 +44,8 @@ export default function GraphLoading({
     }, 3000);
 
     return () => {
-      socket.off("HamiltonianCycle");
-      socket.disconnect();
+      socket?.off("HamiltonianCycle");
+      socket?.disconnect();
     };
   }, [socket, onClose, socketKey]);
 

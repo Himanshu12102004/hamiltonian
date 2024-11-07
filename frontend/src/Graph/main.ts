@@ -1,16 +1,15 @@
-import { GUI } from 'dat.gui';
-import CanvasEvents from './CanvasEvents';
-import { GlobalVariables, NodeState, TravelMode } from './GlobalVariables';
-import { shaderCompiler } from './helpers/compileShaders';
-import { createProgram } from './helpers/createProgram';
+import { GUI } from "dat.gui";
+import CanvasEvents from "./CanvasEvents";
+import { GlobalVariables, NodeState, TravelMode } from "./GlobalVariables";
+import { shaderCompiler } from "./helpers/compileShaders";
+import { createProgram } from "./helpers/createProgram";
 import {
   drawAnimation,
   drawConnections,
   drawMouseTrain,
   drawNodes,
-} from './rendering/draw';
-import AnimationTrain from './world/components/AnimationTrain';
-import { computeAlgo } from './backendInteraction/computeAlgo';
+} from "./rendering/draw";
+import AnimationTrain from "./world/components/AnimationTrain";
 
 async function loadShader(shaderPath: string): Promise<string> {
   const file = await fetch(shaderPath);
@@ -20,12 +19,12 @@ function compileShader(
   vertexShaderSource: string,
   fragmentShaderSource: string
 ) {
-  let vertexShader = shaderCompiler(
+  const vertexShader = shaderCompiler(
     vertexShaderSource,
     GlobalVariables.gl.VERTEX_SHADER,
     GlobalVariables.gl
   );
-  let fragmentShader = shaderCompiler(
+  const fragmentShader = shaderCompiler(
     fragmentShaderSource,
     GlobalVariables.gl.FRAGMENT_SHADER,
     GlobalVariables.gl
@@ -37,69 +36,69 @@ let gui: GUI;
 
 function datInit() {
   gui = new GUI();
-  let controls = gui.addFolder("Controls");
-  let nodes = controls.addFolder("Nodes");
-  let nodeColor = nodes.addFolder("Color");
-  let backGround = controls.addFolder("Backgraound");
-  let animation = controls.addFolder("Animation");
+  const controls = gui.addFolder("Controls");
+  const nodes = controls.addFolder("Nodes");
+  const nodeColor = nodes.addFolder("Color");
+  const backGround = controls.addFolder("Backgraound");
+  const animation = controls.addFolder("Animation");
   controls.open();
   for (let state = 0; state < Object.keys(NodeState).length / 2; state++) {
     nodeColor
-      .addColor({ color: GlobalVariables.nodeColors[state] }, 'color')
+      .addColor({ color: GlobalVariables.nodeColors[state] }, "color")
       .name(NodeState[state])
       .onChange((value: number[]) => {
         GlobalVariables.nodeColors[state] = value;
       });
   }
   backGround
-    .addColor({ color: GlobalVariables.backgroundColor }, 'color')
+    .addColor({ color: GlobalVariables.backgroundColor }, "color")
     .onChange((value: number[]) => {
       GlobalVariables.backgroundColor = value;
     });
-  let nodeBody = nodes.addFolder('Node Body');
+  const nodeBody = nodes.addFolder("Node Body");
   nodeBody
-    .add({ radius: GlobalVariables.nodeRadius }, 'radius', 0, 10)
+    .add({ radius: GlobalVariables.nodeRadius }, "radius", 0, 10)
     .onChange((value: number) => {
       GlobalVariables.nodeRadius = value;
       GlobalVariables.nodeRayTracingTolerance = value;
     });
   nodeBody
-    .add({ polyCount: GlobalVariables.noOfTriangles }, 'polyCount', 3, 100, 1)
+    .add({ polyCount: GlobalVariables.noOfTriangles }, "polyCount", 3, 100, 1)
     .onChange((value: number) => {
       GlobalVariables.noOfTriangles = value;
     });
-  let forces = controls.addFolder('Forces');
+  const forces = controls.addFolder("Forces");
   forces
-    .add({ gravity: GlobalVariables.gravitationalConstant }, 'gravity', 0, 100)
-    .name('Gravitational Constant')
+    .add({ gravity: GlobalVariables.gravitationalConstant }, "gravity", 0, 100)
+    .name("Gravitational Constant")
     .onChange((value: number) => {
       GlobalVariables.gravitationalConstant = value;
     });
   forces
-    .add({ viscosity: GlobalVariables.viscosity }, 'viscosity', 0, 100)
-    .name('Viscosity')
+    .add({ viscosity: GlobalVariables.viscosity }, "viscosity", 0, 100)
+    .name("Viscosity")
     .onChange((value: number) => {
       GlobalVariables.viscosity = value;
     });
   forces
     .add(
       { distancePropotionality: GlobalVariables.distancePropotionality },
-      'distancePropotionality',
+      "distancePropotionality",
       0,
       5
     )
-    .name('Distance Propotionality')
+    .name("Distance Propotionality")
     .onChange((value: number) => {
       GlobalVariables.distancePropotionality = value;
     });
   animation
-    .add(GlobalVariables.animationParams, 'speed', 0.001, 1)
+    .add(GlobalVariables.animationParams, "speed", 0.001, 1)
     .onChange((value) => {
       GlobalVariables.animationParams.speed = value;
     });
 }
 function isAnimationCompleted() {
-  let ap = GlobalVariables.animationParams;
+  const ap = GlobalVariables.animationParams;
   if (
     ap.backendArray[ap.backendArrayPtr][2] == TravelMode.backTrack &&
     ap.frontendArray[ap.frontendArrayPtr].t <= 0
@@ -125,7 +124,7 @@ function isAnimationCompleted() {
   return false;
 }
 function startAnimation() {
-  let ap = GlobalVariables.animationParams;
+  const ap = GlobalVariables.animationParams;
   if (
     ap.backendArray.length != 0 &&
     ap.backendArrayPtr != ap.backendArray.length
@@ -182,7 +181,7 @@ function startAnimation() {
             ap.frontendArray[i].addState(NodeState.accepted);
           else ap.frontendArray[i].addState(NodeState.rejected);
         }
-        let currentAnimationWidth = GlobalVariables.animationConnectionWidth;
+        const currentAnimationWidth = GlobalVariables.animationConnectionWidth;
         GlobalVariables.animationConnectionWidth = currentAnimationWidth * 2;
         GlobalVariables.timeOut = setTimeout(() => {
           ap.isAnimationPaused = false;
@@ -215,7 +214,6 @@ function startAnimation() {
   }
 }
 let lastTime = performance.now();
-let x = true;
 function animate() {
   const currentTime = performance.now();
   const deltaTime = currentTime - lastTime;
@@ -248,10 +246,10 @@ function animate() {
 
 async function init() {
   const vertexShaderLineSource = await loadShader(
-    './shaders/lines/lines.vs.glsl'
+    "./shaders/lines/lines.vs.glsl"
   );
   const fragmentShaderLineSource = await loadShader(
-    './shaders/lines/lines.fs.glsl'
+    "./shaders/lines/lines.fs.glsl"
   );
   GlobalVariables.shaders.line = compileShader(
     vertexShaderLineSource,
@@ -263,10 +261,10 @@ async function init() {
     GlobalVariables.gl
   );
   const vertexShaderBoxSource = await loadShader(
-    './shaders/nodes/nodes.vs.glsl'
+    "./shaders/nodes/nodes.vs.glsl"
   );
   const fragmentShaderBoxSource = await loadShader(
-    './shaders/nodes/nodes.fs.glsl'
+    "./shaders/nodes/nodes.fs.glsl"
   );
   GlobalVariables.shaders.node = compileShader(
     vertexShaderBoxSource,
