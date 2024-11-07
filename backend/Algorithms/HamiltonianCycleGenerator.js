@@ -81,7 +81,6 @@ function HamiltonianCycleGenerator(
       "Converting Graph to adjacency list format"
     );
     graph = MatrixGraphToAdjacencyGraph(graph);
-    console.log(graph);
   } else {
     Socket.sendMessage(
       "HamiltonianCycle",
@@ -113,6 +112,7 @@ function HamiltonianCycleGenerator(
 
   const n = graph.length;
   const visited = new Array(n).fill(0);
+
   let paths = [];
   paths.push([]);
   const complete = [];
@@ -168,7 +168,6 @@ function HamiltonianCycleGenerator(
       paths.push([...pathArray, complete.length - 1]);
     }
   }
-
   Socket.sendMessage("HamiltonianCycle", "Finished finding all paths");
 
   findAllPaths(startNode, startNode, []);
