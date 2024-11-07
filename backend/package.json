@@ -17,7 +17,9 @@
   },
   "scripts": {
     "start": "node server.js",
-    "dev": "eslint . --c .js && nodemon server.js",
-    "test": "jest"
+    "dev": "nodemon server.js",
+    "build": "echo 'No build needed'",
+    "test": "jest",
+    "deploy": "node server.js"
   }
 }

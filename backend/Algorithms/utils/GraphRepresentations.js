@@ -34,15 +34,22 @@ function AdjacencyGraphToMatrixGraph(adjacency_graph) {
 function MatrixGraphToAdjacencyGraph(matrix_graph) {
   // Error checking
   if (!matrix_graph || !matrix_graph.length) {
-    throw new CustomError("Invalid matrix graph", 422);
+    throw new CustomError(
+      "Invalid matrix graph",
+      422,
+      "There are no vertices in the graph, please add some vertices to the graph"
+    );
   }
   // size check of each row
 
   for (let i = 0; i < matrix_graph.length; i++) {
     if (matrix_graph[i].length !== matrix_graph.length) {
       throw new CustomError(
-        `Invalid matrix graph, Row ${i + 1} is invalid`,
-        422
+        `Invalid Matrix Graph`,
+        422,
+        `Graph provided is not in matrix form, Row ${
+          i + 1
+        } does not have the same number of columns as the number of rows in the matrix, Maybe try with adjacency_list format`
       );
     }
   }

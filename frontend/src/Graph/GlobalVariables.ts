@@ -1,7 +1,7 @@
 import AnimationTrain from "./world/components/AnimationTrain";
 import Graph from "./world/components/Graph";
 import MouseTrain from "./world/components/MouseTrain";
-import { TravelMode } from "../Components/enums/TravelMode";
+import { TravelMode } from "../enums/TravelMode";
 
 enum NodeState {
   clicked,

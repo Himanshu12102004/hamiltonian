@@ -20,8 +20,11 @@ import {
 import { useRef, useState, useEffect } from "react";
 import { GlobalVariables } from "../Graph/GlobalVariables";
 import GraphLoading from "./Loadings/GraphLoading";
-import { successStatus } from "./enums/successState";
+import { successStatus } from "../enums/successState";
+import ErrorMessageBoxReturnEnum from "../enums/ErrorMessageBoxReturnEnum";
 import { useMediaQuery } from "react-responsive";
+import useErrorMessage from "../Hooks/useErrorMessage";
+import ErrorMessageBox from "./ErrorMessageBox/ErrorMessageBox";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -36,6 +39,7 @@ interface RequestSolutionParams {
     graphType: string;
   };
   signal: AbortSignal;
+  showError: (heading: string, description: string) => void;
 }
 
 function Layout(props: LayoutProps) {
@@ -64,6 +68,8 @@ function Layout(props: LayoutProps) {
   const isMobile = useMediaQuery({ maxWidth: 640 });
   const [showMobileOverlay, setShowMobileOverlay] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+
+  const useError: ErrorMessageBoxReturnEnum = useErrorMessage();
 
   useEffect(() => {
     if (isMobile) {
@@ -101,8 +107,13 @@ function Layout(props: LayoutProps) {
         graphType: "adjacency_list",
       },
       signal: newAbortController.signal,
+      showError: useError.showError,
     });
-
+    if (response.status == "error") {
+      useError.showError(response.message, response.description);
+      setShowLoading(false);
+      return;
+    }
     setSteps(response.hamiltonian_cycles.complete);
     setPaths(response.hamiltonian_cycles.paths);
     setDropdownLength(response.hamiltonian_cycles.paths.length);
@@ -147,20 +158,15 @@ function Layout(props: LayoutProps) {
     });
   }, []);
 
-  // useEffect(() => {
-  //   if(visibleSteps[visibleSteps]) {
-
-  //     const twenty_steps = steps.filter((_, i) => {
-  //       if (i < currentStep + 20) return true;
-  //       return false;
-  //     });
-
-  //     setVisibleSteps(twenty_steps);
-  //   }
-  // }, [currentStep]);
-
   return (
     <div className="flex flex-col sm:flex-row relative gap-3 h-screen w-screen overflow-y-scroll sm:overflow-hidden p-3">
+      {useError.isErrorVisible ? (
+        <ErrorMessageBox
+          heading={useError.errorHeading}
+          description={useError.description}
+          onClose={useError.hideError}
+        />
+      ) : null}
       {showMobileOverlay && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
@@ -433,7 +439,8 @@ async function requestSolution({
   query: { type, path, graphType },
   signal,
 }: RequestSolutionParams) {
-  const URL = `http://localhost:5000/api/v1/hamiltonian-cycle?type=${type}&path=${path}&graph_type=${graphType}`;
+  console.log(process.env);
+  const URL = `${process.env.BACKEND_URL}/api/v1/hamiltonian-cycle?type=${type}&path=${path}&graph_type=${graphType}`;
   const response = await fetch(URL, {
     method: "POST",
     headers: {

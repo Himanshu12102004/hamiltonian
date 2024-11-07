@@ -45,7 +45,11 @@ function HamiltonianCycleGenerator(
   if (graph.length == 0) {
     Socket.sendMessage("HamiltonianCycle", "Graph is empty");
     // todo - Change the status code to valid status code
-    throw new CustomError("Graph is empty", 400);
+    throw new CustomError(
+      "Empty Graph",
+      400,
+      "There are no vertices in the graph, please add some vertices to the graph"
+    );
   }
 
   if (options.graph_type == "adjacency_list") {
@@ -67,48 +71,19 @@ function HamiltonianCycleGenerator(
       "Either Graph type is not supported or invalid"
     );
     // todo - Change the status code to valid status code
-    throw new CustomError("Either Graph type is not supported or invalid", 400);
+    throw new CustomError(
+      "Invalid Graph",
+      400,
+      "Either Graph type is not supported or invalid, Try using adjacency_list or matrix_graph"
+    );
   }
-  if (options.graph_type == "adjacency_list") {
-    Socket.sendMessage(
-      "HamiltonianCycle",
-      "Graph is already in adjacency list format"
+
+  if (startNode < 0 || startNode >= graph.length) {
+    throw new CustomError(
+      "Invalid start node",
+      400,
+      "The start node provided in the graph is invalid, please provide a valid start node"
     );
-    // * do nothing as the graph is already in adjacency list format
-  } else if (options.graph_type == "matrix_graph") {
-    Socket.sendMessage(
-      "HamiltonianCycle",
-      "Converting Graph to adjacency list format"
-    );
-    graph = MatrixGraphToAdjacencyGraph(graph);
-    console.log(graph);
-  } else {
-    Socket.sendMessage(
-      "HamiltonianCycle",
-      "Either Graph type is not supported or invalid"
-    );
-    // todo - Change the status code to valid status code
-    throw new CustomError("Either Graph type is not supported or invalid", 400);
-  }
-  if (options.graph_type == "adjacency_list") {
-    Socket.sendMessage(
-      "HamiltonianCycle",
-      "Graph is already in adjacency list format"
-    );
-    // * do nothing as the graph is already in adjacency list format
-  } else if (options.graph_type == "matrix_graph") {
-    Socket.sendMessage(
-      "HamiltonianCycle",
-      "Converting Graph to adjacency list format"
-    );
-    graph = MatrixGraphToAdjacencyGraph(graph);
-  } else {
-    Socket.sendMessage(
-      "HamiltonianCycle",
-      "Either Graph type is not supported or invalid"
-    );
-    // todo - Change the status code to valid status code
-    throw new CustomError("Either Graph type is not supported or invalid", 400);
   }
 
   const n = graph.length;

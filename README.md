@@ -1,84 +1,59 @@
-# Graph Algorithms
+# Hamiltonian Cycle Project
 
-## To Run the Project
+This project is a monorepo containing both frontend and backend applications for solving the Hamiltonian Cycle problem.
 
-1. Run the following command to install the dependencies:
+## Project Structure
+
+- `frontend/`: Contains the frontend application built with React.
+- `backend/`: Contains the backend application built with Express.
+
+## Installation
+
+There are several methods to start the server, depending on your needs:
+
+1. **Automatic Setup**: This method is the easiest way to start the server. It will install all the prerequisites and start the frontend and backend applications.
+
+2. **Manual Setup**: This method is useful if the automatic setup doesn't work. It will guide you through the process of installing the prerequisites and starting the frontend and backend applications.
+
+### Automatic Setup
+
+This method will directly deploy the frontend and backend applications and is ready to be hosted anywhere on the web.
 
 ```bash
 cd Hamiltonian_Cycle
 ```
 
-2. To install backend
+2. To install prerequisites , run:
 
-```bash
-cd backend
+```
 npm install
-nodemon server.js
 ```
 
-3. To install frontend
+3. To start the frontend and backend applications, run the following command:
 
 ```bash
-cd frontend
+npm run deploy
+```
+
+### Development Setup
+
+This method is useful for local development. It will start the frontend and backend applications in development mode.
+
+```bash
+cd Hamiltonian_Cycle
+```
+
+2. To install prerequisites , run:
+
+```bash
 npm install
+```
+
+3. To start the frontend and backend applications, run the following command:
+
+```bash
 npm run dev
 ```
-
-## General Information
-
-1. Clear the graph from top left button Clear All to make a new graph.
-
-2. Click on the nodes to delete them.
-
-3. If you select and drag between two nodes then it will create an edge between them. Repeating the same will delete the edge.
-
-4. Canvas is draggable and zoomable.
-
-> Do not delete a node when animation is running as it may cause the graph to crash.
-
-> Don't try to run graph with more than 14 nodes or a highly connected graph as it will take a lot of RAM on your browser to save them and may crash your browser tab.
-
-## Setup
-
-> **This repository requires mandatory setup before use:**
-> ❌ Git operations will be blocked until setup is complete.
-
-<!-- <blockquote style="background-color: #ED2939;padding: 6px 16px;">**Important**: This project requires certain git hooks to be installed. Ensure you have the latest version of git installed on your machine and follow the instructions below to set up the project.</blockquote><br/>
-
-- After cloning this repository, run the installation script:
-
-### Universal Method
-
-Run the following command in the terminal:
-
-```bash
-./install
-````
-
-### Windows Users
-
-Double-click `setup.bat` or run in Command Prompt:
-
-```bash
-setup.bat
-```
-
-### Unix (Mac/Linux) Users
-
-Unix (Mac/Linux Users) users can run the following command in the terminal:
-
-```bash
-chmod +x setup.sh
-./install.sh
-```
-
-This will:
-
-- Set up necessary git configurations
-- Configure merge strategies
-- Install git hooks
-- Create required files
-  -->
 
 ## Manual Setup (if needed)
 
@@ -104,80 +79,3 @@ This project has two main branches: `main` and `deployment`.
 
 1. **main branch**: For local development. Use this branch to run the project on your local machine.
 2. **deployment branch**: For deployment to the web. This branch contains production-ready code and deployment configurations.
-
-## Getting Started
-
-This branch is intended for deploying the application to a production server. Follow these steps to set up and deploy the project.
-
-### Prerequisites
-
-- **Node.js** and **npm** installed (Ensure you are using the latest stable versions)
-- **Hosting Provider Account** (e.g., AWS, Heroku, Vercel, DigitalOcean, or other)
-- **Environment Variables**: Set up the required environment variables in your hosting provider’s dashboard.
-
----
-
-## Project Structure
-
-```plaintext
-- backend/
-  - server.js
-  - other backend files
-
-- frontend/
-  - index.html
-  - other frontend files
-```
-
-## Deployment Instructions
-
-### Backend
-
-1. **Install dependencies**
-   Navigate to the backend directory and install dependencies:
-
-```bash
-cd backend
-npm install
-```
-
-2. **Set Environment Variables**
-   Set the required environment variables in your hosting provider’s dashboard.
-   Configure the following environment variables in your server's environment or in a .env file (if supported):
-
-   - PORT: The port on which the backend will run (e.g., 5000)
-   - Other variables required by your backend setup, such as DATABASE_URL, API_KEY, etc.
-
-3. **Start the Server**
-   Use the following command to start the backend server in production mode:
-
-```bash
-npm start
-```
-
-4. **Deploy to Hosting Provider**
-   Deploy the backend to your hosting provider.
-
-### Frontend
-
-1. **Install dependencies**
-   Navigate to the frontend directory and install dependencies:
-
-```bash
-cd frontend
-npm install
-```
-
-2. Build for Production
-   Build the frontend for production using the following command:
-
-```bash
-npm run build
-```
-
-3. Deploy to Hosting Provider
-   Deploy the frontend to your hosting provider.
-
----
-
-> This markdown code should be used for the `README.md` in your `deployment` branch and provides detailed setup and deployment instructions. Modify the content as needed to suit your project requirements.
