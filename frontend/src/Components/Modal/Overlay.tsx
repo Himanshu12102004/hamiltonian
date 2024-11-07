@@ -2,7 +2,7 @@ import {
   ArrowDownLeftFromCircleIcon,
   ChartGantt,
   CircleX,
-  HomeIcon,
+  // HomeIcon,
   Languages,
   PaintRoller,
   Settings,

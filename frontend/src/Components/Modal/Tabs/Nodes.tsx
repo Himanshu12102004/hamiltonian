@@ -96,7 +96,7 @@ function Nodes() {
     const values = [...sliders];
     values[index] = { ...values[index], value };
     setSliders(values);
-
+    // @ts-expect-error This line is added to make the code dynamic
     GlobalVariables[sliders[index].globalVariableName] = value;
   }
 
@@ -119,7 +119,10 @@ function Nodes() {
           <ColorInput
             key={color.name}
             name={color.name}
-            values={{ color: rgbToHex(...color.color), opacity: color.opacity }}
+            values={{
+              color: rgbToHex(color.color[0], color.color[1], color.color[2]),
+              opacity: color.opacity,
+            }}
             setValues={setValues}
             description={color.description}
           />

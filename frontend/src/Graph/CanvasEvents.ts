@@ -1,5 +1,5 @@
 import { GlobalVariables } from "./GlobalVariables";
-import Train from "./world/components/MouseTrain";
+// import Train from "./world/components/MouseTrain";
 import Point from "./world/helpers/point";
 import { gui } from "./main"; // Import the gui object
 class CanvasEvents {
@@ -39,7 +39,7 @@ class CanvasEvents {
         CanvasEvents.isDragging = true;
       }
       GlobalVariables.canvas.style.cursor = "pointer";
-      let pt = CanvasEvents.convertClientToCanvas(
+      const pt = CanvasEvents.convertClientToCanvas(
         e.clientX - GlobalVariables.canvas.offsetLeft,
         e.clientY - GlobalVariables.canvas.offsetTop
       );
@@ -50,7 +50,7 @@ class CanvasEvents {
       CanvasEvents.handleKeyEvents(e);
     });
   }
-  static onResize(e: MouseEvent | undefined = undefined) {
+  static onResize() {
     GlobalVariables.screenDimensions.height =
       GlobalVariables.canvasParent.clientHeight;
     GlobalVariables.screenDimensions.width =
@@ -64,9 +64,9 @@ class CanvasEvents {
       GlobalVariables.screenDimensions.height
     );
 
-    let centerX =
+    const centerX =
       (GlobalVariables.bounds.maxX + GlobalVariables.bounds.minX) / 2;
-    let centerY =
+    const centerY =
       (GlobalVariables.bounds.maxY + GlobalVariables.bounds.minY) / 2;
     GlobalVariables.bounds.maxX =
       centerX +
@@ -87,20 +87,20 @@ class CanvasEvents {
   }
 
   static convertClientToCanvas(xi: number, yi: number) {
-    let distance = GlobalVariables.graphScale.scale;
-    let rightBound = GlobalVariables.screenDimensions.width / (2 * distance);
-    let topBound = GlobalVariables.screenDimensions.height / (2 * distance);
-    let leftBound = -rightBound;
-    let bottomBound = -topBound;
-    let centerX =
+    const distance = GlobalVariables.graphScale.scale;
+    const rightBound = GlobalVariables.screenDimensions.width / (2 * distance);
+    const topBound = GlobalVariables.screenDimensions.height / (2 * distance);
+    const leftBound = -rightBound;
+    const bottomBound = -topBound;
+    const centerX =
       (GlobalVariables.bounds.maxX + GlobalVariables.bounds.minX) / 2;
-    let centerY =
+    const centerY =
       (GlobalVariables.bounds.maxY + GlobalVariables.bounds.minY) / 2;
-    let x =
+    const x =
       (xi * (rightBound - leftBound)) / GlobalVariables.screenDimensions.width +
       leftBound +
       centerX;
-    let y =
+    const y =
       -(
         (yi * (topBound - bottomBound)) /
           GlobalVariables.screenDimensions.height +
@@ -109,7 +109,7 @@ class CanvasEvents {
     return new Point(x, y);
   }
   static onclick(e: MouseEvent) {
-    let pt = CanvasEvents.convertClientToCanvas(
+    const pt = CanvasEvents.convertClientToCanvas(
       e.clientX - GlobalVariables.canvas.offsetLeft,
       e.clientY - GlobalVariables.canvas.offsetTop
     );
@@ -124,9 +124,9 @@ class CanvasEvents {
       GlobalVariables.graphScale.scale =
         GlobalVariables.graphScale.scale * 1.05;
     }
-    let centerX =
+    const centerX =
       (GlobalVariables.bounds.maxX + GlobalVariables.bounds.minX) / 2;
-    let centerY =
+    const centerY =
       (GlobalVariables.bounds.maxY + GlobalVariables.bounds.minY) / 2;
     GlobalVariables.bounds.maxX =
       centerX +
@@ -147,7 +147,7 @@ class CanvasEvents {
   }
   static onPan(e: MouseEvent) {
     if (e.buttons === 1) {
-      let pt = CanvasEvents.convertClientToCanvas(
+      const pt = CanvasEvents.convertClientToCanvas(
         e.clientX - GlobalVariables.canvas.offsetLeft,
         e.clientY - GlobalVariables.canvas.offsetTop
       );
@@ -156,11 +156,13 @@ class CanvasEvents {
       GlobalVariables.graph.handleConnections(pt);
       GlobalVariables.graph.handleConnectionVicinity(pt);
       if (!GlobalVariables.graph.isConnectionInitiated) {
-        var iRange = GlobalVariables.bounds.maxY - GlobalVariables.bounds.minY;
-        var rRange = GlobalVariables.bounds.maxX - GlobalVariables.bounds.minX;
-        var iDelta =
+        const iRange =
+          GlobalVariables.bounds.maxY - GlobalVariables.bounds.minY;
+        const rRange =
+          GlobalVariables.bounds.maxX - GlobalVariables.bounds.minX;
+        const iDelta =
           (e.movementY / GlobalVariables.canvas.clientHeight) * iRange;
-        var rDelta =
+        const rDelta =
           (e.movementX / GlobalVariables.canvas.clientWidth) * rRange;
         GlobalVariables.bounds.minY += iDelta;
         GlobalVariables.bounds.maxY += iDelta;

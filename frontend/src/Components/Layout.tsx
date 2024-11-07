@@ -1,7 +1,7 @@
 import AlgoStep from "./AlgoStep";
 import Overlay from "./Modal/Overlay";
-// import "../layout.css";
-// import "../tailwind.css";
+
+import { TravelMode } from "../Graph/GlobalVariables";
 
 // todo replace overlay, setOverlay and related setting with areSettingsOpen, setAreSettingsOpen
 // todo proper linking of global variables with the backend
@@ -13,35 +13,53 @@ import {
   StepBack,
   StepForward,
   Trash2,
-  RefreshCcw,
+  //   RefreshCcw,
   HelpCircle,
 } from "lucide-react";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { GlobalVariables } from "../Graph/GlobalVariables";
 import GraphLoading from "./Loadings/GraphLoading";
 import { successStatus } from "./enums/successState";
-import { useEffect } from "react";
 import { useMediaQuery } from "react-responsive";
 
-function Layout(props) {
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+interface RequestSolutionParams {
+  graph: number[][];
+  startNode: number;
+  query: {
+    type: string;
+    path: string;
+    graphType: string;
+  };
+  signal: AbortSignal;
+}
+
+function Layout(props: LayoutProps) {
   const [areSettingsOpen, setAreSettingsOpen] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
   const [showLoading, setShowLoading] = useState(false);
   const [startNode, setStartNode] = useState(GlobalVariables.startNode || 0);
 
   const [currentStep, setCurrentStep] = useState(0);
-  const [paths, setPaths] = useState([]);
-  const [completePath, setCompletePath] = useState([]);
-  const [steps, setSteps] = useState([]);
-  // const [visibleSteps, setVisibleSteps] = useState([]);
+  const [steps, setSteps] = useState<
+    [number, number, TravelMode, number[], boolean][]
+  >([]);
+  const [paths, setPaths] = useState<number[][]>([]);
+  const [completePath, setCompletePath] = useState<
+    [number, number, TravelMode, number[], boolean][]
+  >([]);
+  // const [visibleSteps, setVisibleSteps] = useState<Step[]>([]);
 
   const [dropdownLength, setDropdownLength] = useState(0);
 
   const [abortController, setAbortController] = useState(new AbortController());
 
-  const activeAlgoStepRef = useRef(null);
-  const AlgoStepBoxRef = useRef(null);
+  const activeAlgoStepRef = useRef<HTMLDivElement>(null);
+  const AlgoStepBoxRef = useRef<HTMLDivElement>(null);
 
   const isMobile = useMediaQuery({ maxWidth: 640 });
   const [showMobileOverlay, setShowMobileOverlay] = useState(false);
@@ -102,24 +120,24 @@ function Layout(props) {
   }
 
   useEffect(() => {
-    document.addEventListener("pointerPostion", (e) => {
+    document.addEventListener("pointerPostion", () => {
       setCurrentStep(GlobalVariables.animationParams.backendArrayPtr);
-      AlgoStepBoxRef.current.scrollTo({
-        top: activeAlgoStepRef.current.offsetTop - 175,
+      AlgoStepBoxRef.current?.scrollTo({
+        top: (activeAlgoStepRef.current?.offsetTop || 0) - 175,
         behavior: "smooth",
       });
       if (
-        GlobalVariables.animationParams.backendArrayPtr == 0 ||
-        GlobalVariables.animationParams.backendArrayPtr == -1
+        GlobalVariables.animationParams.backendArrayPtr === 0 ||
+        GlobalVariables.animationParams.backendArrayPtr === -1
       ) {
-        AlgoStepBoxRef.current.scrollTo({
+        AlgoStepBoxRef.current?.scrollTo({
           top: 0,
           behavior: "instant",
         });
       }
 
       if (
-        GlobalVariables.animationParams.backendArrayPtr ==
+        GlobalVariables.animationParams.backendArrayPtr ===
         GlobalVariables.animationParams.backendArray.length
       ) {
         GlobalVariables.animationParams.start = false;
@@ -274,17 +292,68 @@ function Layout(props) {
               const pathNumber = parseInt(e.target.value);
               console.log(pathNumber);
               const newAbortController = new AbortController();
+
+              if (!paths[pathNumber]) {
+                setShowLoading(true);
+                GlobalVariables.animationParams.isAnimationPaused = true;
+                GlobalVariables.animationParams.frontendArray = [];
+                GlobalVariables.animationParams.frontendArrayPtr = -1;
+                GlobalVariables.animationParams.backendArrayPtr = -1;
+                GlobalVariables.killTimeOut();
+              }
+
+              setAbortController(newAbortController);
+              let response;
+
+              if (pathNumber === -1) {
+                response = await requestSolution({
+                  graph: GlobalVariables.graph.parseGraph(),
+                  startNode: 0,
+                  query: {
+                    type: 'path',
+                    path: 'complete',
+                    graphType: 'adjacency_list',
+                  },
+                  signal: newAbortController.signal,
+                });
+                setSteps(response.hamiltonian_cycles.complete);
+                GlobalVariables.animationParams.backendArray =
+                  response.hamiltonian_cycles.complete;
+              } else if (!paths[pathNumber]) {
+                response = await requestSolution({
+                  graph: GlobalVariables.graph.parseGraph(),
+                  startNode: 0,
+                  query: {
+                    type: 'path',
+                    path: pathNumber,
+                    graphType: 'adjacency_list',
+                  },
+                  signal: newAbortController.signal,
+                });
+                setSteps(response.hamiltonian_cycles.nth_path);
+                response = response.hamiltonian_cycles.nth_path;
+              } else {
+                response = paths[pathNumber];
+                setSteps(response);
+              }
+
               GlobalVariables.animationParams.frontendArray = [];
               GlobalVariables.animationParams.frontendArrayPtr = -1;
               GlobalVariables.animationParams.backendArrayPtr = -1;
               GlobalVariables.animationParams.start = true;
               GlobalVariables.resetNodeStates();
               GlobalVariables.killTimeOut();
-              if (pathNumber == -1) {
+              if (pathNumber === -1) {
                 setSteps(completePath);
                 GlobalVariables.animationParams.backendArray = completePath;
               } else {
-                let stepsArray = [];
+                const stepsArray: [
+                  number,
+                  number,
+                  TravelMode,
+                  number[],
+                  boolean
+                ][] = [];
                 for (let i = 0; i < paths[pathNumber].length; i++) {
                   stepsArray.push(completePath[paths[pathNumber][i]]);
                 }
@@ -333,6 +402,7 @@ function Layout(props) {
             {steps.length ? (
               steps.map((step, index) => (
                 <AlgoStep
+                  className="null"
                   key={index + "step"}
                   ref={
                     currentStep === index
@@ -340,8 +410,8 @@ function Layout(props) {
                       : { current: null }
                   }
                   stepNumber={index + 1}
-                  fromNode={step[2] == 1 ? step[1] : step[0]}
-                  toNode={step[2] == 1 ? step[0] : step[1]}
+                  fromNode={step[2] === 1 ? step[1] : step[0]}
+                  toNode={step[2] === 1 ? step[0] : step[1]}
                   action={
                     step[2] === 0
                       ? "Exploring"
@@ -353,7 +423,7 @@ function Layout(props) {
                   }
                   isActive={currentStep === index}
                   sucessState={
-                    step[0] == -1
+                    step[0] === -1
                       ? step[4]
                         ? successStatus.success
                         : successStatus.fail
@@ -407,12 +477,12 @@ async function requestSolution({
   startNode,
   query: { type, path, graphType },
   signal,
-}) {
+}: RequestSolutionParams) {
   const URL = `http://localhost:5000/api/v1/hamiltonian-cycle?type=${type}&path=${path}&graph_type=${graphType}`;
   const response = await fetch(URL, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       graph: graph,
