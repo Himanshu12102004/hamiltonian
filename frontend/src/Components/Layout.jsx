@@ -1,6 +1,5 @@
 import AlgoStep from "./AlgoStep";
 import Overlay from "./Modal/Overlay";
-
 // import "../layout.css";
 // import "../tailwind.css";
 
@@ -15,6 +14,7 @@ import {
   StepForward,
   Trash2,
   RefreshCcw,
+  HelpCircle,
 } from "lucide-react";
 
 import { useRef, useState } from "react";
@@ -22,6 +22,7 @@ import { GlobalVariables } from "../Graph/GlobalVariables";
 import GraphLoading from "./Loadings/GraphLoading";
 import { successStatus } from "./enums/successState";
 import { useEffect } from "react";
+import { useMediaQuery } from "react-responsive";
 
 function Layout(props) {
   const [areSettingsOpen, setAreSettingsOpen] = useState(false);
@@ -33,6 +34,7 @@ function Layout(props) {
   const [paths, setPaths] = useState([]);
   const [completePath, setCompletePath] = useState([]);
   const [steps, setSteps] = useState([]);
+  // const [visibleSteps, setVisibleSteps] = useState([]);
 
   const [dropdownLength, setDropdownLength] = useState(0);
 
@@ -40,6 +42,16 @@ function Layout(props) {
 
   const activeAlgoStepRef = useRef(null);
   const AlgoStepBoxRef = useRef(null);
+
+  const isMobile = useMediaQuery({ maxWidth: 640 });
+  const [showMobileOverlay, setShowMobileOverlay] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+
+  useEffect(() => {
+    if (isMobile) {
+      setShowMobileOverlay(true);
+    }
+  }, [isMobile]);
 
   function hideOverlay() {
     GlobalVariables.animationParams.isAnimationPaused = false;
@@ -117,8 +129,38 @@ function Layout(props) {
     });
   }, []);
 
+  // useEffect(() => {
+  //   if(visibleSteps[visibleSteps]) {
+
+  //     const twenty_steps = steps.filter((_, i) => {
+  //       if (i < currentStep + 20) return true;
+  //       return false;
+  //     });
+
+  //     setVisibleSteps(twenty_steps);
+  //   }
+  // }, [currentStep]);
+
   return (
-    <div className="flex relative gap-3 h-screen w-screen overflow-hidden p-3">
+    <div className="flex flex-col sm:flex-row relative gap-3 h-screen w-screen overflow-y-scroll sm:overflow-hidden p-3">
+      {showMobileOverlay && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <h2 className="text-2xl font-bold mb-4">
+              Better Experience on Desktop
+            </h2>
+            <p className="mb-4">
+              For the best user experience, please use a desktop device.
+            </p>
+            <button
+              onClick={() => setShowMobileOverlay(false)}
+              className="py-2 px-4 bg-blue-500 text-white rounded-md"
+            >
+              Continue Anyway
+            </button>
+          </div>
+        </div>
+      )}
       {showLoading && (
         <GraphLoading
           socketKey="HamiltonianCycle"
@@ -145,7 +187,9 @@ function Layout(props) {
           className="flex items-center justify-end gap-2 bg-white shadow-xl shadow-neutral-300 px-5 py-3 rounded-full hover:bg-stone-100 cursor-pointer hover:translate-x-14 transition-all"
         >
           <Trash2 size={20} strokeWidth={1.5} />
-          <span className="text-stone-800 text-sm select-none">Clear All</span>
+          <span className="w-20 text-stone-800 text-sm select-none">
+            Clear All
+          </span>
         </div>
         <div
           className="flex relative items-center justify-end gap-2 bg-white shadow-xl shadow-neutral-300 px-5 py-3 rounded-full hover:bg-stone-100 cursor-pointer hover:translate-x-14 transition-all"
@@ -157,14 +201,66 @@ function Layout(props) {
         >
           <div className="h-full w-12"></div>
           <Settings size={20} strokeWidth={1.5} />
-          <span className="text-stone-800 text-sm select-none">Settings</span>
+          <span className="w-20 text-stone-800 text-sm select-none">
+            Settings{" "}
+          </span>
+        </div>
+        <div
+          className="flex relative items-center justify-end gap-2 bg-white shadow-xl shadow-neutral-300 px-5 py-3 rounded-full hover:bg-stone-100 cursor-pointer hover:translate-x-14 transition-all"
+          onClick={() => setIsHelpOpen((prev) => !prev)}
+        >
+          <div className="h-full w-12"></div>
+          <HelpCircle size={20} strokeWidth={1.5} />
+          <span className="w-20 text-stone-800 text-sm select-none">
+            Need Help
+          </span>
         </div>
       </div>
       {areSettingsOpen && <Overlay hideOverlay={hideOverlay} />}
-      <div className="content flex-1" id="canvas_parent">
+      {isHelpOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-lg shadow-lg text-center max-w-lg mx-auto">
+            <h2 className="text-3xl font-bold mb-4">Help</h2>
+            <p className="text-left mb-4">
+              Steps to create a cycle:
+              <ol className="list-decimal list-inside text-left mt-2 space-y-2">
+                <li>Click on canvas to add nodes.</li>
+                <li>
+                  Hold a node and connect to another node to make an edge,
+                  repeat the process to make a graph.
+                </li>
+                <li>
+                  General instruction: don't make a highly connected graph.
+                </li>
+                <li>
+                  Click on "Generate Graph" to make the graph and start the
+                  animation.
+                </li>
+                <li>
+                  Use the pause and forward buttons to control the animation.
+                </li>
+                <li>
+                  You can select a path to animate from the dropdown menu.
+                </li>
+                <li>
+                  Click on "Settings" to control various properties about the
+                  canvas, animation, UI, etc.
+                </li>
+              </ol>
+            </p>
+            <button
+              onClick={() => setIsHelpOpen(false)}
+              className="py-2 px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+      <div className="h-[80vh] sm:h-full flex-1" id="canvas_parent">
         {props.children}
       </div>
-      <div className="flex flex-col gap-2 shrink-0 w-80 h-full">
+      <div className="flex w-auto sm:self-stretch md:self-start flex-col gap-2 shrink-0 sm:w-80 h-full">
         <div className="divide-y-2 flex flex-col gap-2 h-full bg-white p-3 overflow-hidden">
           <div className="flex flex-col gap-2">
             <h1 className="text-2xl font-bold">Steps</h1>

@@ -18,4 +18,8 @@ export default defineConfig({
       ],
     }),
   ],
+  server: {
+    host: true, // This will allow the server to be accessed externally
+    port: 5173, // You can specify the port you want to use
+  },
 });
