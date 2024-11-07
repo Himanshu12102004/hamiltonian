@@ -12,7 +12,7 @@
     "dev:backend": "npm run dev --prefix backend",
     "deploy:frontend": "npm run deploy --prefix frontend",
     "deploy:backend": "npm run deploy --prefix backend",
-    "start": "npm-run-all --parallel start:*",
+    "start": "npm-run-all --parallel start:frontend start:backend",
     "dev": "npm-run-all --parallel dev:*",
     "test": "npm --prefix backend run test",
     "deploy": "npm-run-all deploy:*"
