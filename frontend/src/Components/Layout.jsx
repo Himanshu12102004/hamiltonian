@@ -274,6 +274,51 @@ function Layout(props) {
               const pathNumber = parseInt(e.target.value);
               console.log(pathNumber);
               const newAbortController = new AbortController();
+
+              if (!paths[pathNumber]) {
+                setShowLoading(true);
+                GlobalVariables.animationParams.isAnimationPaused = true;
+                GlobalVariables.animationParams.frontendArray = [];
+                GlobalVariables.animationParams.frontendArrayPtr = -1;
+                GlobalVariables.animationParams.backendArrayPtr = -1;
+                GlobalVariables.killTimeOut();
+              }
+
+              setAbortController(newAbortController);
+              let response;
+
+              if (pathNumber === -1) {
+                response = await requestSolution({
+                  graph: GlobalVariables.graph.parseGraph(),
+                  startNode: 0,
+                  query: {
+                    type: 'path',
+                    path: 'complete',
+                    graphType: 'adjacency_list',
+                  },
+                  signal: newAbortController.signal,
+                });
+                setSteps(response.hamiltonian_cycles.complete);
+                GlobalVariables.animationParams.backendArray =
+                  response.hamiltonian_cycles.complete;
+              } else if (!paths[pathNumber]) {
+                response = await requestSolution({
+                  graph: GlobalVariables.graph.parseGraph(),
+                  startNode: 0,
+                  query: {
+                    type: 'path',
+                    path: pathNumber,
+                    graphType: 'adjacency_list',
+                  },
+                  signal: newAbortController.signal,
+                });
+                setSteps(response.hamiltonian_cycles.nth_path);
+                response = response.hamiltonian_cycles.nth_path;
+              } else {
+                response = paths[pathNumber];
+                setSteps(response);
+              }
+
               GlobalVariables.animationParams.frontendArray = [];
               GlobalVariables.animationParams.frontendArrayPtr = -1;
               GlobalVariables.animationParams.backendArrayPtr = -1;
@@ -410,9 +455,9 @@ async function requestSolution({
 }) {
   const URL = `http://localhost:5000/api/v1/hamiltonian-cycle?type=${type}&path=${path}&graph_type=${graphType}`;
   const response = await fetch(URL, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       graph: graph,

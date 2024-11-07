@@ -1,6 +1,6 @@
-import AnimationTrain from "./world/components/AnimationTrain";
-import Graph from "./world/components/Graph";
-import MouseTrain from "./world/components/MouseTrain";
+import AnimationTrain from './world/components/AnimationTrain';
+import Graph from './world/components/Graph';
+import MouseTrain from './world/components/MouseTrain';
 enum NodeState {
   clicked,
   inVisinity,
@@ -105,7 +105,7 @@ class GlobalVariables {
     GlobalVariables.canvas = canvas;
     const renderingContext = canvas.getContext("webgl2", { antialias: true });
     if (!renderingContext) {
-      alert("Webgl2 not supported");
+      alert('Webgl2 not supported');
       return;
     } else {
       GlobalVariables.gl = renderingContext;
@@ -178,7 +178,7 @@ class GlobalVariables {
     clearTimeout(GlobalVariables.timeOut);
   }
   static resetNodeStates() {
-    console.log("Hello");
+    console.log('Hello');
     this.graph.resetStates();
   }
   static fastForward() {
