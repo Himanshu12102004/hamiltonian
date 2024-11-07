@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 
 import Canvas from "./Canvas";
 import main from "../Graph/main";
 
-const CanvasParent: React.FC = () => {
+function CanvasParent(): JSX.Element {
   let canva: HTMLCanvasElement;
   function getCanvas(canvas: HTMLCanvasElement) {
     canva = canvas;
@@ -12,6 +12,6 @@ const CanvasParent: React.FC = () => {
     main(canva);
   });
   return <Canvas onCanvasReady={getCanvas} />;
-};
+}
 
 export default CanvasParent;

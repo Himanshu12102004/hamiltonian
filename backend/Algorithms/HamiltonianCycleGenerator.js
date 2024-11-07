@@ -1,5 +1,5 @@
-const { CustomError } = require('../utils/CustomError');
-const { MatrixGraphToAdjacencyGraph } = require('./utils/GraphRepresentations');
+const { CustomError } = require("../utils/CustomError");
+const { MatrixGraphToAdjacencyGraph } = require("./utils/GraphRepresentations");
 
 /**
  * Finds all Hamiltonian cycles in a given graph represented as an adjacency list.
@@ -33,95 +33,95 @@ function HamiltonianCycleGenerator(
   graph = [[]],
   startNode = 0,
   options = {
-    graph_type: 'adjacency_list',
+    graph_type: "adjacency_list",
     test: false,
   },
   Socket = null
 ) {
   Socket.sendMessage(
-    'HamiltonianCycle',
-    'Generating Hamiltonian Cycle of the Graph'
+    "HamiltonianCycle",
+    "Generating Hamiltonian Cycle of the Graph"
   );
   if (graph.length == 0) {
-    Socket.sendMessage('HamiltonianCycle', 'Graph is empty');
+    Socket.sendMessage("HamiltonianCycle", "Graph is empty");
     // todo - Change the status code to valid status code
-    throw new CustomError('Graph is empty', 400);
+    throw new CustomError("Graph is empty", 400);
   }
 
-  if (options.graph_type == 'adjacency_list') {
+  if (options.graph_type == "adjacency_list") {
     Socket.sendMessage(
-      'HamiltonianCycle',
-      'Graph is already in adjacency list format'
+      "HamiltonianCycle",
+      "Graph is already in adjacency list format"
     );
     // * do nothing as the graph is already in adjacency list format
-  } else if (options.graph_type == 'matrix_graph') {
+  } else if (options.graph_type == "matrix_graph") {
     Socket.sendMessage(
-      'HamiltonianCycle',
-      'Converting Graph to adjacency list format'
+      "HamiltonianCycle",
+      "Converting Graph to adjacency list format"
     );
     graph = MatrixGraphToAdjacencyGraph(graph);
     console.log(graph);
   } else {
     Socket.sendMessage(
-      'HamiltonianCycle',
-      'Either Graph type is not supported or invalid'
+      "HamiltonianCycle",
+      "Either Graph type is not supported or invalid"
     );
     // todo - Change the status code to valid status code
-    throw new CustomError('Either Graph type is not supported or invalid', 400);
+    throw new CustomError("Either Graph type is not supported or invalid", 400);
   }
-  if (options.graph_type == 'adjacency_list') {
+  if (options.graph_type == "adjacency_list") {
     Socket.sendMessage(
-      'HamiltonianCycle',
-      'Graph is already in adjacency list format'
+      "HamiltonianCycle",
+      "Graph is already in adjacency list format"
     );
     // * do nothing as the graph is already in adjacency list format
-  } else if (options.graph_type == 'matrix_graph') {
+  } else if (options.graph_type == "matrix_graph") {
     Socket.sendMessage(
-      'HamiltonianCycle',
-      'Converting Graph to adjacency list format'
+      "HamiltonianCycle",
+      "Converting Graph to adjacency list format"
+    );
+    graph = MatrixGraphToAdjacencyGraph(graph);
+    console.log(graph);
+  } else {
+    Socket.sendMessage(
+      "HamiltonianCycle",
+      "Either Graph type is not supported or invalid"
+    );
+    // todo - Change the status code to valid status code
+    throw new CustomError("Either Graph type is not supported or invalid", 400);
+  }
+  if (options.graph_type == "adjacency_list") {
+    Socket.sendMessage(
+      "HamiltonianCycle",
+      "Graph is already in adjacency list format"
+    );
+    // * do nothing as the graph is already in adjacency list format
+  } else if (options.graph_type == "matrix_graph") {
+    Socket.sendMessage(
+      "HamiltonianCycle",
+      "Converting Graph to adjacency list format"
     );
     graph = MatrixGraphToAdjacencyGraph(graph);
   } else {
     Socket.sendMessage(
-      'HamiltonianCycle',
-      'Either Graph type is not supported or invalid'
+      "HamiltonianCycle",
+      "Either Graph type is not supported or invalid"
     );
     // todo - Change the status code to valid status code
-    throw new CustomError('Either Graph type is not supported or invalid', 400);
-  }
-  if (options.graph_type == 'adjacency_list') {
-    Socket.sendMessage(
-      'HamiltonianCycle',
-      'Graph is already in adjacency list format'
-    );
-    // * do nothing as the graph is already in adjacency list format
-  } else if (options.graph_type == 'matrix_graph') {
-    Socket.sendMessage(
-      'HamiltonianCycle',
-      'Converting Graph to adjacency list format'
-    );
-    graph = MatrixGraphToAdjacencyGraph(graph);
-  } else {
-    Socket.sendMessage(
-      'HamiltonianCycle',
-      'Either Graph type is not supported or invalid'
-    );
-    // todo - Change the status code to valid status code
-    throw new CustomError('Either Graph type is not supported or invalid', 400);
+    throw new CustomError("Either Graph type is not supported or invalid", 400);
   }
 
   const n = graph.length;
   const visited = new Array(n).fill(0);
-
   let paths = [];
   paths.push([]);
   const complete = [];
   let tempPath = [startNode];
   let testPaths = [];
-  Socket.sendMessage('HamiltonianCycle', 'Initializing variables');
+  Socket.sendMessage("HamiltonianCycle", "Initializing variables");
 
   visited[startNode] = 1;
-  Socket.sendMessage('HamiltonianCycle', 'Added start node to the path');
+  Socket.sendMessage("HamiltonianCycle", "Added start node to the path");
 
   function allVisited() {
     return visited.every((vertex) => vertex === 1);
@@ -135,12 +135,8 @@ function HamiltonianCycleGenerator(
     return [cur, next, mode, arr, completed];
   }
 
-  function isAdjacent(cur, next) {
-    return graph[cur].includes(next);
-  }
-
-  Socket.sendMessage('HamiltonianCycle', 'Generated Helper functions');
-  Socket.sendMessage('HamiltonianCycle', 'Starting to find all paths');
+  Socket.sendMessage("HamiltonianCycle", "Generated Helper functions");
+  Socket.sendMessage("HamiltonianCycle", "Starting to find all paths");
   function findAllPaths(cur, start, pathArray) {
     if (allVisited() && cur == start) {
       complete.push(generateStep(-1, -1, 2, true));
@@ -173,8 +169,7 @@ function HamiltonianCycleGenerator(
     }
   }
 
-  Socket.sendMessage('HamiltonianCycle', 'Finished finding all paths');
-  findAllPaths(startNode, startNode);
+  Socket.sendMessage("HamiltonianCycle", "Finished finding all paths");
 
   findAllPaths(startNode, startNode, []);
   console.log(paths);
