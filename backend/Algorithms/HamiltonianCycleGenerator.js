@@ -88,6 +88,7 @@ function HamiltonianCycleGenerator(
 
   const n = graph.length;
   const visited = new Array(n).fill(0);
+
   let paths = [];
   paths.push([]);
   const complete = [];
@@ -143,7 +144,6 @@ function HamiltonianCycleGenerator(
       paths.push([...pathArray, complete.length - 1]);
     }
   }
-
   Socket.sendMessage("HamiltonianCycle", "Finished finding all paths");
 
   findAllPaths(startNode, startNode, []);

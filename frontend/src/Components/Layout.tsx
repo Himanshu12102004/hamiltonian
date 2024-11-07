@@ -298,6 +298,7 @@ function Layout(props: LayoutProps) {
               const pathNumber = parseInt(e.target.value);
               console.log(pathNumber);
               const newAbortController = new AbortController();
+
               GlobalVariables.animationParams.frontendArray = [];
               GlobalVariables.animationParams.frontendArrayPtr = -1;
               GlobalVariables.animationParams.backendArrayPtr = -1;
