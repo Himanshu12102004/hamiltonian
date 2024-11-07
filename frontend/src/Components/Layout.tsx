@@ -434,7 +434,7 @@ async function requestSolution({
   query: { type, path, graphType },
   signal,
 }: RequestSolutionParams) {
-  const URL = `http://localhost:5000/api/v1/hamiltonian-cycle?type=${type}&path=${path}&graph_type=${graphType}`;
+  const URL = `http://localhost:5001/api/v1/hamiltonian-cycle?type=${type}&path=${path}&graph_type=${graphType}`;
   const response = await fetch(URL, {
     method: "POST",
     headers: {

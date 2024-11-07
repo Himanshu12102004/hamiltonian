@@ -1,0 +1,23 @@
+version: '3'
+networks:
+  project-network:
+    driver: bridge
+services:
+  backend:
+    image: himanshu12102004/graphsimbackend
+    container_name: graphsim_backend
+    ports:
+      - '5001:5000'
+    networks:
+      - project-network
+    env_file:
+      - ./backend/config.env
+  frontend:
+    image: himanshu12102004/graphsimfrontend
+    container_name: graphsim_frontend
+    ports:
+      - '443:80'
+    networks:
+      - project-network
+    depends_on:
+      - backend
