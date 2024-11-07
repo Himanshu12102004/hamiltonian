@@ -16,13 +16,13 @@ import { GlobalVariables } from "../../../Graph/GlobalVariables";
 function Forces(): JSX.Element {
   const [sliders, setSliders] = useState([
     {
-      name: "Gravitation",
+      name: "Repulsion",
       value: GlobalVariables.gravitationalConstant,
       min: 0,
       max: 100,
       step: 1,
       icon: <BicepsFlexed className="stroke-1" size={18} />,
-      description: "Gravitation force",
+      description: "Repulsion force",
       globalVariableName: "gravitationalConstant",
     },
     {
@@ -55,6 +55,7 @@ function Forces(): JSX.Element {
 
       findVal.value = value;
       const globalName = findVal.globalVariableName;
+      // @ts-expect-error This line is added to make the code dynamic
       GlobalVariables[globalName] = value;
       return values;
     });

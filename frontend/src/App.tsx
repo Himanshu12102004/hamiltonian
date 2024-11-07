@@ -3,7 +3,7 @@ import "./App.css";
 
 import CanvasParent from "./Components/CanvasParent";
 import Layout from "./Components/Layout";
-import { initializeSocket, getSocket } from "./Components/Socket.jsx";
+import { initializeSocket, getSocket } from "./Components/Socket.js";
 
 function App() {
   initializeSocket();
