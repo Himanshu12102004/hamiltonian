@@ -10,6 +10,7 @@ const AlgoStep = forwardRef<
     action: string;
     isActive: boolean;
     sucessState: successStatus;
+    className: string;
   }
 >(
   (
@@ -20,6 +21,7 @@ const AlgoStep = forwardRef<
       action,
       isActive = false,
       sucessState = successStatus.neutral,
+      className = "",
     },
     ref
   ) => {
@@ -58,7 +60,7 @@ const AlgoStep = forwardRef<
     return (
       <div
         ref={ref}
-        className={`px-2 py-3 rounded-md self-stretch flex flex-col min-h-24 gap-2 m-1 flex-shrink-0 ${boxColor()}`}
+        className={`${className} px-2 py-3 rounded-md self-stretch flex flex-col min-h-24 gap-2 m-1 flex-shrink-0 ${boxColor()}`}
       >
         <div className="flex flex-row gap-1 items-center">
           <span className="text-md">Step: </span>
