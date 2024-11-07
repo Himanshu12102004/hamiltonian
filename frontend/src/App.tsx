@@ -5,7 +5,7 @@ import CanvasParent from "./Components/CanvasParent";
 import Layout from "./Components/Layout";
 import { initializeSocket, getSocket } from "./Components/Socket.js";
 
-function App() {
+function App(): JSX.Element {
   initializeSocket();
   useEffect(() => {
     const socket = getSocket();
