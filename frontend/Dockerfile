@@ -1,3 +1,4 @@
+
 # Use the official nginx image as the base image
 FROM nginx:alpine
 

@@ -1,3 +1,4 @@
+
 # Use the official Node.js image as the base image
 FROM node:21
 
@@ -18,3 +19,4 @@ EXPOSE 5000
 
 # Command to run the application
 CMD ["node", "server.js"]
+
