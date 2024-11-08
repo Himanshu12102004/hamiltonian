@@ -6,15 +6,18 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "start": "cd dist && vite preview",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "start": "npm run build && npm run preview",
+    "test": "eslint .",
+    "preview": "vite preview",
+    "deploy": "vite build --outDir ../backend/Public"
   },
   "dependencies": {
     "ajv": "^8.17.1",
     "ajv-keywords": "^5.1.0",
     "dat.gui": "^0.7.9",
+    "dotenv": "^16.4.5",
     "fastpriorityqueue": "^0.7.5",
+    "gh-pages": "^6.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-responsive": "^10.0.0",

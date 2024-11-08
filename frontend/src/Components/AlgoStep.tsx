@@ -1,4 +1,4 @@
-import { successStatus } from "./enums/successState";
+import { successStatus } from "../enums/successState";
 import { forwardRef } from "react";
 
 const AlgoStep = forwardRef<

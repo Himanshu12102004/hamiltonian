@@ -21,8 +21,9 @@ const HamiltonianCycleController = catchAsync(async (req, res) => {
   if (!validTypes.includes(type)) {
     const validString = validTypes.join(", ");
     throw new CustomError(
-      `Invalid type: ${type}. Valid types are: ${validString}`,
-      404
+      `Invalid Parameter`,
+      404,
+      `Invalid type: ${type}. Valid types are: ${validString}`
     );
   }
 

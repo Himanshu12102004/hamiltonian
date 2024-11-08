@@ -62,12 +62,13 @@ const handlePathRequest = (type, path, cycles, Socket) => {
       "Invalid Path Number. Error in Generating Hamiltonian Cycle of the Graph"
     );
     throw new CustomError(
+      "Invalid Path Number",
+      422,
       `Invalid path number. There are total of ${
         cycles.length
       } paths in given graph. Valid path numbers are 0 to ${
         cycles.paths.length - 1
-      }`,
-      422
+      }`
     );
   }
 };
