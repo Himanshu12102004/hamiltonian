@@ -1,11 +1,10 @@
-import AlgoStep from "./AlgoStep";
-import Overlay from "./Modal/Overlay";
+import AlgoStep from './AlgoStep';
+import Overlay from './Modal/Overlay';
 
-import { TravelMode } from "../Graph/GlobalVariables";
+import { TravelMode } from '../Graph/GlobalVariables';
 
 // todo replace overlay, setOverlay and related setting with areSettingsOpen, setAreSettingsOpen
 // todo proper linking of global variables with the backend
-
 import {
   Pause,
   Settings,
@@ -15,16 +14,16 @@ import {
   Trash2,
   //   RefreshCcw,
   HelpCircle,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { useRef, useState, useEffect } from "react";
-import { GlobalVariables } from "../Graph/GlobalVariables";
-import GraphLoading from "./Loadings/GraphLoading";
-import { successStatus } from "../enums/successState";
-import ErrorMessageBoxReturnEnum from "../enums/ErrorMessageBoxReturnEnum";
-import { useMediaQuery } from "react-responsive";
-import useErrorMessage from "../Hooks/useErrorMessage";
-import ErrorMessageBox from "./ErrorMessageBox/ErrorMessageBox";
+import { useRef, useState, useEffect } from 'react';
+import { GlobalVariables } from '../Graph/GlobalVariables';
+import GraphLoading from './Loadings/GraphLoading';
+import { successStatus } from '../enums/successState';
+import ErrorMessageBoxReturnEnum from '../enums/ErrorMessageBoxReturnEnum';
+import { useMediaQuery } from 'react-responsive';
+import useErrorMessage from '../Hooks/useErrorMessage';
+import ErrorMessageBox from './ErrorMessageBox/ErrorMessageBox';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -74,7 +73,7 @@ function Layout(props: LayoutProps) {
   useEffect(() => {
     if (isMobile) {
       setShowMobileOverlay(true);
-    }
+    } else setShowMobileOverlay(false);
   }, [isMobile]);
 
   function hideOverlay() {
@@ -102,14 +101,14 @@ function Layout(props: LayoutProps) {
       graph: GlobalVariables.graph.parseGraph(),
       startNode: startNode,
       query: {
-        type: "path",
-        path: "all",
-        graphType: "adjacency_list",
+        type: 'path',
+        path: 'all',
+        graphType: 'adjacency_list',
       },
       signal: newAbortController.signal,
       showError: useError.showError,
     });
-    if (response.status == "error") {
+    if (response.status == 'error') {
       useError.showError(response.message, response.description);
       setShowLoading(false);
       return;
@@ -125,17 +124,19 @@ function Layout(props: LayoutProps) {
       GlobalVariables.animationParams.isAnimationPaused = false;
       GlobalVariables.animationParams.backendArray =
         response.hamiltonian_cycles.complete;
-      GlobalVariables.start();
+
       setIsPaused(false);
     }, 1500);
   }
-
   useEffect(() => {
-    document.addEventListener("pointerPostion", () => {
+    if (completePath.length > 1) GlobalVariables.start();
+  }, [completePath]);
+  useEffect(() => {
+    document.addEventListener('pointerPostion', () => {
       setCurrentStep(GlobalVariables.animationParams.backendArrayPtr);
       AlgoStepBoxRef.current?.scrollTo({
         top: (activeAlgoStepRef.current?.offsetTop || 0) - 175,
-        behavior: "smooth",
+        behavior: 'smooth',
       });
       if (
         GlobalVariables.animationParams.backendArrayPtr === 0 ||
@@ -143,7 +144,7 @@ function Layout(props: LayoutProps) {
       ) {
         AlgoStepBoxRef.current?.scrollTo({
           top: 0,
-          behavior: "instant",
+          behavior: 'instant',
         });
       }
 
@@ -168,20 +169,30 @@ function Layout(props: LayoutProps) {
         />
       ) : null}
       {showMobileOverlay && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.7)', // semi-transparent white
+            backdropFilter: 'blur(10px)', // frost effect
+            WebkitBackdropFilter: 'blur(10px)', // for Safari
+            border: '1px solid rgba(255, 255, 255, 0.3)', // light border for glass effect
+            borderRadius: '8px', // smooth corners
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)', // subtle shadow for depth
+          }}
+        >
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
             <h2 className="text-2xl font-bold mb-4">
-              Better Experience on Desktop
+              Welcome to Graph Algorithms
             </h2>
             <p className="mb-4">
               For the best user experience, please use a desktop device.
             </p>
-            <button
+            {/* <button
               onClick={() => setShowMobileOverlay(false)}
               className="py-2 px-4 bg-blue-500 text-white rounded-md"
             >
               Continue Anyway
-            </button>
+            </button> */}
           </div>
         </div>
       )}
@@ -191,7 +202,6 @@ function Layout(props: LayoutProps) {
           onClose={() => {
             setTimeout(() => {
               setShowLoading(false);
-              GlobalVariables.start();
             }, 1500);
           }}
           abortController={abortController}
@@ -226,7 +236,7 @@ function Layout(props: LayoutProps) {
           <div className="h-full w-12"></div>
           <Settings size={20} strokeWidth={1.5} />
           <span className="w-20 text-stone-800 text-sm select-none">
-            Settings{" "}
+            Settings{' '}
           </span>
         </div>
         <div
@@ -365,7 +375,7 @@ function Layout(props: LayoutProps) {
               steps.map((step, index) => (
                 <AlgoStep
                   className="null"
-                  key={index + "step"}
+                  key={index + 'step'}
                   ref={
                     currentStep === index
                       ? activeAlgoStepRef
@@ -376,12 +386,12 @@ function Layout(props: LayoutProps) {
                   toNode={step[2] === 1 ? step[0] : step[1]}
                   action={
                     step[2] === 0
-                      ? "Exploring"
+                      ? 'Exploring'
                       : step[2] === 1
-                      ? "Backtracking"
+                      ? 'Backtracking'
                       : step[4]
-                      ? "Solution Found"
-                      : "Solution Not Found"
+                      ? 'Solution Found'
+                      : 'Solution Not Found'
                   }
                   isActive={currentStep === index}
                   sucessState={
@@ -443,9 +453,9 @@ async function requestSolution({
   console.log(process.env);
   const URL = `${process.env.BACKEND_URL}/api/v1/hamiltonian-cycle?type=${type}&path=${path}&graph_type=${graphType}`;
   const response = await fetch(URL, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       graph: graph,

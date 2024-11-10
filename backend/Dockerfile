@@ -1,6 +1,6 @@
-
 # Use the official Node.js image as the base image
-FROM node:21
+# Specify the platform to avoid compatibility warnings
+FROM --platform=linux/amd64 node:21
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -15,8 +15,7 @@ RUN npm install
 COPY . .
 
 # Expose the port the app runs on
-EXPOSE 5000
+EXPOSE 5002
 
 # Command to run the application
 CMD ["node", "server.js"]
-
