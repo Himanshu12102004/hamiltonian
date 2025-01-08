@@ -129,7 +129,9 @@ function Layout(props: LayoutProps) {
     }, 1500);
   }
   useEffect(() => {
+
     if (completePath.length > 1) GlobalVariables.start();
+    else GlobalVariables.animationParams.start=false;
   }, [completePath]);
   useEffect(() => {
     document.addEventListener('pointerPostion', () => {
@@ -331,6 +333,7 @@ function Layout(props: LayoutProps) {
                 }
                 setSteps(stepsArray);
                 GlobalVariables.animationParams.backendArray = stepsArray;
+                if(completePath.length>1)
                 GlobalVariables.start();
               }
               setAbortController(newAbortController);

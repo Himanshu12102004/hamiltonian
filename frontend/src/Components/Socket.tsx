@@ -3,7 +3,7 @@ import { io, Socket } from 'socket.io-client';
 let socket: Socket | undefined;
 
 const initializeSocket = (): Socket => {
-  socket = io('https://graphsim.vurtex.tech/', {
+  socket = io(process.env.BACKEND_URL, {
     autoConnect: false,
   });
   // when connection is established, log the connection id
